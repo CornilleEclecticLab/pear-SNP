@@ -3,7 +3,7 @@ library(vcfR)
 library(reshape2)
 library(ggplot2)
 
-rand_vcf <- "../ouput/vcfTest.test_rand.vcf.gz"
+rand_vcf <- "../Pear.Zhang_2021.test.vcf.gz"
 
 vcf <- read.vcfR(rand_vcf) 
 
