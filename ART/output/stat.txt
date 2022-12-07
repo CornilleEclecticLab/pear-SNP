@@ -1,3 +1,6 @@
 file                                            format  type  num_seqs      sum_len  min_len    avg_len     max_len        Q1        Q2       Q3  sum_gap         N50  Q20(%)  Q30(%)
 ../input/hap/Ppy362_CCS3.HiFiasm.hap1.fasta.gz  FASTA   DNA        534  533,633,237   11,900  999,313.2  41,386,987    34,231  40,197.5   50,739        0  27,564,754       0       0
 ../input/hap/Ppy362_CCS3.HiFiasm.hap2.fasta.gz  FASTA   DNA        176  515,632,133   20,078  2,929,728  40,437,267  43,277.5  62,058.5  148,661        0  21,946,431       0       0
+file                                                                 format  type  num_seqs      sum_len  min_len      avg_len     max_len      Q1        Q2      Q3  sum_gap         N50  Q20(%)  Q30(%)
+../input/primary_alternatif/Ppy362_CCS3.HiFiasm.alternatif.fasta.gz  FASTA   DNA      1,614  464,382,967   10,729    287,721.8   9,169,044  24,883    37,226  51,825        0   2,491,048       0       0
+../input/primary_alternatif/Ppy362_CCS3.HiFiasm.primary.fasta.gz     FASTA   DNA        450  539,218,681   21,078  1,198,263.7  41,386,987  35,418  41,549.5  51,759        0  27,564,754       0       0
