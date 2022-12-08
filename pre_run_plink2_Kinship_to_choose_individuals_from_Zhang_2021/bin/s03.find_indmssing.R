@@ -3,8 +3,8 @@ library(dplyr)
 library(ggplot2)
 library(cowplot)
 
-sumfile <- "./vcfTest.sum_number.txt"
-ind_miss_file <- "./vcfTest.ind_miss.txt"
+sumfile <- "../output/Pear.Zhang_2021.sum_number.txt"
+ind_miss_file <- "../output/Pear.Zhang_2021.ind_miss.txt"
 
 nu <- read.table(sumfile)
 
@@ -20,19 +20,19 @@ p1 <- ggplot(miss_df, aes(x = missing_rate)) +
   geom_histogram(aes(y = ..density..), colour = "black", fill = "white") +
   geom_density(alpha = .2, fill = "#FF6666") +
   geom_vline(xintercept = 10, linetype = "dashed", color = "red") +
-  xlab("missiong rate (%)") + 
+  xlab("missing rate (%)") + 
   theme_cowplot(12)
 
 p3 <- ggplot(miss_df, aes(x = reorder(individual, missing_rate), y = missing_rate)) +
   geom_bar(stat = "identity") +
   geom_hline(yintercept = 10, linetype = "dashed", color = "red") +
   xlab("individual") +
-  ylab("missiong rate (%)") +
+  ylab("missing rate (%)") +
   coord_flip() +
   theme_cowplot(12)
 
-ggsave("missing_Hist.png", plot = p1, dpi = 300)
-ggsave("missing_bar.png", plot = p3, dpi = 300, 
+ggsave("missing_Hist.pdf", plot = p1, dpi = 300)
+ggsave("missing_bar.pdf", plot = p3, dpi = 300, 
        width = 8,
        height = 20,
        units = "in")
@@ -48,3 +48,4 @@ remove_df <- filter(miss_df, miss_df$missing_rate > 30)
 fileConn <- file("remove.list")
 writeLines(as.character(remove_df$individual), fileConn)
 close(fileConn)
+
