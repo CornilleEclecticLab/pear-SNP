@@ -24,6 +24,8 @@ plink --vcf ../output/Pear.Zhang_2021.test_rand.vcf.gz \
 --allow-extra-chr
 
 
+# It is conventional to use a cutoff of ~0.354 (the geometric mean of 0.5 and 0.25) 
+# to screen for monozygotic twins and duplicate samples
 plink2 --bfile ../output/Pear.Zhang_2021.test_rand \
 --allow-extra-chr \
 --make-king-table \
@@ -31,10 +33,35 @@ plink2 --bfile ../output/Pear.Zhang_2021.test_rand \
 --make-bed \
 --out ../output/without_clone/Pear.cutoff0.354
 
+# ~0.177 to add first-degree relations
+plink2 --bfile ../output/Pear.Zhang_2021.test_rand \
+--allow-extra-chr \
+--make-king-table \
+--king-cutoff 0.177 \
+--make-bed \
+--out ../output/without_clone/Pear.cutoff0.177
+
+# First-degree relations (parent-child, full siblings) correspond to ~0.25
+plink2 --bfile ../output/Pear.Zhang_2021.test_rand \
+--allow-extra-chr \
+--make-king-table \
+--king-cutoff 0.25 \
+--make-bed \
+--out ../output/without_clone/Pear.cutoff0.250
+
+# second-degree relations correspond to ~0.125
+plink2 --bfile ../output/Pear.Zhang_2021.test_rand \
+--allow-extra-chr \
+--make-king-table \
+--king-cutoff 0.125 \
+--make-bed \
+--out ../output/without_clone/Pear.cutoff0.125
+
 
 plink2 --bfile ../output/Pear.Zhang_2021.test_rand \
 --allow-extra-chr \
 --make-king-table \
---king-cutoff 0.400 \
+--king-cutoff 0.063 \
 --make-bed \
---out ../output/without_clone/Pear.cutoff0.400
+--out ../output/without_clone/Pear.cutoff0.063
+

@@ -15,7 +15,7 @@ module load bioinfo/tabix-0.2.5
 # Record software version
 info='info.software_version.txt'
 bcftools version >> $info
-echo "\n tabix Version: 0.2.5(r964)\n" >> $info
+echo -e "\n tabix Version: 0.2.5(r964)\n" >> $info
 perl -version >> $info
 
 usage="Usage: \n  bash $0 <vcf_file> <output_prefix> \n\nExample: \n  bash $0 ../input/genotype_GATK.vcf.gz ../output/Pear.Zhang_2021 \n"
@@ -39,20 +39,20 @@ test_rand_vcfgz="$2.test_rand.vcf.gz"
 
 
 # ectract all the SNP and filter genotype missing 20%
-bcftools view -v snps \
-$vcf \
-| bcftools filter -e 'F_MISSING > 0.2' -O z \
--o $test_vcf
+# bcftools view -v snps \
+# $vcf \
+# | bcftools filter -e 'F_MISSING > 0.2' -O z \
+# -o $test_vcf
 
 
-tabix -p vcf $test_vcf
+# tabix -p vcf $test_vcf
 
 
 # choose random 1% site for DP plot and clone test and missing test
-perl ./bin.SNP_rand_choose_gz.pl 100 $test_vcf $test_rand_vcf
+# perl ./bin.SNP_rand_choose_gz.pl 100 $test_vcf $test_rand_vcf
 
 
-bgzip $test_rand_vcf 
+# bgzip -f $test_rand_vcf 
 tabix -p vcf $test_rand_vcfgz
 
 
@@ -61,9 +61,9 @@ bcftools view -H \
 $test_rand_vcfgz \
 | wc -l > $sum_number_txt
 
-bcftools view -H \
-$vcf \
-| wc -l > $sum_before_number_txt
+# bcftools view -H \
+# $vcf \
+# | wc -l > $sum_before_number_txt
 
 
 # count SNP number for each individual
@@ -72,10 +72,10 @@ bcftools stats -s - $test_rand_vcfgz \
 | cut -f3,14 \
 > $ind_miss_txt
 
-bcftools stats -s - $vcf \
-| grep -E ^PSC \
-| cut -f3,14 \
-> $ind_before_miss_txt
+# bcftools stats -s - $vcf \
+# | grep -E ^PSC \
+# | cut -f3,14 \
+# > $ind_before_miss_txt
 
 
 # remove the combine vcf
