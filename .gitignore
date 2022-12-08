@@ -1,3 +1,5 @@
-gitignore
-*/input
-*/output
+./gitignore
+input
+output
+output_local
+.Rhistory
