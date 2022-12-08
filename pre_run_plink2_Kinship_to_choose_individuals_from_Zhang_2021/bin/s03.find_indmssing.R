@@ -3,8 +3,8 @@ library(dplyr)
 library(ggplot2)
 library(cowplot)
 
-sumfile <- "./vcfTest.sum_number.txt"
-ind_miss_file <- "./vcfTest.ind_miss.txt"
+sumfile <- "../output/Pear.Zhang_2021.sum_number.txt"
+ind_miss_file <- "../output/Pear.Zhang_2021.ind_miss.txt"
 
 nu <- read.table(sumfile)
 
@@ -48,3 +48,4 @@ remove_df <- filter(miss_df, miss_df$missing_rate > 30)
 fileConn <- file("remove.list")
 writeLines(as.character(remove_df$individual), fileConn)
 close(fileConn)
+

@@ -3,7 +3,7 @@ library(vcfR)
 library(reshape2)
 library(ggplot2)
 
-rand_vcf <- "../Pear.Zhang_2021.test.vcf.gz"
+rand_vcf <- "../output/Pear.Zhang_2021.test_rand.vcf.gz"
 
 vcf <- read.vcfR(rand_vcf) 
 
@@ -28,4 +28,4 @@ p <- ggplot(dpf, aes(x=Sample,y=Depth)) +
   stat_summary(fun.data = quantiles_95, geom="boxplot", width=0.5, alpha=0.6) +
   scale_y_continuous(trans=scales::log2_trans(),breaks=c(1,3,5,10,100,1000))
 
-
+p
