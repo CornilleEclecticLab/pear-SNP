@@ -1,0 +1,85 @@
+mkdir: cannot create directory ‘/work/zruilin/Peach/QC/output/s01.raw_qc/Clone_4’: File exists
+Started analysis of Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 5% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 10% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 15% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 20% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 25% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 30% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 35% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 40% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 45% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 50% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 55% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 60% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 65% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 70% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 75% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 80% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 85% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 90% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+Approx 95% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_1.fq.gz
+/var/spool/slurm/d/job39301117/slurm_script: line 9:  : command not found
+Started analysis of Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 5% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 10% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 15% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 20% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 25% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 30% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 35% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 40% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 45% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 50% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 55% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 60% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 65% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 70% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 75% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 80% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 85% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 90% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+Approx 95% complete for Clone_4_EKDN220024216-1A_H35GFDSX5_L1_2.fq.gz
+/var/spool/slurm/d/job39301117/slurm_script: line 10:  : command not found
+Started analysis of Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 5% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 10% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 15% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 20% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 25% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 30% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 35% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 40% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 45% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 50% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 55% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 60% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 65% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 70% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 75% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 80% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 85% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 90% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+Approx 95% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_1.fq.gz
+/var/spool/slurm/d/job39301117/slurm_script: line 11:  : command not found
+Started analysis of Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 5% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 10% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 15% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 20% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 25% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 30% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 35% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 40% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 45% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 50% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 55% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 60% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 65% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 70% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 75% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 80% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 85% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 90% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+Approx 95% complete for Clone_4_EKDN220024216-1A_H3N2VDSX5_L1_2.fq.gz
+/var/spool/slurm/d/job39301117/slurm_script: line 12:  : command not found

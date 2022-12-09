@@ -1,0 +1,163 @@
+Read1 before filtering:
+total reads: 12206222
+total bases: 1830933300
+Q20 bases: 1778504918(97.1365%)
+Q30 bases: 1688267695(92.208%)
+
+Read2 before filtering:
+total reads: 12206222
+total bases: 1830933300
+Q20 bases: 1760328638(96.1438%)
+Q30 bases: 1646145721(89.9075%)
+
+Read1 after filtering:
+total reads: 12104015
+total bases: 1787482340
+Q20 bases: 1738692277(97.2705%)
+Q30 bases: 1651133654(92.372%)
+
+Read2 after filtering:
+total reads: 12104015
+total bases: 1787417702
+Q20 bases: 1722959317(96.3938%)
+Q30 bases: 1612166654(90.1953%)
+
+Filtering result:
+reads passed filter: 24208030
+reads failed due to low quality: 160768
+reads failed due to too many N: 2554
+reads failed due to too short: 41092
+reads with adapter trimmed: 219128
+bases trimmed due to adapters: 11616199
+
+Duplication rate: 10.0514%
+
+Insert size peak (evaluated by paired-end reads): 269
+
+JSON report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.json
+HTML report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.html
+
+fastp -f 2 -l 50 -i /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Prunus_kans_8/Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz -I /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Prunus_kans_8/Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz -o /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz -O /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz -h /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.html -j /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.json -R Prunus_kans_8 
+fastp v0.21.0, time used: 438 seconds
+Started analysis of clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 5% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 10% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 15% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 20% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 25% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 30% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 35% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 40% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 45% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 50% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 55% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 60% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 65% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 70% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 75% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 80% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 85% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 90% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 95% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 100% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_1.fq.gz
+Started analysis of clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 5% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 10% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 15% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 20% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 25% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 30% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 35% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 40% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 45% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 50% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 55% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 60% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 65% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 70% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 75% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 80% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 85% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 90% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 95% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3MGWDSX5_L3_2.fq.gz
+Read1 before filtering:
+total reads: 15275091
+total bases: 2291263650
+Q20 bases: 2232531320(97.4367%)
+Q30 bases: 2122399307(92.6301%)
+
+Read2 before filtering:
+total reads: 15275091
+total bases: 2291263650
+Q20 bases: 2180246676(95.1548%)
+Q30 bases: 2006922264(87.5902%)
+
+Read1 after filtering:
+total reads: 15143090
+total bases: 2235728559
+Q20 bases: 2181846115(97.5899%)
+Q30 bases: 2075350653(92.8266%)
+
+Read2 after filtering:
+total reads: 15143090
+total bases: 2235662943
+Q20 bases: 2133511751(95.4308%)
+Q30 bases: 1965108393(87.8982%)
+
+Filtering result:
+reads passed filter: 30286180
+reads failed due to low quality: 205352
+reads failed due to too many N: 5284
+reads failed due to too short: 53366
+reads with adapter trimmed: 294006
+bases trimmed due to adapters: 15901560
+
+Duplication rate: 16.241%
+
+Insert size peak (evaluated by paired-end reads): 269
+
+JSON report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.json
+HTML report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.html
+
+fastp -f 2 -l 50 -i /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Prunus_kans_8/Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz -I /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Prunus_kans_8/Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz -o /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz -O /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz -h /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.html -j /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Prunus_kans_8/fastp.Prunus_kans_8.json -R Prunus_kans_8 
+fastp v0.21.0, time used: 535 seconds
+Started analysis of clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 5% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 10% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 15% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 20% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 25% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 30% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 35% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 40% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 45% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 50% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 55% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 60% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 65% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 70% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 75% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 80% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 85% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 90% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Approx 95% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_1.fq.gz
+Started analysis of clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 5% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 10% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 15% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 20% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 25% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 30% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 35% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 40% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 45% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 50% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 55% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 60% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 65% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 70% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 75% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 80% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 85% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 90% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz
+Approx 95% complete for clean.Prunus_kans_8_EKDN220024231-1A_H3NGMDSX5_L4_2.fq.gz

@@ -1,0 +1,43 @@
+mkdir: cannot create directory ‘/work/zruilin/Peach/QC/output/s01.raw_qc/S4415’: File exists
+Started analysis of S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 5% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 10% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 15% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 20% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 25% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 30% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 35% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 40% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 45% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 50% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 55% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 60% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 65% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 70% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 75% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 80% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 85% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 90% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+Approx 95% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_1.fq.gz
+/var/spool/slurm/d/job39301138/slurm_script: line 9:  : command not found
+Started analysis of S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 5% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 10% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 15% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 20% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 25% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 30% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 35% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 40% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 45% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 50% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 55% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 60% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 65% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 70% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 75% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 80% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 85% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 90% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+Approx 95% complete for S4415_EKDN220024236-1A_H3MGWDSX5_L3_2.fq.gz
+/var/spool/slurm/d/job39301138/slurm_script: line 10:  : command not found

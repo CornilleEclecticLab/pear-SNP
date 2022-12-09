@@ -1,0 +1,162 @@
+Read1 before filtering:
+total reads: 4085051
+total bases: 612757650
+Q20 bases: 596366311(97.325%)
+Q30 bases: 567694053(92.6458%)
+
+Read2 before filtering:
+total reads: 4085051
+total bases: 612757650
+Q20 bases: 586314945(95.6846%)
+Q30 bases: 543725856(88.7342%)
+
+Read1 after filtering:
+total reads: 4048485
+total bases: 597007979
+Q20 bases: 582224647(97.5238%)
+Q30 bases: 554611694(92.8985%)
+
+Read2 after filtering:
+total reads: 4048485
+total bases: 597000810
+Q20 bases: 573235298(96.0192%)
+Q30 bases: 532041896(89.1191%)
+
+Filtering result:
+reads passed filter: 8096970
+reads failed due to low quality: 53804
+reads failed due to too many N: 6
+reads failed due to too short: 19322
+reads with adapter trimmed: 114434
+bases trimmed due to adapters: 6207467
+
+Duplication rate: 17.3607%
+
+Insert size peak (evaluated by paired-end reads): 268
+
+JSON report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.json
+HTML report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.html
+
+fastp -f 2 -l 50 -i /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/TC_6_2/TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz -I /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/TC_6_2/TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz -o /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz -O /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz -h /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.html -j /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.json -R TC_6_2 
+fastp v0.21.0, time used: 137 seconds
+Started analysis of clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 5% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 10% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 15% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 20% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 25% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 30% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 35% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 40% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 45% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 50% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 55% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 60% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 65% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 70% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 75% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 80% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 85% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 90% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Approx 95% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_1.fq.gz
+Started analysis of clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 5% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 10% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 15% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 20% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 25% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 30% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 35% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 40% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 45% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 50% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 55% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 60% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 65% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 70% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 75% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 80% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 85% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 90% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Approx 95% complete for clean.TC_6_2_EKDN220024263-1A_H35GFDSX5_L1_2.fq.gz
+Read1 before filtering:
+total reads: 18827686
+total bases: 2824152900
+Q20 bases: 2713709020(96.0893%)
+Q30 bases: 2537291288(89.8426%)
+
+Read2 before filtering:
+total reads: 18827686
+total bases: 2824152900
+Q20 bases: 2609813577(92.4105%)
+Q30 bases: 2336102514(82.7187%)
+
+Read1 after filtering:
+total reads: 18606695
+total bases: 2744175439
+Q20 bases: 2642208704(96.2842%)
+Q30 bases: 2472164970(90.0877%)
+
+Read2 after filtering:
+total reads: 18606695
+total bases: 2744158913
+Q20 bases: 2545638779(92.7657%)
+Q30 bases: 2280451088(83.102%)
+
+Filtering result:
+reads passed filter: 37213390
+reads failed due to low quality: 348556
+reads failed due to too many N: 588
+reads failed due to too short: 92838
+reads with adapter trimmed: 506906
+bases trimmed due to adapters: 28579228
+
+Duplication rate: 10.5575%
+
+Insert size peak (evaluated by paired-end reads): 269
+
+JSON report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.json
+HTML report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.html
+
+fastp -f 2 -l 50 -i /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/TC_6_2/TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz -I /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/TC_6_2/TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz -o /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz -O /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz -h /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.html -j /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/TC_6_2/fastp.TC_6_2.json -R TC_6_2 
+fastp v0.21.0, time used: 662 seconds
+Started analysis of clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 5% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 10% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 15% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 20% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 25% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 30% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 35% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 40% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 45% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 50% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 55% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 60% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 65% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 70% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 75% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 80% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 85% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 90% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Approx 95% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_1.fq.gz
+Started analysis of clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 5% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 10% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 15% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 20% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 25% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 30% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 35% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 40% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 45% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 50% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 55% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 60% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 65% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 70% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 75% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 80% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 85% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 90% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz
+Approx 95% complete for clean.TC_6_2_EKDN220024263-1A_H3MWGDSX5_L3_2.fq.gz

@@ -1,0 +1,162 @@
+Read1 before filtering:
+total reads: 11339478
+total bases: 1700921700
+Q20 bases: 1646047906(96.7739%)
+Q30 bases: 1558575254(91.6312%)
+
+Read2 before filtering:
+total reads: 11339478
+total bases: 1700921700
+Q20 bases: 1625200103(95.5482%)
+Q30 bases: 1511791954(88.8807%)
+
+Read1 after filtering:
+total reads: 11211376
+total bases: 1654525537
+Q20 bases: 1604967649(97.0047%)
+Q30 bases: 1520931110(91.9255%)
+
+Read2 after filtering:
+total reads: 11211376
+total bases: 1654526044
+Q20 bases: 1586960553(95.9163%)
+Q30 bases: 1477724455(89.3141%)
+
+Filtering result:
+reads passed filter: 22422752
+reads failed due to low quality: 209368
+reads failed due to too many N: 2356
+reads failed due to too short: 44480
+reads with adapter trimmed: 258984
+bases trimmed due to adapters: 13673001
+
+Duplication rate: 12.1964%
+
+Insert size peak (evaluated by paired-end reads): 269
+
+JSON report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.json
+HTML report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.html
+
+fastp -f 2 -l 50 -i /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Kara_4_1/Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz -I /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Kara_4_1/Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz -o /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz -O /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz -h /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.html -j /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.json -R Kara_4_1 
+fastp v0.21.0, time used: 394 seconds
+Started analysis of clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 5% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 10% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 15% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 20% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 25% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 30% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 35% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 40% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 45% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 50% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 55% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 60% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 65% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 70% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 75% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 80% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 85% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 90% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Approx 95% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_1.fq.gz
+Started analysis of clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 5% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 10% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 15% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 20% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 25% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 30% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 35% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 40% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 45% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 50% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 55% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 60% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 65% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 70% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 75% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 80% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 85% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 90% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Approx 95% complete for clean.Kara_4_1_EKDN220024221-1A_H3MGWDSX5_L2_2.fq.gz
+Read1 before filtering:
+total reads: 14774693
+total bases: 2216203950
+Q20 bases: 2140472513(96.5828%)
+Q30 bases: 2013389450(90.8486%)
+
+Read2 before filtering:
+total reads: 14774693
+total bases: 2216203950
+Q20 bases: 2074348321(93.5992%)
+Q30 bases: 1877096675(84.6987%)
+
+Read1 after filtering:
+total reads: 14610791
+total bases: 2155798979
+Q20 bases: 2086391068(96.7804%)
+Q30 bases: 1963708041(91.0896%)
+
+Read2 after filtering:
+total reads: 14610791
+total bases: 2155769531
+Q20 bases: 2025045640(93.9361%)
+Q30 bases: 1833873625(85.0682%)
+
+Filtering result:
+reads passed filter: 29221582
+reads failed due to low quality: 264910
+reads failed due to too many N: 1480
+reads failed due to too short: 61414
+reads with adapter trimmed: 354236
+bases trimmed due to adapters: 19330530
+
+Duplication rate: 16.6157%
+
+Insert size peak (evaluated by paired-end reads): 269
+
+JSON report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.json
+HTML report: /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.html
+
+fastp -f 2 -l 50 -i /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Kara_4_1/Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz -I /work/zruilin/Peach/QC/input/peach_Illumina_novogene_25082022/merged_row_data/Kara_4_1/Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz -o /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz -O /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz -h /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.html -j /work/zruilin/Peach/QC/output/s03.fastp_and_qc.raw_data.list/Kara_4_1/fastp.Kara_4_1.json -R Kara_4_1 
+fastp v0.21.0, time used: 524 seconds
+Started analysis of clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 5% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 10% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 15% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 20% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 25% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 30% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 35% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 40% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 45% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 50% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 55% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 60% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 65% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 70% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 75% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 80% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 85% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 90% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Approx 95% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_1.fq.gz
+Started analysis of clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 5% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 10% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 15% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 20% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 25% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 30% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 35% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 40% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 45% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 50% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 55% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 60% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 65% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 70% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 75% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 80% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 85% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 90% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz
+Approx 95% complete for clean.Kara_4_1_EKDN220024221-1A_H3TGLDSX5_L3_2.fq.gz

@@ -1,0 +1,1 @@
+ls s01.raw_qc | xagrs -I {} sbatch -c 2 {}
