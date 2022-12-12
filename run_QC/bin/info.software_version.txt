@@ -1,0 +1,2 @@
+Python 3.9.2
+multiqc, version 1.9
