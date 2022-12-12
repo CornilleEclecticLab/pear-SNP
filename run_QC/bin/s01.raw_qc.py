@@ -33,8 +33,8 @@ with open(work_dir+"/input/raw_data.list",'r') as data_list:
         fastq_file_name = os.path.basename(path)
         suffix = str(fastq_file_name).split("_")[-1]
         
-        if not suffix.startswith('1') and not suffix.startswith('2') or '_' not in fastq_file_name:
-            warnings.warn("WARNING: Unexpected file name: "+fastq_file_name)
+        # if not suffix.startswith('1') and not suffix.startswith('2') or '_' not in fastq_file_name:
+        #     warnings.warn("WARNING: Unexpected file name: "+fastq_file_name)
             
         dirname = os.path.dirname(path)
         samplename = os.path.basename(dirname)
@@ -44,7 +44,8 @@ with open(work_dir+"/input/raw_data.list",'r') as data_list:
         
 for sample, ls in data_dic.items():
     if len(ls)%2==1:
-        warnings.warn("WARNING: this sample has odd number of files, \
+        warnings.warn(\
+"WARNING: this sample has odd number of files, \
 it may not sequenced by double-end sequencing: " + sample)
 
 
@@ -67,8 +68,9 @@ for sample,ls in data_dic.items():
         for i in ls:
             dirname = i[0]
             filename = i[1]
-            content = 'fastqc -t 2 -f -o ' + outdir +' ' +dirname+'/'+filename+' &&\\\n'
+            content = 'fastqc -t 2 -f fastq -o ' + outdir +' ' +dirname+'/'+filename+' &&\\\n'
             fo.write(content)
+        fo.write("echo done")
 
 
 
