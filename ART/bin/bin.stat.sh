@@ -10,4 +10,5 @@
 
 seqkit version >> info.software_version.txt
 
-seqkit stat -a ../input/hap/Ppy362_CCS3.HiFiasm.*.fasta.gz >> ../output/stat.txt
+seqkit stat -a ../input/hap/Ppy362_CCS3.HiFiasm.*.fasta.gz > ../output/stat.txt
+seqkit stat -a ../input/primary_alternatif/*.fasta.gz >> ../output/stat.txt
