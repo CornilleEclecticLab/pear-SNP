@@ -18,11 +18,12 @@ module load bioinfo/plink-v1.90b5.3
 plink --vcf ../output/Pear.Zhang_2021.test_rand.vcf.gz \
 --make-bed \
 --const-fid \
---out ../output/Pear.Zhang2021.test_rand
+--out ../output/Pear.Zhang_2021.test_rand \
 --set-missing-var-ids @:# \
 --keep-allele-order \
 --allow-extra-chr
 
+mkdir -p ../output/without_clone
 
 # It is conventional to use a cutoff of ~0.354 (the geometric mean of 0.5 and 0.25) 
 # to screen for monozygotic twins and duplicate samples
