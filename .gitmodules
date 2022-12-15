@@ -1,0 +1,3 @@
+[submodule "art-pipeline-for-anchor-scaffolds"]
+	path = art-pipeline-for-anchor-scaffolds
+	url = git@forgemia.inra.fr:xilong.chen/art-pipeline-for-anchor-scaffolds.git
