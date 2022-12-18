@@ -7,6 +7,6 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 
-multiqc -n ../output/s02.raw_multiqc/pear_raw_report.html \
-../output/s01.raw_qc/*/
+multiqc -n ../output/s02.raw_multiqc/pear_Teng_report.html \
+../output/s01.raw_qc/Chinese_pear_Teng/*/
 
