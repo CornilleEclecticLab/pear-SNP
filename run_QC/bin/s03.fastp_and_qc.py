@@ -83,14 +83,14 @@ fastp \\
 -O {O} \\
 -h {h} \\
 -j {j} \\
--R {R} &&
+-R {R} 
 
 
 fastqc \\
 -t 2 \\
 -f fastq \\
 -o {oqc} \\
-{o} &&
+{o} 
 
 
 fastqc \\
@@ -110,7 +110,7 @@ O=s03_output_dir+"/"+value[1][2]+"/"+sample+"/clean."+os.path.basename(value[1][
 h=s03_output_dir+"/"+value[0][2]+"/"+sample+"/fastp."+sample+".html", \
 j=s03_output_dir+"/"+value[0][2]+"/"+sample+"/fastp."+sample+".json", \
 R=sample, \
-oqc=s03_output_dir+"/"+value[1][2]+"/"+sample, \
+oqc=s03_output_dir+"/"+value[0][2]+"/"+sample, \
 OQC=s03_output_dir+"/"+value[1][2]+"/"+sample)
         
         fo.write(content)
