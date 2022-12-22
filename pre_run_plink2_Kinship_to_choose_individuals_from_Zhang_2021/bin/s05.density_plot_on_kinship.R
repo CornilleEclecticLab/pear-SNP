@@ -41,14 +41,15 @@ p
 data3 <- read.table("../input_local/depth.project.removeUnclearSpeciesPrunus.RemoveGroupLessThan8individuals.txt",
                     header = TRUE)
 p <- ggplot()+
-  geom_histogram(data=data3, aes(x=Depth, colors="black",fill=Dataset))+
+  geom_histogram(data=data3, aes(x=Depth, fill=Dataset), color="#88ada8")+
+  geom_vline(aes(xintercept=10))+
   theme_classic()+
-  geom_density(alpha=0.4)
   scale_x_continuous(breaks=seq(0,40,5)) 
 p
 
 p <- ggplot()+
-  geom_histogram(data=data3, aes(x=Depth, color=Group))+
+  geom_histogram(data=data3, aes(x=Depth, fill=Group),color="black")+
   theme_classic()+
+  geom_vline(aes(xintercept=10))+
   scale_x_continuous(breaks=seq(0,40,5)) 
 p
