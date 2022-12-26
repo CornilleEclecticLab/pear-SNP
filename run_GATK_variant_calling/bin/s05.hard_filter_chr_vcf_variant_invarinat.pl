@@ -21,7 +21,7 @@ my $bwa2     = "module load bioinfo/bwa-mem2-2.0";
 my $samtools = "module load bioinfo/samtools-1.9";
 my $gatk     = "module load bioinfo/gatk-4.1.7.0";
 my $bcftools = "module load bioinfo/bcftools-1.9";
-my $workdir  = "/work/zruilin/Peach/run_GATK_variant_calling";
+my $workdir  = "~/work/pear/run_GATK_variant_calling";
 
 my $output_04 = "$workdir/output/s04.combine_chr_gvcf_to_vcf_allsite";
 my $output_path = "$workdir/output/$shdir";
