@@ -54,7 +54,7 @@ GWHBAOS00000099
 GWHBAOS00000356
 GWHBAOS00000365
 GWHBAOS00000335
-"$workdir/input/input/scaffolds.list");
+"$workdir/input/scaffolds.list");
 
 
 my $out    = "$workdir/output/$shdir";
