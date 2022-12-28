@@ -125,7 +125,7 @@ module purge
 
 module load bioinfo/bwa-mem2-2.2
 module load bioinfo/samtools-1.14
-module load bioinfo/gatk-4.1.7.0
+module load bioinfo/gatk-4.1.9.0
 
 
 '''
@@ -220,7 +220,7 @@ samtools index {output_dir}/{sample}{group}.sorted.markdu.cram \\
             fo.write(content)
 
             ## Load softwares
-            content = 'module purge \nmodule load bioinfo/gatk-4.1.7.0 \n\n'
+            content = 'module purge \nmodule load bioinfo/gatk-4.1.9.0 \n\n'
             fo.write(content)
         
             ## Call SNPs
@@ -244,7 +244,7 @@ gatk --java-options "-Xmx8g" IndexFeatureFile \\
             fo.write(content)
             
         ## Submit this script as a job
-        submit = os.popen("sbatch -c 4 --mem=10G --dependency "+job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh", 'r')
+        submit = os.popen("sbatch -c 4 --mem=10G --dependency=afterok:"+job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh", 'r')
         print("Information: A job has been submitted: \n\t'sbatch -c 4 --mem=10G --dependency " +
               job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh'\n")
         

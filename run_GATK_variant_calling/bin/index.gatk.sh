@@ -5,7 +5,7 @@
 
 module purge
 
-module load bioinfo/gatk-4.1.7.0
+module load bioinfo/gatk-4.1.9.0
 
 gatk CreateSequenceDictionary -R ../input/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.fasta -O ../input/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.dict
 
