@@ -245,7 +245,7 @@ gatk --java-options "-Xmx8g" IndexFeatureFile \\
             
         ## Submit this script as a job
         submit = os.popen("sbatch -c 4 --mem=10G --dependency=afterok:"+job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh", 'r')
-        print("Information: A job has been submitted: \n\t'sbatch -c 4 --mem=10G --dependency " +
+        print("Information: A job has been submitted: \n\t'sbatch -c 4 --mem=10G --dependency=afterok:" +
               job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh'\n")
         
 
