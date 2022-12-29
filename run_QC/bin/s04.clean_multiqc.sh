@@ -7,7 +7,5 @@ module purge
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-module load bioinfo/MultiQC-v1.11
-
-multiqc -n /work/zruilin/Peach/QC/output/s04.clean_multiqc/Peach_clean_report.html \
-/work/zruilin/Peach/QC/output/s03.fastp_and_qc.*/*/
+multiqc -n /data/atipe-workspace/ynie/pear/run_QC/output/s04.clean_multiqc/Pear_clean_report.html \
+/data/atipe-workspace/ynie/pear/run_QC/output/s03.fastp_and_qc/*/*/
