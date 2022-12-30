@@ -36,28 +36,15 @@ output_dir  = output_dir+'/'+prefix
 
 
 # Set input file names
-## A text file record the paths of fastq file, in which, the line starts with # would be ignored, every line for one record(fastq file), and the fastq files of the same sample should be in a same dir with their sample name.
+
+## The path of a text file record the paths of fastq file, in which, the line starts with # would be ignored, every line for one record(fastq file), and the fastq files of the same sample should be in a same dir with their sample name.
 fastq_list = input_dir+"/input.clean_data_list.txt"
+
+## Reference genome (fasta) path
 ref_genome = input_dir+'/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.fasta'
-chromosomes = '''
-GWHBAOS00000076
-GWHBAOS00000158
-GWHBAOS00000386
-GWHBAOS00000381
-GWHBAOS00000224
-GWHBAOS00000085
-GWHBAOS00000163
-GWHBAOS00000172
-GWHBAOS00000128
-GWHBAOS00000425
-GWHBAOS00000352
-GWHBAOS00000424
-GWHBAOS00000274
-GWHBAOS00000099
-GWHBAOS00000356
-GWHBAOS00000365
-GWHBAOS00000335
-'{input_dir}/scaffolds.list'''.format(input_dir=input_dir).strip().split()
+
+# The path of a txt file records the scaffolds IDs in the reference genome. If there are too many scaffolds, you could save some of them in another file, and write it's path in the following file. In this file,  {input_dir} could be recognized as the variant.
+chromosomes = input_dir+'/all_scaffolds.list'
 
 
 
@@ -66,6 +53,17 @@ GWHBAOS00000335
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+
+# Ask if run the scritps
+run = ''
+print("Welcome!")
+while run == '':
+    run = input("Please chose 1 or 2 to continue: \n\t 1) generate the scripts and run them (submit the jobs using sbatch)\
+                \n\t 2) only generate the scripts, without running them.\n")
+    
+    if run != '1' and run !='2':
+        print("Unrecognized input, please try again.\n")
+        run = ''
 
 # Read paths of fastq files
 with open(fastq_list,'r') as fo:
@@ -201,16 +199,22 @@ samtools index {output_dir}/{sample}{group}.sorted.markdu.cram \\
         
         
     ## Submit this script as a job
-    submit = os.popen("sbatch -c 4 --mem=32G "+scripts_dir+"/"+sample_prefix+".sh", 'r')
-    job_id = submit.read().strip().split()[-1]
-    print("\n\nInformation: Dealing with "+ sample + group )
-    print("\nInformation: A job has been submitted: \n\t'sbatch -c 4 --mem=32G "+scripts_dir+"/"+sample_prefix+".sh'\n")
+    if run == '1':
+        submit = os.popen("sbatch -c 4 --mem=32G "+scripts_dir+"/"+sample_prefix+".sh", 'r')
+        job_id = submit.read().strip().split()[-1]
+        print("\n\nInformation: Dealing with "+ sample + group )
+        print("\nInformation: A job has been submitted: \n\t'sbatch -c 4 --mem=32G "+scripts_dir+"/"+sample_prefix+".sh'\n")
         
     
     ## Scripts for variant calling
-    for chr in chromosomes:
+    with open(chromosomes,'r') as fo:
+        chromosome = fo.read().strip().format(input_dir=input_dir).split()
+
+        
+    for chr in chromosome:
         suffix=".VariantCalling"
-        sample_prefix_chr = sample + suffix + '.' + chr.split('/')[-1]
+        chr_base = os.path.basename(chr).split('.')[0]
+        sample_prefix_chr = sample + suffix + '.' + chr_base
         with open(scripts_dir+"/"+sample_prefix_chr+".sh",'w') as fo:
             fo.write(content_header)
             
@@ -232,21 +236,22 @@ gatk --java-options "-Xmx8g" HaplotypeCaller \\
 -ploidy 2 \\
 --emit-ref-confidence GVCF \\
 -I {output_dir}/{sample}{group}.sorted.markdu.cram \\
--O {output_dir}/{sample}.{chr}{group}.g.vcf.gz \\
+-O {output_dir}/{sample}.{chr_base}{group}.g.vcf.gz \\
 || {{ echo 'HaplotypeCaller Call SNP failed' ; exit 1 ; }}
 
 # Index gvcf
 gatk --java-options "-Xmx8g" IndexFeatureFile \\
--I {output_dir}/{sample}.{chr}{group}.g.vcf.gz \\
+-I {output_dir}/{sample}.{chr_base}{group}.g.vcf.gz \\
 || {{ echo 'Index gvcf failed' ; exit 1 ; }}
 \
-                '''.format(ref_genome=ref_genome,chr=chr,output_dir=output_dir,sample=sample,group=group)
+                '''.format(ref_genome=ref_genome,chr=chr,output_dir=output_dir,sample=sample,group=group,chr_base=chr_base)
             fo.write(content)
             
         ## Submit this script as a job
-        submit = os.popen("sbatch -c 4 --mem=10G --dependency=afterok:"+job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh", 'r')
-        print("Information: A job has been submitted: \n\t'sbatch -c 4 --mem=10G --dependency=afterok:" +
-              job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh'\n")
+        if run == '1':
+            submit = os.popen("sbatch -c 4 --mem=10G --dependency=afterok:"+job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh", 'r')
+            print("Information: A job has been submitted: \n\t'sbatch -c 4 --mem=10G --dependency=afterok:" +
+                  job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh'\n")
         
 
 
