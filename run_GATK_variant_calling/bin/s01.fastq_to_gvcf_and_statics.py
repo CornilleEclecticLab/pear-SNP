@@ -21,7 +21,7 @@ print("{0:=^40}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '~/work/pear/run_GATK_variant_calling'
+work_dir 	= '/work/zruilin/pear/run_GATK_variant_calling'
 group       = 'pear.Teng'
 
 
