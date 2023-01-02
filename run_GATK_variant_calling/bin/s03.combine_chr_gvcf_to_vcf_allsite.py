@@ -20,8 +20,8 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '/work/zruilin/pear/run_GATK_variant_calling'
-group       = 'pear.Teng'
+work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
+group       = 'pear.Li2021'
 
 
 ## NO need to change >>
