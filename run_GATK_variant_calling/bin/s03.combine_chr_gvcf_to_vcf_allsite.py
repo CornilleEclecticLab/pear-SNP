@@ -11,13 +11,13 @@
 
 import datetime,os
 start_time = datetime.datetime.now()
-print("{0:=^40}".format(' Start '))
+print("{0:=^80}".format(' Start '))
 
 
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# >>>>>Here is the start fo setting part.>>>>>
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>><<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>             Here is the start fo setting part.                     >>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
 work_dir 	= '/work/zruilin/pear/run_GATK_variant_calling'
@@ -49,9 +49,9 @@ chromosomes = input_dir+'/all_scaffolds.list'
 
 
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-# <<<<<Here is the end fo setting part.<<<<<
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<                   Here is the end fo setting part.                 <<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 
@@ -88,7 +88,7 @@ with open(fastq_list,'r') as fo:
 
 # Create dir for saving scripts and output
 os.system('mkdir -p '+scripts_dir)
-os.system('mkdir -p '+output_dir)
+os.system('mkdir -p '+output3_dir)
 
 
 # Change the working dir
@@ -107,7 +107,7 @@ for chr in chromosome:
     chr_base = os.path.splitext(os.path.basename(chr))[0]
     
     ## Create the chromosomes list file
-    gvcf_list = scripts_dir+'/'+chr_base+".list"
+    gvcf_list = output3_dir+'/'+group+"."+chr_base+".list"
     with open(gvcf_list,'w') as fo:     
         for sample, path in dic.items():
             fo.write(output1_dir+'/'+group+'.'+sample+'.'+chr_base+'.g.vcf.gz\n')
@@ -142,17 +142,17 @@ module load bioinfo/gatk-4.1.9.0
 gatk --java-options "-Xmx32g" CombineGVCFs \\
      -R {ref_genome} \\
      -V {gvcf_list} \\
-     -O {output3_dir}/{chr_base}.combine.g.vcf.gz \\
+     -O {output3_dir}/{group}.{chr_base}.combine.g.vcf.gz \\
      || {{ echo "Combine gvcfs failed!" ; exit 1 ; }} 
 
 # Genotype .vcf
 gatk --java-options "-Xmx32g" GenotypeGVCFs \\
      -all-sites \\
      -R {ref_genome} \\
-     -V {output3_dir}/{chr_base}.combine.g.vcf.gz \\
-     -O {output3_dir}/{chr_base}.combine.vcf.gz \\
+     -V {output3_dir}/{group}.{chr_base}.combine.g.vcf.gz \\
+     -O {output3_dir}/{group}.{chr_base}.combine.vcf.gz \\
      || {{ echo "Genotype gvcf to vcf failed!" ; exit 1 ; }}
-'''.format(ref_genome=ref_genome,output3_dir=output3_dir,chr_base=chr_base,gvcf_list=gvcf_list)
+'''.format(ref_genome=ref_genome,output3_dir=output3_dir,chr_base=chr_base,gvcf_list=gvcf_list,group=group)
         fo.write(content)
         
     ## Submit this script as a job
@@ -167,5 +167,5 @@ gatk --java-options "-Xmx32g" GenotypeGVCFs \\
 
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(40,'='))
-print(str(end_time-start_time).center(40))
+print(' END '.center(80,'='))
+print(str(end_time-start_time).center(80))
