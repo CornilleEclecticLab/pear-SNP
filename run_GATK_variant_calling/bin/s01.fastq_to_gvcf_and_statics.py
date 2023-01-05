@@ -38,7 +38,7 @@ output_dir  = output_dir+'/'+prefix
 # Set input file names
 
 ## The path of a text file record the paths of fastq file, in which, the line starts with # would be ignored, every line for one record(fastq file), and the fastq files of the same sample should be in a same dir with their sample name.
-fastq_list = input_dir+"/input.clean_data_list.txt"
+fastq_list = input_dir+"/"+group+".input.clean_data_list.txt"
 
 ## Reference genome (fasta) path
 ref_genome = input_dir+'/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.fasta'
