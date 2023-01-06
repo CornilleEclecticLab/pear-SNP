@@ -9,20 +9,20 @@
 #Description:
     # 
 
-import datetime, os
-from re import sub
+import datetime, os , getpass
 start_time = datetime.datetime.now()
-print("{0:=^40}".format(' Start '))
+print("{0:=^80}".format(' Start '))
 
 
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# >>>>>Here is the start fo setting part.>>>>>
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>              Here is the start fo setting part.                    >>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
-group       = 'pear.Li2021'
+user        = getpass.getuser()
+work_dir 	= '/work/'+user+'/pear/run_GATK_variant_calling'
+group       = 'pear.Wu2018EC'
 
 
 ## NO need to change >>
@@ -48,9 +48,9 @@ chromosomes = input_dir+'/all_scaffolds.list'
 
 
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-# <<<<<Here is the end fo setting part.<<<<<
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<                Here is the end fo setting part.                    <<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 
@@ -86,9 +86,8 @@ with open(fastq_list,'r') as fo:
 
 
 # Create dir for saving scripts and output
-os.system('mkdir -p '+scripts_dir)
 os.system('mkdir -p '+output_dir)
-
+os.system('mkdir -p '+scripts_dir)
 
 # Change the working dir
 os.chdir(scripts_dir)
@@ -261,5 +260,5 @@ gatk --java-options "-Xmx8g" IndexFeatureFile \\
 
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(40,'='))
-print(str(end_time-start_time).center(40))
+print(' END '.center(80,'='))
+print(str(end_time-start_time).center(80))
