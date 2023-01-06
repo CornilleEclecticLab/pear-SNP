@@ -72,10 +72,10 @@ for chr in chromosome:
             fastq_list = input_dir+"/"+group+".input.clean_data_list.txt"
 
             ## Read samples list
-            with open(fastq_list, 'r') as fo:
+            with open(fastq_list, 'r') as fr:
 
                 dic = {}
-                for line in fo:
+                for line in fr:
                     line = line.strip()
 
                     if line.startswith('#'):
@@ -89,11 +89,11 @@ for chr in chromosome:
                     dic[sample_name] = dic.get(sample_name, [])
                     dic[sample_name].append(path)
 
-                ## For every sample
-                for sample, path in dic.items():
-                    output1_dir = output_dir+'/s01.fastq_to_gvcf_and_statics.'+group
-                    fo.write(output1_dir+'/'+group+'.' +
-                                sample+'.'+chr_base+'.g.vcf.gz\n')
+            ## For every sample
+            for sample, path in dic.items():
+                output1_dir = output_dir+'/s01.fastq_to_gvcf_and_statics.'+group
+                fo.write(output1_dir+'/'+group+'.' +
+                            sample+'.'+chr_base+'.g.vcf.gz\n')
 
 
 
