@@ -20,7 +20,7 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir = '/data/atipe-workspace/ynie/pear/run_GATK_variant_calling/'
+work_dir = '/data/atipe-workspace/ynie/pear/run_GATK_variant_calling'
 groups      = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC pear.Zhang2021'.split()
 
 
