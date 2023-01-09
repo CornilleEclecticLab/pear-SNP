@@ -20,16 +20,16 @@ print("{0:=^40}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '/work/zruilin/pear/run_GATK_variant_calling'
-group       = '.Teng.pear'
+work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
+group       = 'pear.Wu2018AC'
 
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix      = 's02.stat_format'+group
+prefix      = 's02.stat_format.'+group
 scripts_dir = work_dir+'/bin/'+prefix
-output1_dir = output_dir+'/s01.fastq_to_gvcf_and_statics'+group
+output1_dir = output_dir+'/s01.fastq_to_gvcf_and_statics.'+group
 output2_dir = output_dir+'/'+prefix
 
 ## NO need to change Change <<
@@ -39,7 +39,7 @@ output2_dir = output_dir+'/'+prefix
 # Set input file names
 
 ## The path of a text file record the paths of fastq file, in which, the line starts with # would be ignored, every line for one record(fastq file), and the fastq files of the same sample should be in a same dir with their sample name.
-fastq_list = input_dir+"/input.clean_data_list.txt"
+fastq_list = input_dir+"/"+group+".input.clean_data_list.txt"
 
 
 
@@ -81,24 +81,24 @@ os.system('mkdir -p '+output2_dir)
 
 # Create statistical table
 with open(output2_dir+'/'+prefix+".txt",'w') as fo:
-    header = "Sample\tAvg_depth\tBreadth_coverage\tMarkdu_avg_depth\tMarkdu_breadth_coverage\n"
+    header = "Group\tSample\tAvg_depth\tBreadth_coverage\tMarkdu_avg_depth\tMarkdu_breadth_coverage\n"
     fo.write(header)
     
     for sample, path in dic.items():
         
-        with open(output1_dir+"/"+sample+group+".sorted.avg_depth.txt",'r') as txt:
+        with open(output1_dir+"/"+group+"."+sample+".sorted.avg_depth.txt",'r') as txt:
             depth = txt.read().strip()
         
-        with open(output1_dir+"/"+sample+group+".sorted.breadth_coverage.txt", 'r') as txt:
+        with open(output1_dir+"/"+group+"."+sample+".sorted.breadth_coverage.txt", 'r') as txt:
             coverage = txt.read().strip()
             
-        with open(output1_dir+"/"+sample+group+".sorted.markdu.avg_depth.txt", 'r') as txt:
+        with open(output1_dir+"/"+group+"."+sample+".sorted.markdu.avg_depth.txt", 'r') as txt:
             markdu_depth = txt.read().strip()
 
-        with open(output1_dir+"/"+sample+group+".sorted.markdu.breadth_coverage.txt", 'r') as txt:
+        with open(output1_dir+"/"+group+"."+sample+".sorted.markdu.breadth_coverage.txt", 'r') as txt:
             markdu_coverage = txt.read().strip()
         
-        fo.write(sample+'\t'+depth+'\t'+coverage+'\t'+markdu_depth+'\t'+markdu_coverage+'\n')
+        fo.write(group+'\t'+sample+'\t'+depth+'\t'+coverage+'\t'+markdu_depth+'\t'+markdu_coverage+'\n')
 
 
 
