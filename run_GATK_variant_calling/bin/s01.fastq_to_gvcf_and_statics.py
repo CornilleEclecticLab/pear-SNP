@@ -22,7 +22,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 user        = getpass.getuser()
 work_dir 	= '/work/'+user+'/pear/run_GATK_variant_calling'
-group       = 'pear.Wu2018EC'
+group       = 'pear.Wu2018EW'
 
 
 ## NO need to change >>

@@ -9,7 +9,7 @@
 #Description:
     # 
 
-import datetime, os
+import datetime, os, getpass
 start_time = datetime.datetime.now()
 print("{0:=^40}".format(' Start '))
 
@@ -20,8 +20,9 @@ print("{0:=^40}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
-group       = 'pear.Wu2018AC'
+user        = getpass.getuser()
+work_dir 	= '/work/'+user+'/pear/run_GATK_variant_calling'
+group       = 'pear.Wu2018EW'
 
 
 ## NO need to change >>
