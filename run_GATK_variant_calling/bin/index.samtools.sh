@@ -5,6 +5,6 @@
 
 
 module purge
-module load bioinfo/samtools-1.9
+module load bioinfo/samtools-1.14
 
 samtools faidx ../input/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.fasta
