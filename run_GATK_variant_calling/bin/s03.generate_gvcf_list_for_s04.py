@@ -25,8 +25,6 @@ print("{0:=^80}".format(' Start '))
 
 # Set path
 work_dir = '/data/atipe-workspace/ynie/pear/run_GATK_variant_calling'
-groups   = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC pear.Zhang2021'.split()
-groups   = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC'.split()  
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
@@ -83,6 +81,7 @@ with open(chromosomes,'r') as fo:
 
 ## For every chromosome
 for chr in chromosome:
+    #chr='scaffolds'
     chr_base = os.path.splitext(os.path.basename(chr))[0]
     pass_sample = []
 
