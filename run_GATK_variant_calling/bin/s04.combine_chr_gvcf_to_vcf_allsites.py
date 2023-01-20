@@ -19,6 +19,10 @@
     # Version 2.0.2
     # Update for s03.generate_gvcf_list_for_s04.py
     
+    # 2023-01-20 21:17:40
+    # Version 2.0.3
+    # Run on genotoul
+    
 
 import datetime,os
 start_time = datetime.datetime.now()
@@ -31,7 +35,7 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir    = '/data/atipe-workspace/ynie/pear/run_GATK_variant_calling'
+work_dir    = '/work/zruilin/pear/run_GATK_variant_calling'
 #groups      = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC pear.Zhang2021'.split()
 group       = 'pear'
 
@@ -93,30 +97,6 @@ os.chdir(scripts_dir)
 ## Read chromosomes list
 with open(chromosomes,'r') as fo:
     chromosome = fo.read().strip().format(input_dir=input_dir).split()
-
-# for group in groups:
-    
-#     # The path of a text file record the paths of fastq file, in which, the line starts with # would be ignored, every line for one record(fastq file), and the fastq files of the same sample should be in a same dir with their sample name.
-#     fastq_list = input_dir+"/"+group+".input.clean_data_list.txt"
-
-#     # Read paths of fastq files
-#     with open(fastq_list, 'r') as fo:
-
-#         dic = {}
-#         for line in fo:
-#             line = line.strip()
-
-#             if line.startswith('#'):
-#                 continue
-
-#             path = line
-#             file_name = os.path.basename(path)
-#             dir_name = os.path.basename(os.path.dirname(path))
-#             sample_name = dir_name
-
-#             dic[sample_name] = dic.get(sample_name, [])
-#             dic[sample_name].append(path)
-    
     
     for chr in chromosome:
         suffix=".VariantCalling"        
@@ -132,8 +112,10 @@ with open(chromosomes,'r') as fo:
             
 
             ## Load softwares
-            content = '''  
-which gatk
+            content = '''
+
+module purge
+module load bioinfo/gatk-4.1.9.0
 
     '''
             fo.write(content)
@@ -141,14 +123,14 @@ which gatk
             ## Combine, .g.vcf.gz
             content = '''
 # Combine, .g.vcf.gz
-gatk --java-options "-Xmx4g" CombineGVCFs \\
+gatk --java-options "-Xmx8g" CombineGVCFs \\
     -R {ref_genome} \\
     -V {gvcf_list} \\
     -O {output4_dir}/{group}.{chr_base}.combine.g.vcf.gz \\
     || {{ echo "Combine gvcfs failed!" ; exit 1 ; }} 
 
 # Genotype .vcf
-gatk --java-options "-Xmx4g" GenotypeGVCFs \\
+gatk --java-options "-Xmx8g" GenotypeGVCFs \\
     -all-sites \\
     -R {ref_genome} \\
     -V {output4_dir}/{group}.{chr_base}.combine.g.vcf.gz \\
@@ -156,14 +138,7 @@ gatk --java-options "-Xmx4g" GenotypeGVCFs \\
     || {{ echo "Genotype gvcf to vcf failed!" ; exit 1 ; }}
 '''.format(ref_genome=ref_genome,output4_dir=output4_dir,chr_base=chr_base,gvcf_list=gvcf_list,group=group)
             fo.write(content)
-            
-        # ## Submit this script as a job
-        # if run == '1':
-        #     command = "sbatch -c 4 --mem=32G "+sh
-        #     submit  = os.popen(command, 'r')
-        #     job_id  = submit.read().strip().split()[-1]
-        #     print("\n\nInformation: Dealing with "+ group +' '+ sample )
-        #     print("\nInformation: A job has been submitted: \n\t"+command +'\n')
+
 
 
 

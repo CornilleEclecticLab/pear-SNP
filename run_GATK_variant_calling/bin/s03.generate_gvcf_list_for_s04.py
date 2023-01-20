@@ -24,7 +24,7 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir = '/data/atipe-workspace/ynie/pear/run_GATK_variant_calling'
+work_dir = '/work/zruilin/pear/run_GATK_variant_calling'
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
@@ -91,7 +91,7 @@ for chr in chromosome:
         
         
         ## For every line in g.vcf file list
-        s03input_gvcf_list=input_dir+'/s03.input.gvcf_list.txt'
+        s03input_gvcf_list=input_dir+'/s03.input.gvcf_list.genotoul.txt'
         with open(s03input_gvcf_list,'r') as fr:
             for line in fr:
                 line = line.strip()
