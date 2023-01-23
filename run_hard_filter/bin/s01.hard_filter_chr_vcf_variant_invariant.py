@@ -20,7 +20,7 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '/work/zruilin/pear/run_GATK_variant_calling'
+work_dir 	= '/work/zruilin/pear/run_hard_filter'
 group       = 'pear'
 
 
@@ -29,7 +29,7 @@ input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
 prefix      = 's01.hard_filter_chr_vcf_variant_invariant.'+group
 scripts_dir = work_dir+'/bin/'+prefix
-input4_dir = output_dir+'/s04.combine_chr_gvcf_to_vcf_allsites'
+input4_dir = input_dir+'/s04.combine_chr_gvcf_to_vcf_allsites'
 output1_dir = output_dir+'/'+prefix
 
 ## NO need to change Change <<
@@ -66,24 +66,6 @@ while run == '':
         print("Unrecognized input, please try again.\n")
         run = ''
 
-# Read paths of fastq files
-with open(fastq_list,'r') as fo:
-    
-    dic = {}
-    for line in fo:
-        line = line.strip()
-        
-        if line.startswith('#'):
-            continue
-        
-        path = line
-        file_name = os.path.basename(path)
-        dir_name = os.path.basename(os.path.dirname(path))
-        sample_name = dir_name
-        
-        dic[sample_name] = dic.get(sample_name,[])
-        dic[sample_name].append(path)
-        
 
 
 # Create dir for saving scripts and output
@@ -116,7 +98,7 @@ for chr in chromosome:
         fo.write(content_header)
         
         ## SBATCH settings
-        content = '#SBATCH -J '+chr_base+'.s04 \n#SBATCH -o ' + \
+        content = '#SBATCH -J s01.'+chr_base+ '\n#SBATCH -o ' + \
             prefix+'.'+chr_base+'.out \n' + '#SBATCH -e '+prefix+'.'+chr_base+'.err \n'
         fo.write(content)
 
@@ -174,7 +156,7 @@ gatk --java-options "-Xmx4g" SelectVariants \\
         
     ## Submit this script as a job
     if run == '1':
-        command = "sbatch -c 2 --mem=4G "+sh
+        command = "sbatch -c 2 --mem=5G "+sh
         submit  = os.popen(command, 'r')
         job_id  = submit.read().strip().split()[-1]
         print("\n\nInformation: Dealing with "+ group +' '+ chr_base)
