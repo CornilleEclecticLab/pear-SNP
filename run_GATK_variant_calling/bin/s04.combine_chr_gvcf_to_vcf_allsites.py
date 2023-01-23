@@ -113,11 +113,14 @@ with open(chromosomes,'r') as fo:
 
             ## Load softwares
             content = '''
+#SBATCH -J s04.{J}
+#SBATCH -e s04.{J}.err
+#SBATCH -o s04.{J}.out
 
 module purge
 module load bioinfo/gatk-4.1.9.0
 
-    '''
+'''.format(J=chr_base)
             fo.write(content)
             
             ## Combine, .g.vcf.gz
