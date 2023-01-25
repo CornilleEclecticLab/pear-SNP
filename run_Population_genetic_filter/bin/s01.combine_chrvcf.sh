@@ -11,7 +11,7 @@
 module purge
 module load bioinfo/bcftools-1.14
 
-WORKDIR="/work/zruilin/Peach/run_Population_genetic_filter"
+WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
 OUTPUT="$WORKDIR/output"
 

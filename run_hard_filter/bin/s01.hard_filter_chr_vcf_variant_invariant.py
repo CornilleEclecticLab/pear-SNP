@@ -119,11 +119,11 @@ module load bioinfo/bcftools-1.14
 
 bcftools filter -e 'F_MISSING = 1' \\
     {input4_dir}/{group}.{chr_base}.combine.vcf.gz \\
-    -O z \\
+    -O z4 \\
     -o {output1_dir}/{group}.{chr_base}.rmQFI.combine.vcf.gz
 
 
-tabix {output1_dir}/{group}.{chr_base}.rmQFI.combine.vcf.gz
+# tabix {output1_dir}/{group}.{chr_base}.rmQFI.combine.vcf.gz
 
 
 # You can use -XL to remove scaffold like mitochondria
