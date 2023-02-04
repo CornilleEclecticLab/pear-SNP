@@ -54,7 +54,7 @@ chromosomes = input_dir+'/all_scaffolds.list'
 
 
 
-# Ask if run the scritps
+# Ask if run the scripts
 run = ''
 print("Welcome!")
 while run == '':
