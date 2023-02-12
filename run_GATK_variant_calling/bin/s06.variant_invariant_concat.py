@@ -101,12 +101,12 @@ for chr in chromosome:
     with open(sh,'w') as fo: 
         # Shebang
         content_header = "#!/usr/bin/env bash \n\
-            # bash file generated" + __file__ +"\n"
+            # bash file generated" + __file__ + "\n"
         
         fo.write(content_header)
         
         ## SBATCH settings
-        content = '#SBATCH -J s01.' + chr_base + '\n#SBATCH -o ' + \
+        content = '#SBATCH -J s06.' + chr_base + '\n#SBATCH -o ' + \
             prefix + '.' + chr_base + '.out \n' + '#SBATCH -e ' + prefix + '.' + chr_base + '.err \n'
         fo.write(content)
 

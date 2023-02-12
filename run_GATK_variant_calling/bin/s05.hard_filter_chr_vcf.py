@@ -24,8 +24,8 @@ print("{0:=^79}".format(' Start '))
 
 # Set path
 user = getpass.getuser()
-work_dir = '/work' + user + '/pear/GATK_variant_calling'
-group = 'pear.Loquat'
+work_dir = '/work/' + user + '/pear/run_GATK_variant_calling'
+group = 'pear'
 
 
 ## NO need to change >>
@@ -102,7 +102,7 @@ for chr in chromosome:
         fo.write(content_header)
         
         ## SBATCH settings
-        content = '#SBATCH -J s01.' + chr_base + '\n#SBATCH -o ' + \
+        content = '#SBATCH -J s05.' + chr_base + '\n#SBATCH -o ' + \
             prefix + '.' + chr_base + '.out \n' + '#SBATCH -e ' + prefix + '.' + chr_base + '.err \n'
         fo.write(content)
 
@@ -127,7 +127,7 @@ bcftools filter -e 'F_MISSING = 1' \\
     -o {output5_dir}/{group}.{chr_base}.rmQFI.combine.vcf.gz
 
 
-# tabix {output5_dir}/{group}.{chr_base}.rmQFI.combine.vcf.gz
+# tabix -p vcf {output5_dir}/{group}.{chr_base}.rmQFI.combine.vcf.gz
 
 
 # You can use -XL to remove scaffold like mitochondria
