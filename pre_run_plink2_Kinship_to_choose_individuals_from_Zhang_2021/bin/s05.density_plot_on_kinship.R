@@ -38,17 +38,21 @@ p
 
 
 
-data3 <- read.table("../input_local/depth.project.removeUnclearSpeciesPrunus.RemoveGroupLessThan8individuals.txt",
+data3 <- read.table("../input/depth.project.removeUnclearSpeciesPrunus.RemoveGroupLessThan8individuals.txt",
                     header = TRUE)
 p <- ggplot()+
-  geom_histogram(data=data3, aes(x=Depth, fill=Dataset), color="#88ada8")+
+  geom_histogram(data=data3, binwidth = 1,aes(x=Depth, fill=Dataset), color="#88ada8")+
   geom_vline(aes(xintercept=10))+
   theme_classic()+
   scale_x_continuous(breaks=seq(0,40,5)) 
 p
 
+
+# How to show count numbers on stack.
+# geom_text(stat='count', aes(label=after_stat(count)), position = position_stack(vjust = 0.5),size=4)
+
 p <- ggplot()+
-  geom_histogram(data=data3, aes(x=Depth, fill=Group),color="black")+
+  geom_histogram(data=data3, binwidth=1,aes(x=Depth, fill=Group),color="black")+
   theme_classic()+
   geom_vline(aes(xintercept=10))+
   scale_x_continuous(breaks=seq(0,40,5)) 
