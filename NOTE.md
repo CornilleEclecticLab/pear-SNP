@@ -9,7 +9,7 @@ this branch performed on genotoul and portable (Rscript)
 for the project of Zhang et al 2021, we calculate the kinship set the cutoff at 0.354, then remain
 251, and *`211`* individuals with sequencing depth > 10x.
 
-# QC
+# Branch QC
 ## Two bad files the sequences are not paired. **REMOVE them**
 - SAMN12691580 
 - SNAM12691720, 
@@ -30,3 +30,7 @@ Following are the output of s03, they run fastp for one time, the input fastq fi
 - P11-8
 - P6-1
 
+
+## Three Europe Wild samples we sequenced removed for low quality
+During the Further filter steps:
+A326, A352, A794
