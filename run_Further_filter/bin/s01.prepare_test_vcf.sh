@@ -41,13 +41,13 @@ test_rand_vcfgz="$a2.test_rand.vcf.gz"
 
 # if you only have one vcf.gz for whole genome, you can start here
 # ectract all the SNP and filter genotype missing 20% 
-##bcftools view -v snps \
-##$combine_vcf \
-##| bcftools filter -e 'F_MISSING > 0.2' -O z \
-##-o $test_vcf \
-##--threads 8
+bcftools view -v snps \
+$combine_vcf \
+| bcftools filter -e 'F_MISSING > 0.2' -O z4 \
+-o $test_vcf \
+--threads 8
 
-#tabix -p vcf $test_vcf
+tabix -p vcf $test_vcf
 
 # choose random 0.1% site for DP plot and clone test and missing test
 perl ./SNP_rand_choose_gz.pl 100 $test_vcf $test_rand_vcf
