@@ -17,6 +17,7 @@ plink -bfile $INPUT --allow-extra-chr --pca
 
 perl get_R_data.pl
 
+mv ./plink.* $OUTDIR/
 mv ./*.eigenv* $OUTDIR/
 mv ./pca_input.data $OUTDIR/
 
