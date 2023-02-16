@@ -1,0 +1,21 @@
+PLINK v1.90b5.3 64-bit (21 Feb 2018)           www.cog-genomics.org/plink/1.9/
+(C) 2005-2018 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to plink.log.
+Options in effect:
+  --allow-extra-chr
+  --bfile /home/zruilin/work/Peach/run_Splitstree/input/Combine_Chr.geno20_maf005.anno.syno.thin8k
+  --distance 1-ibs square
+
+257686 MB RAM detected; reserving 128843 MB for main workspace.
+13883 variants loaded from .bim file.
+55 people (0 males, 0 females, 55 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to plink.nosex .
+Using up to 63 threads (change this with --threads).
+Before main variant filters, 55 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+Total genotyping rate is 0.982135.
+13883 variants and 55 people pass filters and QC.
+Note: No phenotypes present.
+960 markers complete.1920 markers complete.2880 markers complete.3840 markers complete.4800 markers complete.5760 markers complete.6720 markers complete.7680 markers complete.8640 markers complete.9600 markers complete.10560 markers complete.11520 markers complete.12480 markers complete.13440 markers complete.13883 markers complete.Distance matrix calculation complete.
+IDs written to plink.mdist.id .
+Writing... 1%Writing... 3%Writing... 5%Writing... 7%Writing... 9%Writing... 10%Writing... 12%Writing... 14%Writing... 16%Writing... 18%Writing... 20%Writing... 21%Writing... 23%Writing... 25%Writing... 27%Writing... 29%Writing... 30%Writing... 32%Writing... 34%Writing... 36%Writing... 38%Writing... 40%Writing... 41%Writing... 43%Writing... 45%Writing... 47%Writing... 49%Writing... 50%Writing... 52%Writing... 54%Writing... 56%Writing... 58%Writing... 60%Writing... 61%Writing... 63%Writing... 65%Writing... 67%Writing... 69%Writing... 70%Writing... 72%Writing... 74%Writing... 76%Writing... 78%Writing... 80%Writing... 81%Writing... 83%Writing... 85%Writing... 87%Writing... 89%Writing... 90%Writing... 92%Writing... 94%Writing... 96%Writing... 98%Writing... 100%Distances (proportions) written to plink.mdist .

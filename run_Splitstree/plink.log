@@ -1,0 +1,26 @@
+PLINK v1.90b5.3 64-bit (21 Feb 2018)
+Options in effect:
+  --allow-extra-chr
+  --bfile /home/zruilin/work/Peach/run_Splitstree/input/Combine_Chr.geno20_maf005.anno.syno.thin8k
+  --distance 1-ibs square
+
+Hostname: node112
+Working directory: /work/zruilin/Peach/run_Splitstree/bin
+Start time: Tue Nov  8 14:33:33 2022
+
+Random number seed: 1667914413
+257686 MB RAM detected; reserving 128843 MB for main workspace.
+13883 variants loaded from .bim file.
+55 people (0 males, 0 females, 55 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to plink.nosex .
+Using up to 63 threads (change this with --threads).
+Before main variant filters, 55 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.982135.
+13883 variants and 55 people pass filters and QC.
+Note: No phenotypes present.
+Distance matrix calculation complete.
+IDs written to plink.mdist.id .
+Distances (proportions) written to plink.mdist .
+
+End time: Tue Nov  8 14:33:33 2022
