@@ -6,10 +6,11 @@ module purge
 module load bioinfo/plink-v1.90b5.3
 
 
-WORKDIR="/home/zruilin/work/Peach/run_PCA_plink"
-INPUT="$WORKDIR/input/Combine_Chr.geno20_maf005.anno.syno.thin8k"
-OUTDIR="$WORKDIR/output/s01.get_pca_plink"
-mkdir $OUTDIR
+WORKDIR="/work/zruilin/pear/run_PCA_plink/"
+INPUT="/work/zruilin/pear/run_Population_genetic_filter/output/batch1.reduce3EupropeWildPear/pear.Combine_Chr.geno20_maf005.anno.syno.thin8k"
+OUTDIR="$WORKDIR/output/batch1.reduce3EupropeWildPear"
+
+mkdir -p $OUTDIR
 
 
 plink -bfile $INPUT --allow-extra-chr --pca
