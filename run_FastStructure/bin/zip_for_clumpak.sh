@@ -1,10 +1,10 @@
 
-cd /work/zruilin/Peach/run_FastStructure/output/s01.generate_fast
+cd /work/zruilin/pear/run_FastStructure/output/batch2.removeCloneAnd3LowQualEuropeWildPear
 mkdir result
 cp ./K*/*.meanQ ./result
 
 cd result
-for i in `seq 2 10`
+for i in `seq 2 15`
 do
     zip -q K${i}.zip *.${i}.meanQ
 done
