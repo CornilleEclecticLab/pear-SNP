@@ -7,6 +7,7 @@
 
 module purge
 module load bioinfo/samtools-1.14
+module load bioinfo/tabix-0.2.5
 module load bioinfo/vcftools-0.1.15
 
 WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
