@@ -22,6 +22,8 @@ output
 # local dir
 output_local
 .Rhistory
+.RData
+.RDataTmp
 
 # rsync scripts
 rsync\.*.sh
