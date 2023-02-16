@@ -3,8 +3,8 @@ library(dplyr)
 library(ggplot2)
 library(cowplot)
 
-sumfile <- "./vcfTest.sum_number.txt"
-ind_miss_file <- "./vcfTest.ind_miss.txt"
+sumfile <- "./pear.sum_number.txt"
+ind_miss_file <- "./pear.ind_miss.txt"
 
 nu <- read.table(sumfile)
 

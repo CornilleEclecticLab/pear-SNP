@@ -3,7 +3,7 @@ library(vcfR)
 library(reshape2)
 library(ggplot2)
 
-rand_vcf <- "../output/pear.test_rand.vcf.gz"
+rand_vcf <- "../output/pear.test_rand.new_17scaffolds.vcf.gz"
 
 vcf <- read.vcfR(rand_vcf) 
 
