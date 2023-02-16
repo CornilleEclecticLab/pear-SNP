@@ -1,5 +1,5 @@
 
-cd /work/zruilin/pear/run_FastStructure/output/batch2.removeCloneAnd3LowQualEuropeWildPear
+cd ../output/batch2.removeCloneAnd3LowQualEuropeWildPear
 mkdir result
 cp ./K*/*.meanQ ./result
 
