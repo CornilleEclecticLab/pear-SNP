@@ -1,5 +1,5 @@
 
-cd ../output/batch2.removeCloneAnd3LowQualEuropeWildPear
+cd /work/zruilin/pear/run_FastStructure/output/batch6.only_Prifolia
 mkdir result
 cp ./K*/*.meanQ ./result
 
