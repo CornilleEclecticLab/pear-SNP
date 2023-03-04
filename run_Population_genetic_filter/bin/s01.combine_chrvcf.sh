@@ -15,6 +15,7 @@ WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
 OUTPUT="$WORKDIR/output"
 
-bcftools concat -f $INPUT/chr_variant_file_list.txt \
--O z \
--o $OUTPUT/Combine_Chr.vcf.gz
+bcftools concat -f $INPUT/pear.withLoquat.chr.variant.vcf.list \
+-O z4 \
+--threads 8 \
+-o $OUTPUT/pear.withLoquat.Combine_Chr.vcf.gz
