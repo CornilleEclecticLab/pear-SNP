@@ -21,7 +21,7 @@ print("{0:=^40}".format(' Start '))
 
 # Set path
 work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
-group       = 'pear.Loquat'
+group       = 'pear.Wu2018_part2'
 
 
 ## NO need to change >>
