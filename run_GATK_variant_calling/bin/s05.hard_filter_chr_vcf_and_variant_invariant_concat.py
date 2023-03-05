@@ -31,7 +31,7 @@ print("{0:=^79}".format(' Start '))
 user = getpass.getuser()
 work_dir = '/work/' + user + '/pear/run_GATK_variant_calling'
 group = 'pear'
-group_new = 'pear.withLoquat'
+group_new = 'pear.withLiPart2'
 
 
 ## NO need to change >>
@@ -194,7 +194,7 @@ gatk --java-options "-Xmx8g" SelectVariants \\
 
         # bcftools filter, .vcf.gz
         content = '''
-bcftools filter -S . -e 'FMT/DP<5 | FMT/RGQ<20 | FMT/DP>100' \\
+bcftools filter -S . -e 'FMT/DP<3 | FMT/RGQ<20 | FMT/DP>100' \\
     {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.filter_passed_sites.vcf.gz \\
 | bcftools filter -i 'ALT="."' \\
 | bcftools filter -e 'F_MISSING > 0.2' \\
@@ -204,7 +204,7 @@ bcftools filter -S . -e 'FMT/DP<5 | FMT/RGQ<20 | FMT/DP>100' \\
 tabix -p vcf {output5_dir}/{group_new}.{chr_base}.filtered_pixy_invariant.vcf.gz
 
 
-bcftools filter -S . -e 'FMT/DP<5 | FMT/GQ<20 | FMT/DP>100' \\
+bcftools filter -S . -e 'FMT/DP<3 | FMT/GQ<20 | FMT/DP>100' \\
     {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.filter_passed_sites.vcf.gz \\
 | bcftools filter --SnpGap 10 \\
 | bcftools view -m2 -M2 -v snps \\
