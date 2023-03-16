@@ -22,7 +22,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 user        = getpass.getuser()
 work_dir 	= '/work/'+user+'/pear/run_GATK_variant_calling'
-group       = 'pear.Zhang2021_b2_p1'
+group       = 'pear.Zhang2021_b3'
 
 
 ## NO need to change >>
@@ -64,12 +64,7 @@ while run == '':
     if run != '1' and run !='2':
         print("Unrecognized input, please try again.\n")
         run = ''
-        
-        
-# Record the job_id
-# Record the job ID
-if run == "1":
-    job_id_txt = open(prefix+'job_ID.txt', 'w')
+
     
     
 # Read paths of fastq files
@@ -100,6 +95,12 @@ os.system('mkdir -p '+scripts_dir)
 os.chdir(scripts_dir)
 
 
+
+# Record the job ID
+if run == "1":
+    job_id_txt = open(prefix+'.job_ID.txt', 'w')
+    
+    
 
 # Generating the scripts
 ## Shebang
@@ -260,9 +261,9 @@ gatk --java-options "-Xmx8g" IndexFeatureFile \\
         ## Submit this script as a job
         if run == '1':
             command = "sbatch -c 2 --mem=10G --dependency=afterok:"+dependent_job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh"
+            submit = os.popen(command, 'r')
             job_id = submit.read().strip().split()[-1]
             job_id_txt.write(sample_prefix+'.sh' + '\t' + job_id + '\n')
-            submit = os.popen(command, 'r')
             print("Information: A job has been submitted: \n\t"+command+'\n')
         
 
