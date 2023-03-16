@@ -131,7 +131,8 @@ bcftools filter -e 'F_MISSING = 1' \\
     {input4_dir}/{group}.{chr_base}.combine.vcf.gz \\
     -O z4 \\
     -o {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.vcf.gz \\
-    --threads 4
+    --threads 4 \\
+|| {{ echo "rmQFI failed!" ; exit 1 ; }} 
 
 tabix {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.vcf.gz
 
