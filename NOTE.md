@@ -37,21 +37,32 @@ A326, A352, A794
 
 # 2023-03-17 I checked the GATK SNP calling steps *.err and *.out files:
 Did follwing steps on later record accounts on different clusters:
+```bash
     cat s01.*/*.out
     grep failed s01.*/*.out
     tail -n 2 s01.*/*.err | awk 'NR%4==2{print}'
     tail -n 2 s01.*/*.err | awk 'NR%4==2{print}' | grep -v done
+```
 For secondary dir:
+```bash
     grep failed s01.*/*/*.out
+```
 
 Check the job status using seff
+using hash to renew the job id for every script as the last running
+```bash
     cat s01.*/*.txt |sort -n -k2 |awk '{a[$1]=$2}END{for (i in a) print i,a[i]}'|cut -d' ' -f2 |xargs -I% seff %| grep State
     cat s01.*/*.txt |sort -n -k2 |awk '{a[$1]=$2}END{for (i in a) print i,a[i]}'|cut -d' ' -f2 |xargs -I% seff %| grep State | grep -v COMPLETED
+```
 
 using this command to list all the dirs and secondary dir (if exit):
+```bash
     find s01* -type d
+```
 ensure there is no secondary dir
+```
     find s01*/* -type d
+```
 
 ruilin@genoutoul: 
     [-] s01.branch.bam_to_gvcf_and_statics.ECLECTIC
