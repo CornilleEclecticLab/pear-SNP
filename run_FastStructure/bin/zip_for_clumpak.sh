@@ -1,5 +1,5 @@
-
-cd ../output/batch2.removeCloneAnd3LowQualEuropeWildPear
+#!/usr/bin/env bash
+cd /work/zruilin/pear/run_FastStructure/output/batch5.only_Communis_without_clone/
 mkdir result
 cp ./K*/*.meanQ ./result
 

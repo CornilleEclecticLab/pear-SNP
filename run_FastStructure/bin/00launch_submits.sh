@@ -1,5 +1,5 @@
 
-cd /work/zruilin/pear/run_FastStructure/output/batch2.removeCloneAnd3LowQualEuropeWildPear
+cd /work/zruilin/pear/run_FastStructure/output/batch3.removeLoquatColoneAnd3LowQualEuropeWildPear
 for rep in `seq 2 15`
 do
         cd ./K$rep
