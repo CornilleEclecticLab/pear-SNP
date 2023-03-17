@@ -48,7 +48,7 @@ For secondary dir:
     grep failed s01.*/*/*.out
 ```
 
-Check the job status using seff
+Check the job status using seff  
 using hash to renew the job id for every script as the last running
 ```bash
     cat s01.*/*.txt |sort -n -k2 |awk '{a[$1]=$2}END{for (i in a) print i,a[i]}'|cut -d' ' -f2 |xargs -I% seff %| grep State
@@ -65,25 +65,25 @@ ensure there is no secondary dir:
 ```
 
 ruilin@genoutoul:  
-    [-] s01.branch.bam_to_gvcf_and_statics.ECLECTIC 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Teng   
+    [-] s01.branch.bam_to_gvcf_and_statics.ECLECTIC  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Teng  
     [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018EC   
-    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018EW 
-ynie@genoutoul: 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Li2021 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Li2021_part2 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Li2021_part2_2 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Loquat 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018AC 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018AW 
+    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018EW  
+ynie@genoutoul:  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Li2021  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Li2021_part2  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Li2021_part2_2  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Loquat  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018AC  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018AW  
     [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018_part2 
     [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021 
     [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p1 
     [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b3 
-ynie@IFB: 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2 
-    [x] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2/DISCARD.run_with_problem_tmp 
-    [x] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2/DISCARD.run1.gatk_variant_calling_stoped_as_Java_env_memory_is_not_enough 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p3c 
+ynie@IFB:   
+    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2  
+    [x] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2/DISCARD.run_with_problem_tmp  
+    [x] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2/DISCARD.run1.gatk_variant_calling_stoped_as_Java_env_memory_is_not_enough  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p3c  
 
 As you see, the *.err files in `DISCARD.run_with_problem_tmp` and `DISCARD.run1.gatk_variant_calling_stoped_as_Java_env_memory_is_not_enough` could not pass the check steps, showing the steps are effective. 
