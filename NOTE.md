@@ -41,9 +41,12 @@ Did follwing steps on later record accounts on different clusters:
     grep failed s01.*/*.out
     tail -n 2 s01.*/*.err | awk 'NR%4==2{print}'
     tail -n 2 s01.*/*.err | awk 'NR%4==2{print}' | grep -v done
-secondary dir:
+For secondary dir:
     grep failed s01.*/*/*.out
 
+Check the job status using seff
+    cat s01.*/*.txt |sort -n -k2 |awk '{a[$1]=$2}END{for (i in a) print i,a[i]}'|cut -d' ' -f2 |xargs -I% seff %| grep State
+    cat s01.*/*.txt |sort -n -k2 |awk '{a[$1]=$2}END{for (i in a) print i,a[i]}'|cut -d' ' -f2 |xargs -I% seff %| grep State | grep -v COMPLETED
 
 using this command to list all the dirs and secondary dir (if exit):
     find s01* -type d
@@ -72,4 +75,4 @@ ynie@IFB
     [x] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2/DISCARD.run1.gatk_variant_calling_stoped_as_Java_env_memory_is_not_enough
     [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p3c
 
-As you see, the *.err files in `DISCARD.run_with_problem_tmp` could not pass the check steps.
+As you see, the *.err files in `DISCARD.run_with_problem_tmp` and `DISCARD.run1.gatk_variant_calling_stoped_as_Java_env_memory_is_not_enough` could not pass the check steps, showing the steps are effective. 
