@@ -284,5 +284,4 @@ job_id_txt.close()
 
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(80,'='))
-print(str(end_time-start_time).center(80))
+print(' END '.center(80,'=')
