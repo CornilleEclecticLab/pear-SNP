@@ -42,13 +42,13 @@ print("{0:=^80}".format(' Start '))
 # Set path
 work_dir = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling'
 #groups      = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC pear.Zhang2021'.split()
-group = 'pear'
+group = 'loquat'
 
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix      = 's04.combine_chr_gvcf_to_vcf_allsites'
+prefix      = 's04.combine_chr_gvcf_to_vcf_allsites_loquat'
 scripts_dir = work_dir+'/bin/'+prefix
 output4_dir = output_dir+'/'+prefix
 output3_dir = output_dir+'/s03.generate_gvcf_list'
