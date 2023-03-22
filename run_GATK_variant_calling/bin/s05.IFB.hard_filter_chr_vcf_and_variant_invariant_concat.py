@@ -180,7 +180,7 @@ gatk --java-options "-Xmx8g -Djava.io.tmpdir={tmp_dir}" SelectVariants \\
 
     ## Submit this script as a job
     if run == '1':
-        command = "sbatch -c 4 --mem=32G -p long "+sh
+        command = "sbatch -c 4 --mem=32G -p long -A pear_snp2 "+sh
         submit = os.popen(command, 'r')
         current_job_id = submit.read().strip().split()[-1]
         depended_job_id = current_job_id
@@ -245,7 +245,7 @@ tabix -p vcf {output5_dir}/{group_new}.{chr_base}.filtered_pixy_concat.vcf.gz
     # Submit this script as a job
     if run == '1':
         continue # Don't running the script as the hard filter threshold is unsure
-        command = "sbatch -p long -c 4 --mem=32G --dependency=afterok:" + depended_job_id + ' ' + sh2
+        command = "sbatch -p long -c 4 -A pear_snp2 --mem=32G --dependency=afterok:" + depended_job_id + ' ' + sh2
         submit = os.popen(command, 'r')
         current_job_id = submit.read().strip().split()[-1]
         job_id_txt.write(sh2 + '\t' + current_job_id + '\n')
