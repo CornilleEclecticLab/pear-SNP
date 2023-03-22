@@ -76,10 +76,10 @@ ynie@genoutoul:
     [-] s01.fastq_to_gvcf_and_statics.pear.Loquat  
     [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018AC  
     [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018AW  
-    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018_part2 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p1 
-    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b3 
+    [-] s01.fastq_to_gvcf_and_statics.pear.Wu2018_part2  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p1  
+    [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b3  
 ynie@IFB:   
     [-] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2  
     [x] s01.fastq_to_gvcf_and_statics.pear.Zhang2021_b2_p2/DISCARD.run_with_problem_tmp  
