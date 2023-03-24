@@ -20,8 +20,8 @@ print("{0:=^40}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
-group       = 'pear.Wu2018_part2'
+work_dir 	= '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
+group       = 'pear.Loquat_2'
 
 
 ## NO need to change >>
