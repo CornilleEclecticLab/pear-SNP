@@ -24,7 +24,7 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir = '/work/zruilin/pear/run_GATK_variant_calling'
+work_dir = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
