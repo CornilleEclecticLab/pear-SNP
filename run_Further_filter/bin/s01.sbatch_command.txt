@@ -1,0 +1,17 @@
+# The real run command:
+for i in $(cat ../input/s01.input.whole_pear_filter_passed_sites_vcf.file_list.txt); do echo $i >  s01.input.$(echo $i |cut -d "." -f4).path.txt ;done
+
+input_dir="../input/"
+for i in $(realpath "${input_dir}s01.input.GWHBAOS00000*.path.txt"); do
+    chr_id=$(echo "${i}" | cut -d "." -f3)
+    sbatch -c 1 --mem=32G -A pear_snp2 s01.prepare_test_vcf.sh "$(cat "${i}")" "whole_pear.${chr_id}" | awk '{print $4}' | xargs -I% echo -e "${chr_id}"'\t'% >> s01.job_id.txt
+done
+
+
+# The easy command without test:
+input_dir="../input/"
+for i in $(cat ${input_dir}/input/s01.input.whole_pear_filter_passed_sites_vcf.file_list.txt); do
+chr_id=$(echo "${i}" | cut -d "." -f4)
+sbatch -c 1 --mem=32G -A pear_snp2 s01.prepare_test_vcf.sh "$(cat "${i}")" "whole_pear.${chr_id}" | awk '{print $4}' | xargs -I% echo -e "${chr_id}"'\t'% >> s01.job_id.txt
+done
+
