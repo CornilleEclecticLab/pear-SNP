@@ -2,8 +2,8 @@
 # Adaptation by Yuqi NIE on 2022/11/02
 
 #SBATCH -J s02.filtering_geno_maf
-#SBATCH -o s02.filtering_geno_maf.out
-#SBATCH -e s02.filtering_geno_maf.err
+#SBATCH -o s02.filtering_geno_maf.%j.out
+#SBATCH -e s02.filtering_geno_maf.%j.err
 module purge
 module load bioinfo/bcftools-1.14
 
