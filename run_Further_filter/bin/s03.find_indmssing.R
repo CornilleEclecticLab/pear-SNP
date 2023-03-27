@@ -3,8 +3,8 @@ library(dplyr)
 library(ggplot2)
 library(cowplot)
 
-sumfile <- "./vcfTest.sum_number.txt"
-ind_miss_file <- "./vcfTest.ind_miss.txt"
+sumfile <- "../output/whole_pear/whole_pear.combine.sum_number.txt"
+ind_miss_file <- "../output/whole_pear/whole_pear.combine.ind_miss.txt"
 
 nu <- read.table(sumfile)
 
@@ -34,7 +34,7 @@ p3 <- ggplot(miss_df, aes(x = reorder(individual, missing_rate), y = missing_rat
 ggsave("missing_Hist.png", plot = p1, dpi = 300)
 ggsave("missing_bar.png", plot = p3, dpi = 300, 
        width = 8,
-       height = 20,
+       height = 45,
        units = "in")
 
 p2 <- ggplot(miss_df, aes(x = missing_rate, y = "SNP")) +

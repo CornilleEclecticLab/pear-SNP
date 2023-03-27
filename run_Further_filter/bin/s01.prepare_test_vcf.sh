@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH -J s01.combine
-#SBATCH -e s01.err
-#SBATCH -o s01.out
+#SBATCH -J s01.prepare
+#SBATCH -e s01.%J.err
+#SBATCH -o s01.%J.out
 
 # 2023/01/25 modify this for sbatch running
 # 
@@ -12,7 +12,7 @@ module load bcftools/1.14
  
 
 
-usage="bash $0 <vcf_list_file> <output_prefix>\n"
+# usage="bash $0 <vcf_list_file> <output_prefix>\n"
 
 # if [ "$#" -ne 2 ]
 # then
@@ -22,14 +22,14 @@ usage="bash $0 <vcf_list_file> <output_prefix>\n"
 
 
 # ="../input/s01_prepare_test_vcf.filter_passed_sites_vcf.list"
-# list=$1 
-# pfefix=$2
+list=$1 
+prefix=$2
+combine_vcf=$list
 
-list='/shared/ifbstor1/projects/pear_snp2/pear/run_Further_filter/input/s01.input.whole_pear_filter_passed_sites_vcf.file_list.txt'
-prefix='whole_pear'
+# list='/shared/ifbstor1/projects/pear_snp2/pear/run_Further_filter/input/s01.input.whole_pear_filter_passed_sites_vcf.file_list.txt'
+# prefix='whole_pear'
 
 
-combine_vcf="$prefix.combine.vcf.gz"
 test_vcf="$prefix.test.vcf.gz"
 sum_number_txt="$prefix.sum_number.txt"
 ind_miss_txt="$prefix.ind_miss.txt"
@@ -43,9 +43,9 @@ GotTest="False"
 # The default parameter '-O z' using compress level 9 that is very slow
 
 # if [ "$GotTest" == "False" ]; then
-    # bcftools concat -f $list -O z4 --threads 8 \
+    # bcftools concat -f $list \
     # | bcftools view -v snps \
-    # | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf --threads 8
+    # | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf 
     # "$GotTest"="True"
 # fi
 
@@ -55,7 +55,7 @@ GotTest="False"
 # ectract all the SNP and filter genotype missing 20% 
 if [ "$GotTest" == "False" ]; then
     bcftools view -v snps $combine_vcf \
-    | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf --threads 8
+    | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf 
     "$GotTest"="True"
 fi
 
