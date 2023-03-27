@@ -11,17 +11,25 @@
 
 import datetime
 import argparse
+from email import message
 import warnings
 
 start_time = datetime.datetime.now()
 print("{0:=^40}".format(' Start '))
 
-parser = argparse.ArgumentParser(prog="Remove_N",
-                                 description="Remove_N_bases_from_root_sequence_in_alignment")
-parser.add_argument('filename',
-                    metavar="filename.phy", help='phy Alignment file name')
-parser.add_argument('-r', '--rootID',
-                    help='The sequence ID in the alignment file that you assumed as root in the phylogenetic tree')
+message = \
+'''The sequence ID in the alignment file that you assumed 
+as root in the phylogenetic tree.'''
+
+parser = argparse.ArgumentParser(
+    prog="Remove_N",
+    description="Remove N bases positions from root sequence in alignment")
+parser.add_argument(
+    'filename',
+    metavar="filename.phy", help='phy Alignment file name')
+parser.add_argument(
+    '-r', '--rootID',
+    help=message)
 
 args = parser.parse_args()
 
@@ -82,12 +90,11 @@ for i in range(length):
 
 # Generate the new file
 with open(args.filename+".abridged.phy", 'w') as fo:
-    fo.write(str(len(seq_dic.keys()))+' '+str(length-len(remove_sites)) + '\n')
+    fo.write(str(len(seq_dic.keys()))+' '+str(
+        length-len(remove_sites)) + '\n')
     for id, seq in abridged_seq_dic.items():
         fo.write(id.ljust(max+4)+''.join(seq)+'\n')
 
-
-# map, zip, lambda用法
 
 
 end_time = datetime.datetime.now()
