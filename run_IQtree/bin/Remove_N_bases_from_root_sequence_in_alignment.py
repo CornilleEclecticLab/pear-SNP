@@ -11,7 +11,6 @@
 
 import datetime
 import argparse
-from email import message
 import warnings
 
 start_time = datetime.datetime.now()
