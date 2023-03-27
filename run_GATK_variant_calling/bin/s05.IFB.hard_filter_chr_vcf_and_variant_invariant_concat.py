@@ -30,10 +30,10 @@ print("{0:=^79}".format(' Start '))
 # Set path
 user = getpass.getuser()
 work_dir = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling'
-group = 'loquat'
+group = 'pear'
 
-## /!\ Warning, you need to check the output4_dir
-group_new = 'loquat_and_2'
+## /!\ Warning, you need to check the output4_dir /!\
+group_new = 'pear'
 
 
 ## NO need to change >>
@@ -41,8 +41,8 @@ input_dir = work_dir + '/input'
 output_dir = work_dir + '/output'
 prefix = 's05.hard_filter_chr_vcf.' + group_new
 prefix2 = 's05.variant_invariant_concat.' + group_new
-scripts_dir = work_dir +'/bin/s05.hard_filter_chr_vcf_and_variant_invariant_concat.'+ group_new 
-input4_dir = output_dir +'/s04.combine_chr_gvcf_to_vcf_allsites_loquat'
+scripts_dir = work_dir +'/bin/s05.hard_filter_chr_vcf_and_variant_invariant_concat.' + group_new 
+input4_dir = output_dir +'/s04.combine_chr_gvcf_to_vcf_allsites'
 output5_dir = output_dir + '/' + prefix
 tmp_dir = work_dir+'/gatk_tmp'
 
@@ -71,8 +71,9 @@ chromosomes = input_dir + '/all_scaffolds.list'
 run = ''
 print("Welcome!")
 while run == '':
-    run = input("Please chose 1 or 2 to continue: \n\t 1) generate the scripts and run them (submit the jobs using sbatch)\
-                \n\t 2) only generate the scripts, without running them.\n")
+    run = input("Please chose 1 or 2 to continue: \
+\n\t1) generate the scripts and run them\(submit the jobs using sbatch)\
+\n\t2) only generate the scripts, without running them.\n")
 
     if run != '1' and run !='2':
         print("Unrecognized input, please try again.\n")
@@ -102,7 +103,7 @@ with open(chromosomes,'r') as fo:
 
 
 for chr in chromosome:
-    suffix =".VariantCalling"        
+    suffix =".VariantCalling"
     chr_base = os.path.splitext(os.path.basename(chr))[0]
 
     ## Create the hard filter bash script
@@ -180,7 +181,7 @@ gatk --java-options "-Xmx8g -Djava.io.tmpdir={tmp_dir}" SelectVariants \\
 
     ## Submit this script as a job
     if run == '1':
-        command = "sbatch -c 4 --mem=32G -p long -A pear_snp2 "+sh
+        command = "sbatch -c 4 --mem=32G -A pear_snp2 "+sh
         submit = os.popen(command, 'r')
         current_job_id = submit.read().strip().split()[-1]
         depended_job_id = current_job_id

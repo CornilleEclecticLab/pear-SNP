@@ -21,7 +21,7 @@ print("{0:=^40}".format(' Start '))
 
 # Set path
 work_dir 	= '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
-group       = 'pear.Loquat_2'
+group       = 'pear.Zhang2021_b2_p3'
 
 
 ## NO need to change >>
