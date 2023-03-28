@@ -1,4 +1,3 @@
-ID	ID
 A301	EWP.pyra478
 A302	EWP.pyra479
 A339	EWP.pyra481
