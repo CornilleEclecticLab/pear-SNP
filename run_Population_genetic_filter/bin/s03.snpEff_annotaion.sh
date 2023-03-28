@@ -9,18 +9,18 @@ module load bioinfo/bcftools-1.14
 module load bioinfo/samtools-1.14
 module load bioinfo/Java15.0.1
 
-
 WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output"
+OUTPUT="$WORKDIR/output/branch7.whole_pear"
+PREFIX="whole_pear"
 
-tabix -p vcf $OUTPUT/pear.Combine_Chr.geno20_maf005.vcf.gz
+tabix -p vcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.vcf.gz
 
 java -Xmx8g -jar $WORKDIR/bin/snpEff/snpEff.jar Pyr.cuiguan \
-$OUTPUT/pear.Combine_Chr.geno20_maf005.vcf.gz > \
-$OUTPUT/pear.Combine_Chr.geno20_maf005.anno.vcf
+$OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.vcf.gz > \
+$OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf
 
 mv snpEff_* $OUTPUT/
 
-bgzip $OUTPUT/pear.Combine_Chr.geno20_maf005.anno.vcf && \
-tabix -p vcf $OUTPUT/pear.Combine_Chr.geno20_maf005.anno.vcf.gz
+bgzip $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf && \
+tabix -p vcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf.gz
