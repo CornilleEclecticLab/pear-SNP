@@ -2,8 +2,8 @@
 # Adaptation by Yuqi NIE on 2022/11/02
 
 #SBATCH -J s05.filter_thin
-#SBATCH -o s05.filter_thin.out
-#SBATCH -e s05.filter_thin.err
+#SBATCH -o s05.filter_thin.%j.out
+#SBATCH -e s05.filter_thin.%j.err
 
 module purge
 module load samtools/1.14

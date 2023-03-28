@@ -3,8 +3,8 @@
 # 9/11/2022
 
 #SBATCH -J s06.plink_vcf2bed
-#SBATCH -o s06.plink_vcf2bed.out
-#SBATCH -e s06.plink_vcf2bed.err
+#SBATCH -o s06.plink_vcf2bed.%j.out
+#SBATCH -e s06.plink_vcf2bed.%j.err
 module purge
 module load plink
 
