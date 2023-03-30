@@ -9,9 +9,10 @@ module load bioinfo/bcftools-1.14
 
 WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output"
+OUTPUT="$WORKDIR/output/branch7.whole_pear"
 
+# --threads 8 \
 bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 \
---threads 8 \
--o $OUTPUT/pear.Combine_Chr.geno20_maf005.vcf.gz $OUTPUT/pear.Combine_Chr.vcf.gz
+-o $OUTPUT/whole_pear.keep_all_samples.Combine_Chr.geno20_maf005.vcf.gz \
+   $OUTPUT/whole_pear.Combine_Chr.vcf.gz
 

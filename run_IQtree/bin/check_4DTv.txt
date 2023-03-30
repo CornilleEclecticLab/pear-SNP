@@ -1,0 +1,7 @@
+bcftools view -H pear.Combine_Chr.geno20_maf005.anno.4dtv.vcf.gz
+
+seqkit subseq --gtf GWHBAOS00000000.gff GWHBAOS00000000.genome.fasta --feature CDS --chr GWHBAOS00000076 --region 489701:489704
+
+grep GWHBAOS00000076 *.gff | grep '\bCDS\b' | awk '$4<=489704 && $5>=489704 {print}' 
+
+grep CT condon_table.txt

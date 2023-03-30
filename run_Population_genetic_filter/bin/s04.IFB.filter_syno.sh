@@ -2,8 +2,8 @@
 # Adaptation by Yuqi NIE on 2023/01/26
 
 #SBATCH -J s04.filter_syno
-#SBATCH -o s04.filter_syno.out
-#SBATCH -e s04.filter_syno.err
+#SBATCH -o s04.filter_syno.%j.out
+#SBATCH -e s04.filter_syno.%j.err
 
 module purge
 module load bcftools/1.14

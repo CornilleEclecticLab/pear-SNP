@@ -11,7 +11,8 @@
 
 import datetime
 import argparse
-import warnings
+from collections import defaultdict
+
 
 start_time = datetime.datetime.now()
 print("{0:=^40}".format(' Start '))
@@ -35,10 +36,10 @@ args = parser.parse_args()
 
 # Read the alignment file.
 with open(args.filename, 'r') as fo:
-    seq_dic = {}
+    seq_dic = defaultdict(str)
     first_line = True
     length = True
-    max = 0
+    max_len = 0
 
     for line in fo:
         if first_line:
@@ -48,51 +49,60 @@ with open(args.filename, 'r') as fo:
         ID = line[0]
         seq = line[1]
         
-        if len(ID) > max:
-            max = len(ID)
+        if len(ID) > max_len:
+            max_len = len(ID)
         
         if length == True:
             length = len(seq)
         else:
             if len(seq) != length:
-                warnings.warn("ODD sequence length: " + ID)
+                print("ODD sequence length: " + ID)
         seq_dic[ID] = seq
 
 
 
 # Calculate the rate of N on every site of assumed root sequences
 remove_sites = []
-ids = args.rootID.strip().split(',')
-for i in range(length):
-    count = 0
+if args.rootID is not None: 
+    ids = args.rootID.strip().split(',')
+    for i in range(length):
+        count = sum(1 for id in ids if seq_dic[id][i] == 'N')
+        rate = count / len(ids)
+        if rate >= 0.6:
+            remove_sites.append(i)
 
-    for id in ids:
-        if seq_dic[id][i] == 'N':
-            count += 1
 
-    rate = count / len(ids)
-    if rate >= 0.6:
-        remove_sites.append(i)
+print("Input sequence length:{}".format(length))
 
-print(length)
 
 # Remove the sites
-abridged_seq_dic = {}
-for id in seq_dic.keys():
-    abridged_seq_dic[id] = []
-    
-for i in range(length):
-    if i not in remove_sites:
-        for id, seq in seq_dic.items():
+# abridged_seq_dic = {id: [seq[i] for i in range(length) if i not in remove_sites] for id, seq in seq_dic.items()}
+
+
+abridged_seq_dic = defaultdict(list)
+for id, seq in seq_dic.items():
+    for i in range(length):
+        if i not in remove_sites:
             abridged_seq_dic[id].append(seq[i])
+
+# abridged_seq_dic = {id: [seq[i] for i in range(length) if i not in remove_sites] for id, seq in seq_dic.items()}
+
+
+# for id in seq_dic.keys():
+#     abridged_seq_dic[id] = []
+
+# for i in range(length):
+#     if i not in remove_sites:
+#         for id, seq in seq_dic.items():
+#             abridged_seq_dic[id].append(seq[i])
+
 
 
 # Generate the new file
 with open(args.filename+".abridged.phy", 'w') as fo:
-    fo.write(str(len(seq_dic.keys()))+' '+str(
-        length-len(remove_sites)) + '\n')
+    fo.write("{} {}\n".format(len(seq_dic.keys()), length - len(remove_sites)))
     for id, seq in abridged_seq_dic.items():
-        fo.write(id.ljust(max+4)+''.join(seq)+'\n')
+        fo.write(id.ljust(max_len+4)+''.join(seq)+'\n')
 
 
 

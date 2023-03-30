@@ -3,19 +3,20 @@
 # 9/11/2022
 
 #SBATCH -J s06.plink_vcf2bed
-#SBATCH -o s06.plink_vcf2bed.out
-#SBATCH -e s06.plink_vcf2bed.err
+#SBATCH -o s06.plink_vcf2bed.%j.out
+#SBATCH -e s06.plink_vcf2bed.%j.err
 module purge
 module load bioinfo/plink-v1.90b5.3
 
 WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output"
+OUTPUT="$WORKDIR/output/branch7.whole_pear"
+PREFIX="whole_pear"
 
-plink --vcf $OUTPUT/pear.Combine_Chr.geno20_maf005.anno.syno.thin8k.vcf.gz \
+plink --vcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.thin8k.vcf.gz \
 --make-bed \
 --const-fid \
---out $OUTPUT/pear.Combine_Chr.geno20_maf005.anno.syno.thin8k \
+--out $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.thin8k \
 --set-missing-var-ids \@\:# \
 --keep-allele-order \
 --allow-extra-chr
