@@ -46,7 +46,7 @@ GotTest="False"
     # bcftools concat -f $list \
     # | bcftools view -v snps \
     # | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf 
-    # "$GotTest"="True"
+    # $GotTest="True"
 # fi
 
 
@@ -56,7 +56,7 @@ GotTest="False"
 if [ "$GotTest" == "False" ]; then
     bcftools view -v snps $combine_vcf \
     |bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf 
-    "$GotTest"="True"
+    GotTest="True"
 fi
 
 
