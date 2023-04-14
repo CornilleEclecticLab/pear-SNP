@@ -10,7 +10,7 @@ module load bioinfo/samtools-1.14
 
 WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/branch7.whole_pear"
+OUTPUT="$WORKDIR/output/branch7.batch12.kinship_base_on_branch7_batch11_remove_clone_low_quality"
 PREFIX="whole_pear"
 
 perl filter_by_anno.pl \
