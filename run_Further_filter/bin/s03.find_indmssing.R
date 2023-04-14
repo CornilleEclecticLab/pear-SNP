@@ -20,12 +20,14 @@ p1 <- ggplot(miss_df, aes(x = missing_rate)) +
   geom_histogram(aes(y = ..density..), colour = "black", fill = "white") +
   geom_density(alpha = .2, fill = "#FF6666") +
   geom_vline(xintercept = 10, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 30, linetype = "dashed", color = "yellow") +
   xlab("missiong rate (%)") + 
   theme_cowplot(12)
 
 p3 <- ggplot(miss_df, aes(x = reorder(individual, missing_rate), y = missing_rate)) +
   geom_bar(stat = "identity") +
   geom_hline(yintercept = 10, linetype = "dashed", color = "red") +
+  geom_line(yintercept = 30, linetype = "dashed", color = "yellow") +
   xlab("individual") +
   ylab("missiong rate (%)") +
   coord_flip() +
@@ -41,6 +43,7 @@ p2 <- ggplot(miss_df, aes(x = missing_rate, y = "SNP")) +
   geom_violin() +
   geom_boxplot(width = 0.1) +
   geom_vline(xintercept = 10, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 30, linetype = "dashed", color = "yellow") +
   theme_cowplot(12)
 
 remove_df <- filter(miss_df, miss_df$missing_rate > 30)

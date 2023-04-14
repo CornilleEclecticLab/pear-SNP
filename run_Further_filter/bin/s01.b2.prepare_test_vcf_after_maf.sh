@@ -55,8 +55,8 @@ GotTest="False"
 # ectract all the SNP and filter genotype missing 20% 
 if [ "$GotTest" == "False" ]; then
     bcftools view -v snps $combine_vcf \
-    | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf 
-    $GotTest="True"
+    |bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf 
+    GotTest="True"
 fi
 
 
