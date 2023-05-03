@@ -20,7 +20,8 @@ plink -bfile $INPUT \
     --make-rel \
     --out ${set}.pca
 
-# perl get_R_data.pl
+
+# perl get_R_data.pl # Disused, as Plink couldn't calculate the Proportion of variance explained(pve) directly, but this script set eigenvalues as PVE. To calculate PVE, use following new script.
 perl bin.calculate_pve.pl $set
 
 
