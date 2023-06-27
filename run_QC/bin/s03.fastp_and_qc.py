@@ -82,7 +82,7 @@ mkdir -p {dir}
 
 
 fastp \\
--f {f} \\ 
+-f {f} \\
 -l {l} \\
 -i {i} \\
 -I {I} \\
