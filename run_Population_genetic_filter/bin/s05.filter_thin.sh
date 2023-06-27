@@ -12,7 +12,7 @@ module load bioinfo/vcftools-0.1.15
 
 WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/branch7.whole_pear"
+OUTPUT="$WORKDIR/output/branch7.batch12.kinship_base_on_branch7_batch11_remove_clone_low_quality"
 PREFIX="whole_pear"
 
 vcftools --gzvcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.vcf.gz --thin 8000 \
