@@ -24,7 +24,7 @@ module load bcftools/1.14
 # ="../input/s01_prepare_test_vcf.filter_passed_sites_vcf.list"
 list=$1 
 prefix=$2
-combine_vcf=$2
+combine_vcf=$1
 
 # list='/shared/ifbstor1/projects/pear_snp2/pear/run_Further_filter/input/s01.input.whole_pear_filter_passed_sites_vcf.file_list.txt'
 # prefix='whole_pear'
@@ -54,7 +54,7 @@ GotTest="False"
 # paragraph code as annotation and start here
 # ectract all the SNP and filter genotype missing 20% 
 if [ "$GotTest" == "False" ]; then
-    bcftools view -v snps $combine_vcf \
+    bcftools view -m2 -M2 -v snps $combine_vcf \
     |bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf 
     GotTest="True"
 fi
