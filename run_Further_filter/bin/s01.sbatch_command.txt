@@ -22,3 +22,11 @@ for i in $(cat ${input_dir}/s01.b2.whole_pear_test_vcf.file_list.txt); do
 chr_id=$(echo "${i}" | cut -d "." -f2)
 sbatch -c 1 --mem=32G -A pear_snp2 s01.b2.prepare_test_vcf_after_maf.sh "$(echo "${i}")" "whole_pear_maf005.${chr_id}" | awk '{print $4}' | xargs -I% echo -e "${chr_id}"'\t'% >> s01.job_id.txt
 done
+
+
+# The command for submit s01.b4.prepare_test_vcf_after_m2M2_maf.sh :
+input_dir="../input/"
+for i in $(cat ${input_dir}/s01.b2.whole_pear_test_vcf.file_list.txt); do
+chr_id=$(echo "${i}" | cut -d "." -f2)
+sbatch -c 1 --mem=32G -A pear_snp2 s01.b4.prepare_test_vcf_after_m2M2_maf.sh "$(echo "${i}")" "whole_pear_m2M2_maf005.${chr_id}" | awk '{print $4}' | xargs -I% echo -e "${chr_id}"'\t'% >> s01.job_id.txt
+done
