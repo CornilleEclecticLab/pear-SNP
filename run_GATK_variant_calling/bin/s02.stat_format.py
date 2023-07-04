@@ -21,8 +21,7 @@ print("{0:=^40}".format(' Start '))
 
 # Set path
 work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
-group       = 'pear.Wu2018_part2'
-
+group       = 'pear.Zhang2021_b3'
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
