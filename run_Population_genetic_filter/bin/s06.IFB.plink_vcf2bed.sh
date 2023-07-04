@@ -6,11 +6,11 @@
 #SBATCH -o s06.plink_vcf2bed.%j.out
 #SBATCH -e s06.plink_vcf2bed.%j.err
 module purge
-module load bioinfo/plink-v1.90b5.3
+module load plink
 
-WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
+WORKDIR="/shared/ifbstor1/projects/pear_snp2/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/branch7.batch12.kinship_base_on_branch7_batch11_remove_clone_low_quality"
+OUTPUT="$WORKDIR/output/branch7.whole_pear"
 PREFIX="whole_pear"
 
 plink --vcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.thin8k.vcf.gz \

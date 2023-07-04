@@ -6,11 +6,11 @@
 #SBATCH -e s04.filter_syno.%j.err
 
 module purge
-module load bioinfo/samtools-1.14
+module load bcftools/1.14
 
-WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
+WORKDIR="/shared/ifbstor1/projects/pear_snp2/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/branch7.batch12.kinship_base_on_branch7_batch11_remove_clone_low_quality"
+OUTPUT="$WORKDIR/output/branch7.whole_pear"
 PREFIX="whole_pear"
 
 perl filter_by_anno.pl \

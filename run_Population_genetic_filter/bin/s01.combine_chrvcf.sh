@@ -9,13 +9,13 @@
 #SBATCH -e s01.combine_chrvcf.err
 
 module purge
-module load bioinfo/bcftools-1.14
+module load bcftools/1.14
 
-WORKDIR="/work/zruilin/pear/run_Population_genetic_filter"
+WORKDIR="/shared/ifbstor1/projects/pear_snp2/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
 OUTPUT="$WORKDIR/output"
 
-bcftools concat -f $INPUT/pear.withLiPart2.chr.variant.vcf.list \
+bcftools concat -f $INPUT/whole_pear.cvr.variant.vcf.list \
 -O z4 \
 --threads 8 \
--o $OUTPUT/pear.withLoquat.Combine_Chr.vcf.gz
+-o $OUTPUT/branch7.whole_pear/whole_pear.Combine_Chr.vcf.gz
