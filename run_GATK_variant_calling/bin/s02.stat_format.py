@@ -20,9 +20,14 @@ print("{0:=^40}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
+<<<<<<< HEAD
+work_dir 	= '/work/ynie/pear/run_GATK_variant_calling'
+group       = 'pear.Zhang2021_b3'
+=======
 work_dir 	= '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
 group       = 'pear.Zhang2021_b2_p3'
 
+>>>>>>> 3d4c86403ac49f023a1f9401ec50a1dcfc9f17e5
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
