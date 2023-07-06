@@ -15,6 +15,7 @@
 import datetime
 import os
 import sys
+import textwrap
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
@@ -42,7 +43,8 @@ os.system("mkdir -p "+output_dir)
 
 with open(chromosome_list,'r') as fr:
     chr_list = fr.read().strip().split('\n')
-    print('Read the "chromosomes list": '+chr_list)
+    info=f'Reading the "chromosomes list": {",".join(chr_list)}'
+    print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
 
 
@@ -54,7 +56,8 @@ with open(individual_population_list,'r') as fr:
         line = line.strip().split()
         individual = line[0]
         population = line[1]
-        print('Read the "individuals_and_populations_list": '+individual,population)
+        info=f'Reading the "individuals_and_populations_list": {individual} {population}'
+        print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
         population_dict[population] = population_dict.get(population,list())
         population_dict[population].append(individual)

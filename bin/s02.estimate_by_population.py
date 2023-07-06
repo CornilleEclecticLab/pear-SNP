@@ -1,26 +1,32 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
  
-# @File     : s02.estimate_py_population.py
-# @Version  : 1.0.0
+# @File     : s02.estimate_by_population.py
+# @Version  : 1.0.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/07/05 19:13:09
 # @Description:
-#     
+#     This script is used to generate sub-scripts for the "smc++ estimate" command.
+
+#     version 1.0.1: 2023-07-06 15:00:22
+#     Polished the code style.
+
+
+
 
 import datetime
 import os
 import sys
+import textwrap
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
 
-
-version = "1.0.0"
+version = "1.0.1"
 cpu_cores = '20'
-script_basename = "s02.estimate_py_population"
+script_basename = "s02.estimate_by_population"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
 input_dir = work_dir+'/input/'
@@ -31,7 +37,8 @@ sub_script_dir = work_dir+'/bin/'+script_basename
 
 
 vcf = input_dir+"/s01.input.vcf.gz"
-chromosome_list = "input/s01.scaffolds_list.txt"  # Format: individual_name population_name
+chromosome_list = input_dir+"/s01.scaffolds_list.txt"
+individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 load_singularity = 'module load system/singularity-3.7.3'
 
 
@@ -42,21 +49,23 @@ os.system("mkdir -p "+output_dir)
 
 
 
-with open(work_dir+'/'+chromosome_list,'r') as fr:
+with open(chromosome_list,'r') as fr:
     chr_list = fr.read().strip().split('\n')
-    print(chr_list)
+    info=f'Reading the "chromosomes list": {",".join(chr_list)}'
+    print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
 
 
 population_dict = {}
-with open(input_dir+"/s01.individuals_and_populations_list.txt",'r') as fr:
+with open(individual_population_list,'r') as fr:
     for line in fr:
         if line.startswith("#") or line.strip()=='':
             continue 
         line = line.strip().split()
         individual = line[0]
         population = line[1]
-        print(individual,population)
+        info=f'Reading the "individuals_and_populations_list": {individual} {population}'
+        print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
         population_dict[population] = population_dict.get(population,list())
         population_dict[population].append(individual)
