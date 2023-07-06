@@ -67,7 +67,7 @@ with open(individual_population_list,'r') as fr:
 for pop, inds in population_dict.items(): 
     for chr in chr_list:
         sub_script = sub_script_dir+f"/vcf2smc.{pop}.{chr}.sh"
-        out = output_dir+'/'+pop+'.'+chr+'.smc.gz'
+        out = f"{output_dir}/{pop}.{chr}.smc.gz"
         inds = ",".join(inds)
 
         with open(sub_script,"w") as fo:
