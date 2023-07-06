@@ -14,3 +14,5 @@ module load system/singularity-3.7.3
 
 # download container
 singularity pull smcpp.sif docker://terhorst/smcpp:latest
+
+singularity run smcpp.sif version > s00.smcpp_version.txt
