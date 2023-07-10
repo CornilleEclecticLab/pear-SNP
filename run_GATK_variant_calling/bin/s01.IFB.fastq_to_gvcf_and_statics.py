@@ -22,7 +22,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 user        = getpass.getuser()
 work_dir    = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling'
-group       = 'pear.Loquat_2'
+group       = 'pear.EuJAP'
 
 
 ## NO need to change >>
@@ -120,7 +120,7 @@ for sample, path in dic.items():
         fo.write(content_header)
         
         ## SBATCH settings
-        content = '#SBATCH -J '+sample_prefix+' \n'+'#SBATCH -o '+sample_prefix+'.out \n' +'#SBATCH -e '+sample_prefix+'.err \n'
+        content = '#SBATCH -J '+sample_prefix+' \n'+'#SBATCH -o '+sample_prefix+'.%J.out \n' +'#SBATCH -e '+sample_prefix+'.%J.err \n'
         fo.write(content)
 
         ## Load softwares
@@ -209,8 +209,8 @@ samtools index {output_dir}/{group}.{sample}.sorted.markdu.cram \\
 \
             '''.format(sample=sample,ref_genome=ref_genome,output_dir=output_dir,group=group, tmp_dir=tmp_dir)
         fo.write(content)
-        
-        
+
+
     ## Submit this script as a job
     if run == '1':
         command = "sbatch -c 4 -p long --mem=32G -A pear_snp2 "+scripts_dir+"/"+sample_prefix+".sh"
@@ -240,7 +240,7 @@ samtools index {output_dir}/{group}.{sample}.sorted.markdu.cram \\
             
             ## SBATCH settings
             content = '#SBATCH -J '+sample+'.'+chr.split('/')[-1]+' \n'+'#SBATCH -o ' + \
-                      sample_prefix_chr+'.out \n' + '#SBATCH -e '+sample_prefix_chr+'.err \n\n'
+                      sample_prefix_chr+'.%J.out \n' + '#SBATCH -e '+sample_prefix_chr+'.%J.err \n\n'
             fo.write(content)
 
             ## Load softwares
@@ -264,10 +264,10 @@ gatk --java-options "-Xmx8g" HaplotypeCaller \\
 gatk --java-options "-Xmx8g -Djava.io.tmpdir={tmp_dir}" IndexFeatureFile \\
 -I {output_dir}/{group}.{sample}.{chr_base}.g.vcf.gz \\
 || {{ echo 'Index gvcf failed' ; exit 1 ; }}
-\
-                '''.format(ref_genome=ref_genome,chr=chr,output_dir=output_dir,sample=sample,group=group,chr_base=chr_base,tmp_dir=tmp_dir)
+
+'''.format(ref_genome=ref_genome,chr=chr,output_dir=output_dir,sample=sample,group=group,chr_base=chr_base,tmp_dir=tmp_dir)
             fo.write(content)
-            
+
         ## Submit this script as a job
         if run == '1':
             command = "sbatch -A pear_snp2 -p long -c 2 --mem=10G --dependency=afterok:"+depended_job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh"
@@ -276,7 +276,8 @@ gatk --java-options "-Xmx8g -Djava.io.tmpdir={tmp_dir}" IndexFeatureFile \\
             job_id_txt.write(sample_prefix_chr+'.sh' + '\t' + current_job_id + '\n')
             print("Information: A job has been submitted: \n\t"+command+'\n')
 
-job_id_txt.close()
+if run=="1":
+    job_id_txt.close()
 
 
 
@@ -284,4 +285,5 @@ job_id_txt.close()
 
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(80,'=')
+print(' END '.center(80,'='))
+print(str(end_time-start_time).center(80))
