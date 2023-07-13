@@ -19,6 +19,9 @@
 #    Version 1.0.3: 2023-07-11 16:19:23
 #    Didn't use for chr in chr_list to generate the same sub-script for each population pair.
 
+#    Version 1.0.4: 2023-07-13 17:28:26
+#    Book more cpu cores for the "smc++ split" command.
+
 import datetime
 import os
 import sys
@@ -29,7 +32,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.3"
+version = "1.0.4"
 s01_script_basename = "s01.vcf2smc_by_chr"
 s02_script_basename = "s02.estimate_by_population"
 s04_script_basename = "s04.vcf2smc_to_prepare_for_split"
@@ -50,6 +53,7 @@ chromosome_list = input_dir+"/s01.scaffolds_list.txt"
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
 load_singularity = 'module load system/singularity-3.7.3'
+cpu_cores = "20"
 
 
 
@@ -152,6 +156,8 @@ for (pop1,pop2) in population_pair_list:
 #SBATCH -J {sub_script_basename}
 #SBATCH -o {sub_script_basename}.%J.out
 #SBATCH -e {sub_script_basename}.%J.err
+#SBATCH --cpus-per-task={cpu_cores}
+#SBATCH --mem 120G
 
 
 {load_singularity}
@@ -160,6 +166,7 @@ for (pop1,pop2) in population_pair_list:
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif split \\
         -o {output_dir}/{pop1}.{pop2}/ \\
+        --cores {cpu_cores} \\
         {s02_output_dir}/{pop1}/model.final.json \\
         {s02_output_dir}/{pop2}/model.final.json \\
         {get_smc_list_for_pop_by_chr(s01_output_dir, [pop1,pop2])} \\
