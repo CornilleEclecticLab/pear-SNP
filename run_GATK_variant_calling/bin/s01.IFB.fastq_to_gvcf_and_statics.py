@@ -22,7 +22,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 user        = getpass.getuser()
 work_dir    = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling'
-group       = 'pear.EuJAP'
+group       = 'pear.Japanese'
 
 
 ## NO need to change >>
