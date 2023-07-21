@@ -8,8 +8,11 @@
 # @Time(CET):   2022/12/30 11:40:38
 #Description:
     # 
+    # Version 1.0.1 2023-07-17 11:30:29
+    # Polish the code.
 
-import datetime, os, getpass
+import datetime
+import os
 start_time = datetime.datetime.now()
 print("{0:=^40}".format(' Start '))
 
@@ -21,7 +24,7 @@ print("{0:=^40}".format(' Start '))
 
 # Set path
 work_dir 	= '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
-group       = 'pear.Zhang2021_b2_p3'
+group       = 'pear.White_pear'
 
 
 ## NO need to change >>
@@ -56,22 +59,22 @@ chromosomes = input_dir+'/all_scaffolds.list'
 
 # Read paths of fastq files
 with open(fastq_list,'r') as fo:
-    
+
     dic = {}
     for line in fo:
         line = line.strip()
-        
+
         if line.startswith('#'):
             continue
-        
+
         path = line
         file_name = os.path.basename(path)
         dir_name = os.path.basename(os.path.dirname(path))
         sample_name = dir_name
-        
+
         dic[sample_name] = dic.get(sample_name,[])
         dic[sample_name].append(path)
-        
+
 
 
 # Create dir for saving scripts and output
@@ -83,21 +86,21 @@ os.system('mkdir -p '+output2_dir)
 with open(output2_dir+'/'+prefix+".txt",'w') as fo:
     header = "Group\tSample\tAvg_depth\tBreadth_coverage\tMarkdu_avg_depth\tMarkdu_breadth_coverage\n"
     fo.write(header)
-    
+
     for sample, path in dic.items():
-        
+
         with open(output1_dir+"/"+group+"."+sample+".sorted.avg_depth.txt",'r') as txt:
             depth = txt.read().strip()
-        
+
         with open(output1_dir+"/"+group+"."+sample+".sorted.breadth_coverage.txt", 'r') as txt:
             coverage = txt.read().strip()
-            
+
         with open(output1_dir+"/"+group+"."+sample+".sorted.markdu.avg_depth.txt", 'r') as txt:
             markdu_depth = txt.read().strip()
 
         with open(output1_dir+"/"+group+"."+sample+".sorted.markdu.breadth_coverage.txt", 'r') as txt:
             markdu_coverage = txt.read().strip()
-        
+
         fo.write(group+'\t'+sample+'\t'+depth+'\t'+coverage+'\t'+markdu_depth+'\t'+markdu_coverage+'\n')
 
 

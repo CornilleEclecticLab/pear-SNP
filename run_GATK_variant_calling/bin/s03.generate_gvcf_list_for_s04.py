@@ -11,6 +11,9 @@
     # 2023-01-15 21:32:23
     # Compatible with extra g.vcf file path
     
+    # v2.0.1
+    # 2023-07-17 17:11:27
+    # Polish the code
 
 
 import datetime,os,warnings
@@ -25,17 +28,15 @@ print("{0:=^80}".format(' Start '))
 
 # Set path
 work_dir = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
+species = 'pear_July2023'
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix = 's03.generate_gvcf_list'
-
-
-output3_dir = output_dir+'/'+prefix
-
+step = 's03.generate_gvcf_list'
+output3_dir = output_dir+'/'+step
+output3_prefix = output3_dir+'/'+species
 ## NO need to change Change <<
-
 
 
 # The path of a txt file records the scaffolds IDs in the reference genome. If there are too many scaffolds, you could save some of them in another file, and write it's path in the following file. In this file,  {input_dir} could be recognized as the variant.
@@ -86,12 +87,12 @@ for chr in chromosome:
     pass_sample = []
 
     ## Create the chromosomes list file
-    gvcf_list = output3_dir+'/pear.'+chr_base+".gvcf.list"
+    gvcf_list = f'{output3_prefix}.{chr_base}.gvcf.list'
     with open(gvcf_list, 'w') as fo:
-        
-        
+
+
         ## For every line in g.vcf file list
-        s03input_gvcf_list=input_dir+'/s03.input.gvcf_list.genotoul.txt'
+        s03input_gvcf_list=input_dir+'/s03.input.gvcf_list.txt'
         with open(s03input_gvcf_list,'r') as fr:
             for line in fr:
                 line = line.strip()
@@ -102,18 +103,18 @@ for chr in chromosome:
                     gvcf_chr    = os.path.basename(line).split('.')[-4]
                 except:
                     print(line)
-                
+                    exit(1)
                 if gvcf_sample in allow_samples and gvcf_chr == chr_base:
                     fo.write(line+'\n')
                     pass_sample.append(gvcf_sample)
-    
-    
+
+
     if len(pass_sample) != len(allow_samples):
         warnings.warn("[ERROR] Unequal sample amount in pass list from allow list!")
         print("Interrupted at chromosome: "+chr_base)
-        exit()
+        exit(1)
 
-             
+
 
 end_time = datetime.datetime.now()
 print('')
