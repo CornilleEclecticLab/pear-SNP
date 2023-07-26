@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     :   s04.combine_chr_gvcf_to_vcf_allsites.py
-# @Version  :   2.0.2
+# @Version  :   2.1.2
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
 # @Time(CET):   2022/12/31 23:15:37
@@ -27,6 +27,13 @@
     # Version 2.1.0
     # Run on IFB: change the work dir and specific the tem dir.
     
+    # 2023-07-18 20:55:48
+    # Version 2.1.1
+    # Polish the script.
+    
+    # 2023-07-26 13:04:48
+    # Version 2.1.2
+    # Polish the script, to compatible with s05.IFB.hard_filter_chr_vcf_and_variant_invariant_concat.py
 
 import datetime,os
 from time import time
@@ -48,7 +55,7 @@ species = group = 'pear_July2023'
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix      = 's04.combine_chr_gvcf_to_vcf_allsites_'+species
+prefix      = 's04.combine_chr_gvcf_to_vcf_allsites.'+species
 scripts_dir = work_dir+'/bin/'+prefix
 output4_dir = output_dir+'/'+prefix
 output3_dir = output_dir+'/s03.generate_gvcf_list'
