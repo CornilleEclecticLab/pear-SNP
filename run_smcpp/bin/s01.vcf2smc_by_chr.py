@@ -15,6 +15,10 @@
 #     version 1.0.2: 2023-07-09 10:37:26
 #     Shortened the slurm job file name
 #     Fixed bugs.
+
+#     version 1.1.0: 2023-07-26 22:03:54
+#     add the "--mask" option
+
 import datetime
 import os
 import sys
@@ -22,20 +26,21 @@ import textwrap
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "1.0.2"
+version = "1.1.0"
+mask = '/shared/ifbstor1/projects/pear_snp3/pear/run_genmap_Genome_Mappability/output/GWHBAOS00000000.genome.genmap.mask.bed'
 script_basename = "s01.vcf2smc_by_chr"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
-input_dir = work_dir+'/input/'
-output_dir = work_dir+'/output/'+script_basename
-sub_script_dir = work_dir+'/bin/'+script_basename
+input_dir = os.path.join(work_dir, 'input')
+output_dir = os.path.join(work_dir, 'output', script_basename)
+sub_script_dir = os.path.join(work_dir, 'bin', script_basename)
 
 
 
-vcf = input_dir+"/s01.input.vcf.gz"
-chromosome_list = input_dir+"/s01.scaffolds_list.txt"  
-individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
-load_singularity = 'module load system/singularity-3.7.3'
+vcf = os.path.join(input_dir, "s01.input.vcf.gz")
+chromosome_list = os.path.join(input_dir, "s01.scaffolds_list.txt") 
+individual_population_list = os.path.join(input_dir,"s01.individuals_and_populations_list.txt") # Format: individual_name population_name
+load_singularity = '# module load system/singularity-3.7.3' # singularity is installed on the cluster
 
 
 
@@ -91,6 +96,7 @@ f'''#!/usr/bin/env bash
 
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif vcf2smc \\
+        --mask {mask} \\
         {vcf} \\
         {out} \\
         {chr} \\
