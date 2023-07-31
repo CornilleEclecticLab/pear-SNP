@@ -256,7 +256,7 @@ tabix -p vcf {output5_dir}/{group_new}.{chr_base}.filtered_pixy_concat.vcf.gz
 
     # Submit this script as a job
     if run == '1':
-        #continue # Don't running the script as the hard filter threshold is unsure
+        continue # Don't running the script as the hard filter threshold is unsure
         command = f"sbatch -p long -c 4 -A {account} --mem={mem_bcftools_filter} --dependency=afterok:{depended_job_id} {sh2}"
         submit = os.popen(command, 'r')
         current_job_id = submit.read().strip().split()[-1]
