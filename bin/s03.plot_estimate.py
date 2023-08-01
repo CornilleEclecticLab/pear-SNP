@@ -105,6 +105,7 @@ singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_basename}.pdf \\
         -g 7.5 \\
+        --cores 1 \\
         -c \\
         {get_json_list_for_plot_by_pop()}
 '''
@@ -134,6 +135,7 @@ singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_basename}.pdf \\
         -g 7.5 \\
+        --cores 1 \\
         -c \\
         {s02_output_dir}/{pop}/model.final.json
 '''

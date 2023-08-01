@@ -155,6 +155,7 @@ singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{script_basename}.{pop1}.{pop2}.pdf \\
         -g 7.5 \\
+        --cores 1 \\
         -c \\
         {s05_output_dir}/{pop1}.{pop2}/model.final.json
 '''
