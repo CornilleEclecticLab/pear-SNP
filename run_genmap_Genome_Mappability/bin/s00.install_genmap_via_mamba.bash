@@ -19,9 +19,9 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 
 
-# install genmap
+# install genmap and pandas
 WORKDIR="~/work/conda/env/genmap"
-mamba create -p $WORKDIR -c bioconda genmap
+mamba create -p $WORKDIR -c bioconda genmap pandas
 
 # init mamba
 mamba init bash

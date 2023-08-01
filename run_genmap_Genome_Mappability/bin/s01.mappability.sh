@@ -18,4 +18,4 @@ module load conda
 # activate genmap
 source activate ~/work/conda/env/genmap
 
-genmap map -K 140 -E 0 -T 40  -I ../input/index_genmap -O ../output -t -w -bg
+genmap map -K 140 -E 0 -T 40 -I ../input/index_genmap -O ../output -t -w -bg 
