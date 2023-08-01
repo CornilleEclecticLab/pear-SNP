@@ -100,6 +100,7 @@ for pop, inds in population_dict.items():
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif estimate \\
         --cores {cpu_cores} \\
+        --timepoints 100 1e7 \\
         --outdir {output_dir}/{pop}/ \\
         --spline piecewise \\
         --polarization-error 0.5 \\

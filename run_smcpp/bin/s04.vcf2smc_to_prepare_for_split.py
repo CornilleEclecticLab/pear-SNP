@@ -40,6 +40,7 @@ sub_script_dir = work_dir+'/bin/'+script_basename
 
 
 vcf = input_dir+"/s01.input.vcf.gz"
+mask = '/shared/ifbstor1/projects/pear_snp3/pear/run_genmap_Genome_Mappability/output/GWHBAOS00000000.genome.genmap.mask.bed'
 chromosome_list = input_dir+"/s01.scaffolds_list.txt"  
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
@@ -175,6 +176,7 @@ for (pop1,pop2) in population_pair_list:
 
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif vcf2smc \\
+        --mask {mask} \\
         {vcf} \\
         {out12} \\
         {chr} \\
@@ -182,6 +184,7 @@ singularity run -B  {work_dir}:{work_dir} \\
         {pop2}:{inds2} && \\
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif vcf2smc \\
+        --mask {mask} \\
         {vcf} \\
         {out21} \\
         {chr} \\
