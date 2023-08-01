@@ -23,14 +23,20 @@ module load bcftools/1.14
 
 
 prefix='pear_Jul2023' #$2
-list=$1
+list=$4
+combine_vcf=$3
 prefix=$2
-combine_vcf=$1
+test_vcf=$1
 GotOneCombinedFile="False"
+GotTestFile="False"
 
-# if [ "$combine_vcf" != "" ]; then
-#     GotOneCombinedFile="True"
-# fi
+if [ "$combine_vcf" != "" ]; then
+    GotOneCombinedFile="True"
+fi
+
+if [ "$test_vcf" != "" ]; then
+    GotTestFile="True"
+fi
 
 # list='/shared/ifbstor1/projects/pear_snp3/pear/run_Further_filter/input/s01.branch8.input.pear_Jul2023.filter_passed_sites_vcf.file_list.txt'
 # list='/shared/ifbstor1/projects/pear_snp2/pear/run_Further_filter/input/s01.input.whole_pear_filter_passed_sites_vcf.file_list.txt'
@@ -42,7 +48,7 @@ sum_number_txt="$prefix.sum_number.txt"
 ind_miss_txt="$prefix.ind_miss.txt"
 test_rand_vcf="$prefix.test_rand.vcf"
 test_rand_vcfgz="$prefix.test_rand.vcf.gz"
-GotTestFile="False"
+
 
 
 
@@ -60,11 +66,13 @@ GotTestFile="False"
     # $GotTest="True"
 # fi
 
+### According to the test on 2023-07-31, the following is convient but about 90% slower than seperately run filter on each chromosome vcf.gz file
 ### Updated this part on 2023-07-30
 if [ "$GotTestFile" == "False" ] && [ "$GotOneCombinedFile" == "False" ]; then
     bcftools concat --threads 8 -f $list \
     | bcftools view -m2 -M2 -v snps --threads 8 \
-    | bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf --threads 8
+    | bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf --threads 8
+    # | bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf --threads 8
     GotTestFile="True"
     echo "GotTestFile is $GotTestFile"
 fi
@@ -74,9 +82,10 @@ fi
 # paragraph code as annotation and start here
 # ectract all the SNP and filter genotype missing 20% 
 
-if [ "$GotTestFile" == "False" ]&& [ "$GotOneCombinedFile" == "False" ] && [ "$GotOneCombinedFile" == "True" ]; then
+if [ "$GotTestFile" == "False" ] && [ "$GotOneCombinedFile" == "True" ]; then
     bcftools view -m2 -M2 -v snps --threads 8 $combine_vcf \
-    |bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf --threads 8
+    |bcftools filter -e 'F_MISSING > 0.2' -O z4 -o $test_vcf --threads 8
+    #|bcftools filter -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' -O z4 -o $test_vcf --threads 8
     GotTestFile="True"
 fi
 

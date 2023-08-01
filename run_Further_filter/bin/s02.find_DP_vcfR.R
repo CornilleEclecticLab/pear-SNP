@@ -3,7 +3,7 @@ library(vcfR)
 library(reshape2)
 library(ggplot2)  
 
-rand_vcf <- "../output/whole_pear/whole_pear.combine.test_rand.vcf.gz"
+rand_vcf <- "/shared/ifbstor1/projects/pear_snp3/pear/run_Further_filter/output/pear_Jul2023.Fmissing02_m2M2_maff005/pear_Jul2023.Fmiss02_m2M2_maf005.test_rand.vcf.gz"
 
 vcf <- read.vcfR(rand_vcf) 
 
@@ -29,10 +29,13 @@ p <- ggplot(dpf, aes(x=Sample,y=Depth)) +
 
 
 
-ggsave("whole_pear.combine.test_rand.vcf.gz.violin.png",plot = p, dpi = 300, 
-       width =  30,
-       height = 8,
+ggsave("pear_Jul2023.Fmiss02_m2M2_maf005.test_rand.violin.png",plot = p, dpi = 300, 
+       width =  42,
+       height = 4,
        units = "in")
+
+print("Done!")
+
 
 
 
