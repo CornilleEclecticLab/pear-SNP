@@ -5,17 +5,19 @@
 # Adaptated by Yuqi NIE on 2022-01-23
 
 #SBATCH -J s01.combine_chrvcf
-#SBATCH -o s01.combine_chrvcf.out
-#SBATCH -e s01.combine_chrvcf.err
+#SBATCH -o s01.combine_chrvcf.NOGIT.%J.out
+#SBATCH -e s01.combine_chrvcf.NOGIT.%J.err
 
 module purge
 module load bcftools/1.14
 
-WORKDIR="/shared/ifbstor1/projects/pear_snp2/pear/run_Population_genetic_filter"
+WORKDIR="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output"
+OUTPUT="$WORKDIR/output/branch8.pear_Jul2023"
 
-bcftools concat -f $INPUT/whole_pear.cvr.variant.vcf.list \
+mkdir -p $OUTPUT
+
+bcftools concat -f $INPUT/pear_Jul2023.chr.variant.vcf.list \
 -O z4 \
 --threads 8 \
--o $OUTPUT/branch7.whole_pear/whole_pear.Combine_Chr.vcf.gz
+-o $OUTPUT/pear_Jul2023.Combine_Chr.vcf.gz
