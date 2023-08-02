@@ -27,7 +27,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 version = "1.1.0"
-mask = '/shared/ifbstor1/projects/pear_snp3/pear/run_genmap_Genome_Mappability/output/GWHBAOS00000000.genome.genmap.mask.bed'
+
 script_basename = "s01.vcf2smc_by_chr"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -36,7 +36,7 @@ output_dir = os.path.join(work_dir, 'output', script_basename)
 sub_script_dir = os.path.join(work_dir, 'bin', script_basename)
 
 
-
+mask = os.path.join(input_dir,"GWHBAOS00000000.genome.genmap.mask.bed.gz")
 vcf = os.path.join(input_dir, "s01.input.vcf.gz")
 chromosome_list = os.path.join(input_dir, "s01.scaffolds_list.txt") 
 individual_population_list = os.path.join(input_dir,"s01.individuals_and_populations_list.txt") # Format: individual_name population_name
