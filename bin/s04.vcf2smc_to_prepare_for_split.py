@@ -33,14 +33,14 @@ script_basename = "s04.vcf2smc_to_prepare_for_split"
 s05_script = 's05.split_time_estimation.py'
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
-input_dir = work_dir+'/input/'
-output_dir = work_dir+'/output/'+script_basename
-sub_script_dir = work_dir+'/bin/'+script_basename
+input_dir = os.path.join(work_dir,'input')
+output_dir = os.path.join(work_dir,'output',script_basename)
+sub_script_dir = os.path.join(work_dir,'bin',script_basename)
 
 
 
+mask = os.path.join(input_dir,"GWHBAOS00000000.genome.genmap.mask.bed.gz")
 vcf = input_dir+"/s01.input.vcf.gz"
-mask = '/shared/ifbstor1/projects/pear_snp3/pear/run_genmap_Genome_Mappability/output/GWHBAOS00000000.genome.genmap.mask.bed'
 chromosome_list = input_dir+"/s01.scaffolds_list.txt"  
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
