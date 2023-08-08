@@ -13,6 +13,7 @@ perl CLUMPAK.pl --id <job_name> --dir <output_dir> --file <your CLUMPAK_zip file
 perl CLUMPAK.pl --id <job_name> --dir <output_dir> --file <your CLUMPAK_zip file> --inputtype admixture
 ```
 You can give any name for <job_name>, eg “mydata123”. But the <output_dir> must be a folder in CLUMPAK folder, eg ./output_test
+But the output_dir should be different from job_name
 
 The job will run about 3 to 4 hours on a K2 to K15 by repeating 20 runs of a dataset containing thirteen markers among 800 individuals. 
 When the jobs are finished, you can copy the <output_dir> to your own folder. And please **remove** the <output_dir> locally.
