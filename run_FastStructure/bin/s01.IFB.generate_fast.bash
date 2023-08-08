@@ -1,12 +1,13 @@
 #!/bin/bash
 
-WORKDIR="/work/zruilin/pear/run_FastStructure"
+WORKDIR="/shared/ifbstor1/projects/pear_snp3/pear/run_FastStructure"
 
-BED="/work/zruilin/pear/run_Population_genetic_filter/output/batch4.remove_b3_remove_Pashia_Pseudopshia/pear.Combine_Chr.geno20_maf005.anno.syno.thin8k"
 
-OUTDIR="$WORKDIR/output/batch4.remove_b3_Pashia_Pseudopshia"
+BED_PREFIX="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter/output/branch8.batch15.pear_Jul2023_noclone/pear_Jul2023_noclone.Combine_Chr.geno20_maf005.anno.syno.thin8k"
 
-mkdir -p $OUTDIR
+OUTDIR="$WORKDIR/output/branch8.bathch15.pear_Jul2023_noclone"
 
-perl ./mk_faststructure_IFB_cv.pl -b $BED -minK 2 -maxK 15 -r 30 -o $OUTDIR
+
+
+perl ./mk_faststructure_IFB_cv.pl -b $BED_PREFIX -minK 2 -maxK 15 -r 30 -o $OUTDIR
 

@@ -10,7 +10,7 @@ use Getopt::Long;
 # Contact: chen_xilong@outlook.com
 
 # Edited by Yuqi NIE
-# For IFB
+# For IFB. And Copy meanQ files to a folder for CLUMPAK
 # Edit Date: 03/08/2023 10:45
 
 my $FastStructure_py = "/shared/ifbstor1/software/miniconda/envs/faststructure-1.0/bin/structure.py";
@@ -76,7 +76,7 @@ do
         cd ..
 done";
 
-open my $ou2, ">", "zip_for_clumpak.sh" or die;
+open my $ou2, ">", "01.zip_for_clumpak.sh" or die;
 print $ou2 "
 cd $output_dir
 mkdir result
@@ -91,4 +91,6 @@ done
 zip -q ../input_clumpak.zip K*.zip
 
 rm -rf K*.zip
+cd $output_dir
+rm -rf ./result
 "
