@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     :   s03.fastp_and_qc.py
-# @Version  :   1.0.0
+# @Version  :   2.0.0
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
 # @Time(CET):   2022/12/19 11:52:17
@@ -11,8 +11,15 @@
     # Compliance with PEP8 standard
     # Using value[fastq1][i] instead of value[0][i], which would be more clear
 
+    # Version: 2.0.0
+    # Update: 2023-09-13 10:11:22
+    # Compatibility with more than two fastq files for every sample
+    # Change the output file name following the second column input file
+    # Edit the warning message
+
 import datetime
-import warnings,os
+import os
+import warnings
 
 start_time = datetime.datetime.now()
 print("{0:=^40}".format(' Start '))
@@ -43,16 +50,30 @@ with open(input_dir+"/fastp_cutoff.dic.txt", 'r') as fo:
                 , this record is not 6 columns: "+' '.join(line))
 
         path = line[0]
+
+        # Check the file path
+        if os.path.splitext(path)[1] != ".gz":
+            warnings.warn("WARNING: bad input file\
+                , this record is not a fastq.gz file: "+path)
+            continue
+
+        if os.path.splitext(os.path.splitext(path)[0])[1] not in [".fastq", ".fq"]:
+            warnings.warn("WARNING: bad input file\
+                , this record is not a fastq.gz file: "+path)
+            continue
+
         file_prefix = line[1]
         sample = os.path.basename(os.path.dirname(path))
-        project = line[2]
-        front_trimmin = line[3]
-        length_require = line[4]
-        average_length = line[5]
+
+        # The expected input file content:
+        # project = line[2]
+        # front_trim_min = line[3]
+        # length_require = line[4]
+        # average_length = line[5]
         dic[sample] = dic.get(sample, [])
         dic[sample].append(line)
 
-        
+
 os.system("mkdir -p "+s03_dir)
 os.system("mkdir -p "+s03_output_dir)
 
@@ -61,18 +82,32 @@ content_header='''#!/usr/bin/env bash
 '''
 
 
-fastq1, fastq2 = 0, 1
+
 for sample, value in dic.items():
-    if len(value) != 2:
-        print(sample, len(value))
+    # Check the fastq file number
+    if len(value)%2 == 1:
+        print(sample, len(value), "fastq files")
         warnings.warn(
-            "WARNING: this sample contains only ONE fastq file, as you had checked it, it would be discard for fastp running: "+value[fastq1][0])
+            "WARNING: the sample "+sample+" contains NON-Pair fastq file, please checked it, it would be discard for fastp running: "+value[0][0])
         continue
 
-    for i in [2, 3, 4]:
-        if value[fastq1][i] != value[fastq2][i]:
-            warnings.warn(
-                "WARNING: Bad record in the input file, as the paired fastq files with different parameters: "+str(value))
+    elif len(value) > 2:
+        print("the sample "+sample+" contains ("+str(len(value))+") more than two fastq files")
+
+    fastq1s, fastq2s = [], []
+    for m in range(len(value)):
+        if os.path.splitext(os.path.splitext(value[m][0])[0])[0].endswith("1"):
+            fastq1s.append(m)
+        elif os.path.splitext(os.path.splitext(value[m][0])[0])[0].endswith("2"):
+            fastq2s.append(m)
+
+        for i in [2, 3, 4]:
+            if value[m][i] != value[0][i]:
+                warnings.warn(
+                    "WARNING: Bad record in the input file, as the paired fastq files with different parameters: "+str(value))
+
+    fastq1=fastq1s[0]
+    fastq2=fastq2s[0]
 
     with open(s03_dir+'/'+s03_prefix+"_"+sample+".sh", 'w') as fo:
         fo.write(content_header)
@@ -97,7 +132,7 @@ fastqc \\
 -t 2 \\
 -f fastq \\
 -o {oqc} \\
-{o} 
+{o}
 
 
 fastqc \\
@@ -109,13 +144,18 @@ fastqc \\
 '''.format(
             f=value[fastq1][3],
             l=value[fastq1][4],
-            i=value[fastq1][0],
-            I=value[fastq2][0],
-            dir=s03_output_dir+"/"+value[fastq1][2]+"/"+sample,
-            o=s03_output_dir+"/"+value[fastq1][2]+"/"+sample +
-                "/clean."+os.path.basename(value[fastq1][0]),
-            O=s03_output_dir+"/"+value[fastq2][2]+"/"+sample +
-                "/clean."+os.path.basename(value[fastq2][0]),
+            i=" \\\n-i ".join([value[fq1][0] for fq1 in fastq1s]),
+            I=" \\\n-I ".join([value[fq2][0] for fq2 in fastq2s]),
+            dir=s03_output_dir+"/"+value[fastq1][2]+"/"+sample, 
+            o=s03_output_dir+"/"+value[fastq1][2]+"/"+sample + # Version 2.0.0 2023-09-13 11:27:19
+                "/clean."+value[fastq1][1],                    # Version 2.0.0 2023-09-13 11:27:19
+            O=s03_output_dir+"/"+value[fastq2][2]+"/"+sample + # Version 2.0.0 2023-09-13 11:27:19
+                "/clean."+value[fastq2][1],                    # Version 2.0.0 2023-09-13 11:27:19
+            # Version 1.0.0
+            # o=s03_output_dir+"/"+value[fastq1][2]+"/"+sample +
+            #     "/clean."+os.path.basename(value[fastq1][0]),
+            # O=s03_output_dir+"/"+value[fastq2][2]+"/"+sample +
+            #     "/clean."+os.path.basename(value[fastq2][0]),
             h=s03_output_dir+"/"+value[fastq1][2] +
                 "/"+sample+"/fastp."+sample+".html",
             j=s03_output_dir+"/"+value[fastq1][2] +
@@ -123,7 +163,7 @@ fastqc \\
             R=sample,
             oqc=s03_output_dir+"/"+value[fastq1][2]+"/"+sample,
             OQC=s03_output_dir+"/"+value[fastq2][2]+"/"+sample)
-        
+
         fo.write(content)
 
 
