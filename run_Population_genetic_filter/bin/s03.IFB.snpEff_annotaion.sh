@@ -10,10 +10,10 @@ module load samtools/1.14
 module load java-jdk/11.0.9.1
 
 
-WORKDIR="/shared/ifbstor1/projects/pear_snp2/pear/run_Population_genetic_filter"
+WORKDIR="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/branch7.whole_pear"
-PREFIX="whole_pear"
+OUTPUT="$WORKDIR/output/branch8.batch15.pear_Jul2023_noclone"
+PREFIX="pear_Jul2023_noclone"
 
 tabix -p vcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.vcf.gz
 
@@ -24,4 +24,4 @@ $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf
 mv snpEff_* $OUTPUT/
 
 bgzip $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf && \
-tabix -p vcf $OUTPUT/$PREFIXS.Combine_Chr.geno20_maf005.anno.vcf.gz
+tabix -p vcf $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf.gz

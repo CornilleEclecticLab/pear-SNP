@@ -1,3 +1,6 @@
 [submodule "art-pipeline-for-anchor-scaffolds"]
 	path = art-pipeline-for-anchor-scaffolds
 	url = git@forgemia.inra.fr:xilong.chen/art-pipeline-for-anchor-scaffolds.git
+[submodule "run_smcpp"]
+	path = run_smcpp
+	url = git@forgemia.inra.fr:yuqi/run_smcpp.git

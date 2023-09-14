@@ -31,6 +31,7 @@ output_local
 .Rhistory
 .RData
 .RDataTmp
+.vscode
 
 #### rsync scripts and their logs
 rsync\.*.sh

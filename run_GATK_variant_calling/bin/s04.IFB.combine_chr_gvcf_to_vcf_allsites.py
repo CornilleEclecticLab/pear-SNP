@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     :   s04.combine_chr_gvcf_to_vcf_allsites.py
-# @Version  :   2.0.2
+# @Version  :   2.1.2
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
 # @Time(CET):   2022/12/31 23:15:37
@@ -27,6 +27,13 @@
     # Version 2.1.0
     # Run on IFB: change the work dir and specific the tem dir.
     
+    # 2023-07-18 20:55:48
+    # Version 2.1.1
+    # Polish the script.
+    
+    # 2023-07-26 13:04:48
+    # Version 2.1.2
+    # Polish the script, to compatible with s05.IFB.hard_filter_chr_vcf_and_variant_invariant_concat.py
 
 import datetime,os
 from time import time
@@ -42,13 +49,13 @@ print("{0:=^80}".format(' Start '))
 # Set path
 work_dir = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling'
 #groups      = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC pear.Zhang2021'.split()
-group = 'loquat'
+species = group = 'pear_July2023'
 
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix      = 's04.combine_chr_gvcf_to_vcf_allsites_loquat'
+prefix      = 's04.combine_chr_gvcf_to_vcf_allsites.'+species
 scripts_dir = work_dir+'/bin/'+prefix
 output4_dir = output_dir+'/'+prefix
 output3_dir = output_dir+'/s03.generate_gvcf_list'
@@ -106,9 +113,9 @@ with open(chromosomes,'r') as fo:
     chromosome = fo.read().strip().format(input_dir=input_dir).split()
     
     for chr in chromosome:
-        suffix=".VariantCalling"        
+        suffix=".VariantCalling"
         chr_base = os.path.splitext(os.path.basename(chr))[0]
-        gvcf_list = output3_dir+'/'+group+'.'+chr_base+".gvcf.list"
+        gvcf_list = output3_dir+'/'+species+'.'+chr_base+".gvcf.list"
 
         ## Create the bash script
         sh = scripts_dir+'/s04.'+chr_base+".sh"
@@ -119,36 +126,36 @@ with open(chromosomes,'r') as fo:
             
 
             ## Load softwares
-            content = '''
-#SBATCH -J s04.{J}
-#SBATCH -e s04.{J}.err
-#SBATCH -o s04.{J}.out
+            content = f'''
+#SBATCH -J s04.{chr_base}
+#SBATCH -e s04.{chr_base}.%J.err
+#SBATCH -o s04.{chr_base}.%J.out
 
 module purge
 module load conda
 source /shared/ifbstor1/home/ynie/.bashrc
 conda activate gatk-4.1.9.0
 
-'''.format(J=chr_base)
+'''
             fo.write(content)
             
             ## Combine, .g.vcf.gz
-            content = '''
+            content = f'''
 # Combine, .g.vcf.gz
-gatk --java-options "-Xmx8g  -Djava.io.tmpdir={tmp_dir}" CombineGVCFs \\
+gatk --java-options "-Xmx24g  -Djava.io.tmpdir={tmp_dir}" CombineGVCFs \\
     -R {ref_genome} \\
     -V {gvcf_list} \\
     -O {output4_dir}/{group}.{chr_base}.combine.g.vcf.gz \\
     || {{ echo "Combine gvcfs failed!" ; exit 1 ; }} 
 
 # Genotype .vcf
-gatk --java-options "-Xmx8g  -Djava.io.tmpdir={tmp_dir}" GenotypeGVCFs \\
+gatk --java-options "-Xmx24g  -Djava.io.tmpdir={tmp_dir}" GenotypeGVCFs \\
     -all-sites \\
     -R {ref_genome} \\
     -V {output4_dir}/{group}.{chr_base}.combine.g.vcf.gz \\
     -O {output4_dir}/{group}.{chr_base}.combine.vcf.gz \\
     || {{ echo "Genotype gvcf to vcf failed!" ; exit 1 ; }}
-'''.format(ref_genome=ref_genome,output4_dir=output4_dir,chr_base=chr_base,gvcf_list=gvcf_list,group=group,tmp_dir=tmp_dir)
+'''
             fo.write(content)
 
 

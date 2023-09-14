@@ -8,10 +8,10 @@
 module purge
 module load bcftools/1.14
 
-WORKDIR="/shared/ifbstor1/projects/pear_snp2/pear/run_Population_genetic_filter"
+WORKDIR="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter"
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/branch7.whole_pear"
-PREFIX="whole_pear"
+OUTPUT="$WORKDIR/output/branch8.batch15.pear_Jul2023_noclone"
+PREFIX="pear_Jul2023_noclone"
 
 perl filter_by_anno.pl \
 $OUTPUT/$PREFIX.Combine_Chr.geno20_maf005.anno.vcf.gz \
