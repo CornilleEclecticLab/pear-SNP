@@ -21,6 +21,11 @@
     # Update: 2023-09-14 15:41:25
     # Combine the fastq files if there are more than two fastq files for every sample, as fastp only support two fastq files at max as input
 
+    # Version: 2.0.2
+    # Update: 2023-09-15 10:43:02
+    # Fix the bug which allows the fastp running when fastq combining not finished
+    # Create the output directory firstly if not exist
+
 
 import datetime
 import os
@@ -139,17 +144,20 @@ for sample, value in dic.items():
         fq2_inputs = ' '.join([value[m][0] for m in fastq2s])
         fq2_input = s03_output_dir+"/"+value[fastq2][2]+"/"+sample+"/raw.merged."+value[fastq2][1]
         content_merge_fastq = f'''
-zcat {fq1_inputs} | bgzip -c > {fq1_input} &
-zcat {fq2_inputs} | bgzip -c > {fq2_input}
+zcat {fq1_inputs} | bgzip -c --threads 2 > {fq1_input} &
+
+zcat {fq2_inputs} | bgzip -c --threads 2 > {fq2_input} &
+
+wait
 '''
 
     with open(s03_dir+'/'+s03_prefix+"_"+sample+".sh", 'w') as fo:
         fo.write(content_header)
-        fo.write(content_merge_fastq)
         content = '''
 
 mkdir -p {dir}
 
+{content_merge_fastq}
 
 fastp \\
 -f {f} \\
@@ -182,6 +190,7 @@ fastqc \\
             i=fq1_input,
             I=fq2_input,
             dir=s03_output_dir+"/"+value[fastq1][2]+"/"+sample, 
+            content_merge_fastq=content_merge_fastq,
             o=s03_output_dir+"/"+value[fastq1][2]+"/"+sample + # Version 2.0.0 2023-09-13 11:27:19
                 "/clean."+value[fastq1][1],                    # Version 2.0.0 2023-09-13 11:27:19
             O=s03_output_dir+"/"+value[fastq2][2]+"/"+sample + # Version 2.0.0 2023-09-13 11:27:19
