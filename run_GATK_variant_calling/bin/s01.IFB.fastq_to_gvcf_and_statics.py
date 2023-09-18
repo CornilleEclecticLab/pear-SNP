@@ -21,8 +21,8 @@ print("{0:=^80}".format(' Start '))
 
 # Set path
 user        = getpass.getuser()
-work_dir    = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling'
-group       = 'pear.Japanese'
+work_dir    = '/shared/ifbstor1/projects/pear_snp3/pear/run_GATK_variant_calling'
+group       = 'pear.USDA_Armenia'
 
 
 ## NO need to change >>
@@ -213,7 +213,7 @@ samtools index {output_dir}/{group}.{sample}.sorted.markdu.cram \\
 
     ## Submit this script as a job
     if run == '1':
-        command = "sbatch -c 4 -p long --mem=32G -A pear_snp2 "+scripts_dir+"/"+sample_prefix+".sh"
+        command = "sbatch -c 4 -p long --mem=32G -A pear_snp3 "+scripts_dir+"/"+sample_prefix+".sh"
         submit  = os.popen(command, 'r')
         current_job_id  = submit.read().strip().split()[-1]
         depended_job_id = current_job_id
@@ -270,7 +270,7 @@ gatk --java-options "-Xmx8g -Djava.io.tmpdir={tmp_dir}" IndexFeatureFile \\
 
         ## Submit this script as a job
         if run == '1':
-            command = "sbatch -A pear_snp2 -p long -c 2 --mem=10G --dependency=afterok:"+depended_job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh"
+            command = "sbatch -A pear_snp3 -p long -c 2 --mem=10G --dependency=afterok:"+depended_job_id+' '+scripts_dir+"/"+sample_prefix_chr+".sh"
             submit = os.popen(command, 'r')
             current_job_id  = submit.read().strip().split()[-1]
             job_id_txt.write(sample_prefix_chr+'.sh' + '\t' + current_job_id + '\n')
