@@ -9,8 +9,13 @@
 # @Description:
 #     
 
-# Update: 2023-09-20 12:48:24
+# Update v2.0.0: 2023-09-20 12:48:24
 # 1. Fix a bug that index of ids is not correct
+
+# Update v2.0.1: 2023-09-21 13:28:33
+# 1. Output the Q file with header and id_map
+# 2. Output the best cluster for each individual in the id_map.txt file for further manual check
+
 
 import datetime
 import sys
@@ -37,6 +42,7 @@ input_file_fam = os.path.join(input_dir,'test.fam')            # Please change t
 input_file_id_map = os.path.join(input_dir,'test.id_map')      #######################################################
 output_dir = os.path.join(work_dir,'output',script_basename)
 output_file = os.path.join(output_dir,'s01.non_admix.id_map.txt')
+output_Q = os.path.join(output_dir,'s01.id_map_header.Q.tsv')
 sub_script_dir = os.path.join(work_dir,'bin',script_basename)
 
 os.system(f'mkdir -p {output_dir}')
@@ -77,23 +83,39 @@ uni_ids = {id:u_id for u_id, id in zip(u_ids,m_ids)}
 
 # Find the non-admixture individuals
 fo = open(output_file,'w') 
+fo_Q = open(output_Q,'w')
+
 with open(input_file_Q, 'r') as fi:
     n = 0
     for line in fi:
         line = line.strip()
         if line == '':
             continue
-        admix = True
+
+        non_admix = False
         n+=1
         line = line.strip()
+        line = line.replace(' ','\t')
         Qs = line.split()
-        for value in Qs:
-            if float(value) >= threshold:
-                admix = False
-                id = ids[n-1]
-                fo.write(f"{id}\t{uni_ids[id]}\n")
+
+        if n == 1:
+            clusters = "Cluster"+'\tCluster'.join([str(c+1) for c in range(len(Qs))])
+            header=f"#ID\tUni_ID\t{clusters}\n"
+            fo_Q.write(header)
+            header2=f"#ID\tUni_ID\tBestCluster\t{clusters}\n"
+            fo.write(header2)
+
+        id = ids[n-1]
+        u_id = uni_ids[id]
+        fo_Q.write(f"{id}\t{u_id}\t{line}\n")
+        for i in range(len(Qs)):
+            if float(Qs[i]) >= threshold:
+                non_admix = True
+                fo.write(f"{id}\t{u_id}\tCluster{str(i+1)}\t{line}\n")
                 break
 fo.close()
+fo_Q.close()
+
 
 
 if n != len(ids):
