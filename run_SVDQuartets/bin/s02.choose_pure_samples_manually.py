@@ -2,12 +2,16 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s02.choosing_pure_samples_manually.py
-# @Version  : 1.0.0
+# @Version  : 2.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/09/18 14:52:50
 # @Description:
 #     
+
+# Updates:
+# Version 2.0.0 2023-09-20 10:58:57
+# 1. Rename the sample names if "-" in the name, change it to "_" to avoid PAUP error.
 
 import datetime
 import sys
@@ -26,6 +30,7 @@ input_dir = os.path.join(work_dir,'input')
 input_file_sample_list= os.path.join(work_dir,'output','s01.find_pure_individuals','s01.non_admix.id_map.txt')  
 output_dir = os.path.join(work_dir,'output',script_basename)
 output_list_for_bcftools = os.path.join(output_dir,'s02.non_admixed_list.txt')
+output_rename_list = os.path.join(output_dir,'s02.non_admixed_rename_list.txt')
 output_nex_for_PAUP = os.path.join(output_dir,'s02.taxpartitions.nex')
 output_txt_for_PAUP = os.path.join(output_dir,'s02.taxpartitions.txt')
 
@@ -76,19 +81,24 @@ with open(input_file_sample_list,'r') as fi:
 
 
 dict_num = {}
-with open (output_txt_for_PAUP,'w') as fo:
-    with open(output_list_for_bcftools,'w') as fo2:
-        print(wrap(
-            f'''Note:  The following individuals with index numbers are chosen as pure individuals, and will be useful for PAUP analysis setting up outgroup. The order of samples maybe CHANGED from the original id_map file <s01.non_admix.id_map.txt>. The content is saved in {output_txt_for_PAUP}:'''))
+fo = open (output_txt_for_PAUP,'w')
+fo2 = open(output_list_for_bcftools,'w')
+fo3 = open(output_rename_list,'w')
+print(wrap(
+    f'''Note:  The following individuals with index numbers are chosen as pure individuals, and will be useful for PAUP analysis setting up outgroup. The order of samples maybe CHANGED from the original id_map file <s01.non_admix.id_map.txt>. The content is saved in {output_txt_for_PAUP}:'''))
 
-        n = 0
-        for species,ids in dict_species.items():
-            for id in ids:
-                n += 1
-                dict_num[id] = str(n)
-                fo.write(f"{str(n)}\t{id}\t{species}\n")
-                print(f"{str(n)}\t{id}\t{species}")
-                fo2.write(id + '\n')
+n = 0
+for species,ids in dict_species.items():
+    for id in ids:
+        n += 1
+        dict_num[id] = str(n)
+        fo.write(f"{str(n)}\t{id}\t{species}\n")
+        print(f"{str(n)}\t{id}\t{species}")
+        fo2.write(id + '\n')
+        fo3.write(f"{id}\t{id.replace('-','_')}\n")
+fo.close()
+fo2.close()
+fo3.close()
 
 
 with open(output_nex_for_PAUP,'w') as fo:

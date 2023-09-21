@@ -2,18 +2,20 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s01.find_pure_individuals.py
-# @Version  : 1.0.0
+# @Version  : 2.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/09/15 11:35:21
 # @Description:
 #     
 
+# Update: 2023-09-20 12:48:24
+# 1. Fix a bug that index of ids is not correct
+
 import datetime
 import sys
 import textwrap
 import os
-from types import new_class
 from warnings import warn
 
 start_time = datetime.datetime.now()
@@ -30,11 +32,11 @@ script_basename = 's01.find_pure_individuals'
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
 input_dir = os.path.join(work_dir,'input')
-input_file_Q = os.path.join(input_dir,'test.Q')                # Please change this path to your actual input file
-input_file_fam = os.path.join(input_dir,'test.fam') 
-input_file_id_map = os.path.join(input_dir,'test.id_map')
+input_file_Q = os.path.join(input_dir,'test.Q')                #######################################################
+input_file_fam = os.path.join(input_dir,'test.fam')            # Please change these paths to your actual input file #
+input_file_id_map = os.path.join(input_dir,'test.id_map')      #######################################################
 output_dir = os.path.join(work_dir,'output',script_basename)
-output_file = os.path.join(output_dir,'s01.non_admix')
+output_file = os.path.join(output_dir,'s01.non_admix.id_map.txt')
 sub_script_dir = os.path.join(work_dir,'bin',script_basename)
 
 os.system(f'mkdir -p {output_dir}')
@@ -75,7 +77,6 @@ uni_ids = {id:u_id for u_id, id in zip(u_ids,m_ids)}
 
 # Find the non-admixture individuals
 fo = open(output_file,'w') 
-fo2 = open(output_file+'.id_map.txt','w')
 with open(input_file_Q, 'r') as fi:
     n = 0
     for line in fi:
@@ -89,15 +90,14 @@ with open(input_file_Q, 'r') as fi:
         for value in Qs:
             if float(value) >= threshold:
                 admix = False
-                id = ids[n]
-                fo.write(f"{id}\n")
-                fo2.write(f"{id}\t{uni_ids[id]}\n")
+                id = ids[n-1]
+                fo.write(f"{id}\t{uni_ids[id]}\n")
                 break
 fo.close()
 
 
 if n != len(ids):
-    print(n, len(ids)-1)
+    print(n, len(ids))
     warn(wrap('WARNING: Incompatible two input files'))
     exit
 

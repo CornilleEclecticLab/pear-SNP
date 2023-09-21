@@ -16,14 +16,15 @@ module load bcftools/1.14
 # WORK_DIR="/shared/home/ynie/work/pear/run_SVDQuartets" # Replace with the actual path to your input directory
 WORK_DIR="../"
 PREFIX="pear_Jul2023_noclone"   # Replace with your desired prefix
-INPUT_VCF="../input/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.thin8k.vcf.gz"
-OUTPUT_DIR="../output/s03.extract_pure_sample_filter_geno_maf_to_nex"
-OUTPUT_VCF="$OUTPUT_DIR/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.thin8k.Nomix.vcf.gz"
-
-echo 'Your input file is: ' $INPUT_VCF
+MIDDLE="Combine_Chr.geno20_maf005.anno.syno.thin8k"
+INPUT_VCF="$WORK_DIR/input/$PREFIX.$MIDDLE.vcf.gz"
+OUTPUT_DIR="$WORK_DIR/output/s03.extract_pure_sample_filter_geno_maf_to_nex"
+OUTPUT_VCF="$OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.vcf.gz"
+S02_OUTPUT_DIR="$WORK_DIR/output/s02.choose_pure_samples_manually"
 
 # Define the sample list file
-SAMPLE_LIST="$WORK_DIR/output/s02.choose_pure_samples_manually/s02.non_admixed_list.txt"  # or SAMPLE_LIST="^PATH", where ^ means exclude
+SAMPLE_LIST="$S02_OUTPUT_DIR/s02.non_admixed_list.txt"  # or SAMPLE_LIST="^PATH", where ^ means exclude
+RENAME_LIST="$S02_OUTPUT_DIR/s02.non_admixed_rename_list.txt"  # or SAMPLE_LIST="^PATH", where ^ means exclude
 
 # Define filtering criteria
 FILTER_EXPRESSION='F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN'
@@ -31,9 +32,16 @@ FILTER_EXPRESSION='F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN'
 # Define the number of threads for parallel processing
 THREADS=8
 
+echo 'Your input file is: ' $INPUT_VCF
+
+# Make sure the folder exist
+mkdir -p $OUTPUT_DIR 
+
 # Use bcftools to filter and process the VCF file
 bcftools view "$INPUT_VCF" \
     --samples-file "$SAMPLE_LIST" \
+| bcftools reheader \
+    --samples "$RENAME_LIST" \
 | bcftools filter \
     --exclude "$FILTER_EXPRESSION" \
     --output-type z4 \
@@ -57,4 +65,4 @@ fi
 
 
 # Combine nexus files
-cat $OUTPUT_DIR/*.nex "$WORK_DIR/s02.choose_pure_samples_manually/s02.taxpartitions.txt"> $OUTPUT_DIR/$PREFIX.Combine_Chr.geno20_maf005.anno.syno.thin8k.Nomix.parts.nex
+cat $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus "$S02_OUTPUT_DIR/s02.taxpartitions.nex"> $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex
