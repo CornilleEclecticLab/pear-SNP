@@ -27,8 +27,8 @@ print("{0:=^80}".format(' Start '))
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Set path
-work_dir = '/shared/ifbstor1/projects/pear_snp2/pear/run_GATK_variant_calling/'
-species = 'pear_July2023'
+work_dir = '/shared/ifbstor1/projects/pear_snp3/pear/run_GATK_variant_calling/'
+species = 'pear_USDA_Armenia'
 
 ## NO need to change >>
 input_dir   = work_dir+'/input'
