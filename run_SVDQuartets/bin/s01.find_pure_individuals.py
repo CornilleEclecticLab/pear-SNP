@@ -16,6 +16,9 @@
 # 1. Output the Q file with header and id_map
 # 2. Output the best cluster for each individual in the id_map.txt file for further manual check
 
+# Update v2.0.2: 2023-09-22 11:11:28
+# 1. Remain the uni_id, and add species name column in the output file
+# 2. Rename some variables
 
 import datetime
 import sys
@@ -28,7 +31,7 @@ print(f'{" Start ":=^79}')
 
 
 # Constants
-version = "1.0.0"
+version = "2.0.2"
 threshold = 1.0 #0.8   # The threshold value that to distinguish the admixture
 
 
@@ -56,8 +59,8 @@ def wrap(text, width=79):
 
 # Create lists and dictionaries
 ids = []
-u_ids = []
-m_ids = []
+uni_ids = []
+map_ids = []
 uni_ids = {}
 
 # Read ids from .fam and id_map, 
@@ -66,19 +69,19 @@ with open(input_file_fam, 'r') as fi:
 
 with open(input_file_id_map, 'r') as fi:
     lines = fi.read().strip().split('\n')
-    m_ids = [i.split()[0] for i in lines]
-    u_ids = [i.split()[1] for i in lines]
+    map_ids = [i.split()[0] for i in lines]
+    uni_ids = [i.split()[1] for i in lines]
 
 # Check ids in fam and id_map
-if len(ids) != len(u_ids) or len(ids) != len(m_ids):
+if len(ids) != len(uni_ids) or len(ids) != len(map_ids):
     warn(wrap(f'ERROR: Incompatible two input files'))
-    exit
-for id, m_id in zip(ids,m_ids):
-    if id != m_id:
+    sys.exit(1)
+for id, map_id in zip(ids,map_ids):
+    if id != map_id:
         warn(wrap(f'WARNING: Incompatible two input files'))
 
-# Create a dictionary mapping u_ids to ids
-uni_ids = {id:u_id for u_id, id in zip(u_ids,m_ids)}
+# Create a dictionary mapping uni_ids to ids
+uni_ids = {id:uni_id for uni_id, id in zip(uni_ids,map_ids)}
 
 
 # Find the non-admixture individuals
@@ -102,16 +105,16 @@ with open(input_file_Q, 'r') as fi:
             clusters = "Cluster"+'\tCluster'.join([str(c+1) for c in range(len(Qs))])
             header=f"#ID\tUni_ID\t{clusters}\n"
             fo_Q.write(header)
-            header2=f"#ID\tUni_ID\tBestCluster\t{clusters}\n"
+            header2=f"#ID\tSpecies\tUni_ID\tBestCluster\t{clusters}\n"
             fo.write(header2)
 
         id = ids[n-1]
-        u_id = uni_ids[id]
-        fo_Q.write(f"{id}\t{u_id}\t{line}\n")
+        uni_id = uni_ids[id]
+        fo_Q.write(f"{id}\t{uni_id}\t{line}\n")
         for i in range(len(Qs)):
             if float(Qs[i]) >= threshold:
                 non_admix = True
-                fo.write(f"{id}\t{u_id}\tCluster{str(i+1)}\t{line}\n")
+                fo.write(f"{id}\t{uni_id[:4]}\t{uni_id}\tCluster{str(i+1)}\t{line}\n")
                 break
 fo.close()
 fo_Q.close()
