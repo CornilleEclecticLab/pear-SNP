@@ -26,6 +26,10 @@
     # Fix the bug which allows the fastp running when fastq combining not finished
     # Create the output directory firstly if not exist
 
+    # Version: 2.0.3
+    # Update: 2023-09-26 17:36:09
+    # Update this script to fit the new raw data file name
+
 
 import datetime
 import os
@@ -107,12 +111,15 @@ for sample, value in dic.items():
     fastq1s, fastq2s = [], []
     for m in range(len(value)):
         # Check the fastq file name
-        suffix = os.path.splitext(value[m][0])[1]
-        suffix2 = os.path.splitext(os.path.splitext(value[m][0])[0])[1]
-        prefix2 = os.path.splitext(os.path.splitext(value[m][0])[0])[0]
-        if prefix2.endswith("1"):
+        fq_file_path = value[m][0] # *.fastq.gz
+        fq_file_split = os.path.splitext(fq_file_path)
+        fq_prefix, fq_suffix = fq_file_split[0],fq_file_split[1] # *.fastq,  .gz
+        fq_prefix_split = os.path.splitext(fq_prefix)
+        prefix2 ,suffix2 = fq_prefix_split[0], fq_prefix_split[1] #  *_1 , .fastq OR # 1.clean, fastq
+
+        if prefix2.endswith("1") or prefix2.endswith("1.clean"):
             fastq1s.append(m)
-        elif prefix2.endswith("2"):
+        elif prefix2.endswith("2") or prefix2.endswith("2.clean"):
             fastq2s.append(m)
         else:
             warnings.warn(
