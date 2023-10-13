@@ -168,7 +168,9 @@ samtools depth \\
 | awk '{{c++; if($3>0) total+=1}}END{{print (total/c)*100}}' > {output_dir}/{group}.{sample}.sorted.breadth_coverage.txt 
 
 
-conda activate gatk-4.1.9.0
+# conda activate gatk-4.1.9.0
+module load gatk4/4.1.9.0
+
 
 # GATK MarkDuplicates, .bam
 gatk --java-options "-Xmx25g -Djava.io.tmpdir={tmp_dir}" MarkDuplicates \\
@@ -244,7 +246,8 @@ samtools index {output_dir}/{group}.{sample}.sorted.markdu.cram \\
             fo.write(content)
 
             ## Load softwares
-            content = 'module purge \nmodule load conda \nsource /shared/ifbstor1/home/ynie/.bashrc\nconda activate gatk-4.1.9.0\n\n'
+            # content = 'module purge \nmodule load conda \nsource /shared/ifbstor1/home/ynie/.bashrc\nconda activate gatk-4.1.9.0\n\n'
+            content = 'module load gatk4/4.1.9.0\n\n'
             fo.write(content)
         
             ## Call SNPs
