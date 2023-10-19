@@ -60,8 +60,7 @@ with open(input_dir+"/fastp_cutoff.dic.txt", 'r') as fo:
 
         if len(line) != 6:
             print(len(line))
-            warnings.warn("WARNING: bad input file\
-                , this record is not 6 columns: "+' '.join(line))
+            warnings.warn("WARNING: bad input file, this record is not 6 columns: "+' '.join(line))
 
         path = line[0]
 
