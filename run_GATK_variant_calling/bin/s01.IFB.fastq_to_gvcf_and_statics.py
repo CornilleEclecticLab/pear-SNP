@@ -22,7 +22,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 user        = getpass.getuser()
 work_dir    = '/shared/ifbstor1/projects/pear_snp3/pear/run_GATK_variant_calling'
-group       = 'pear.USDA_Armenia'
+group       = 'pear.Zhang2021_b4'
 
 
 ## NO need to change >>
@@ -59,7 +59,7 @@ chromosomes = input_dir+'/all_scaffolds.list'
 run = ''
 print("Welcome!")
 while run == '':
-    run = input("Please chose 1 or 2 to continue: \n\t 1) generate the scripts and run them (submit the jobs using sbatch)\
+    run = input("Please chose 1 or 2 to continue: \n\t 1) generate the scripts and run them (only availabel on IFB, submit the\njobs using sbatch)\
                 \n\t 2) only generate the scripts, without running them.\n")
     
     if run != '1' and run !='2':
@@ -168,7 +168,9 @@ samtools depth \\
 | awk '{{c++; if($3>0) total+=1}}END{{print (total/c)*100}}' > {output_dir}/{group}.{sample}.sorted.breadth_coverage.txt 
 
 
-conda activate gatk-4.1.9.0
+# conda activate gatk-4.1.9.0
+module load gatk4/4.1.9.0
+
 
 # GATK MarkDuplicates, .bam
 gatk --java-options "-Xmx25g -Djava.io.tmpdir={tmp_dir}" MarkDuplicates \\
@@ -244,7 +246,8 @@ samtools index {output_dir}/{group}.{sample}.sorted.markdu.cram \\
             fo.write(content)
 
             ## Load softwares
-            content = 'module purge \nmodule load conda \nsource /shared/ifbstor1/home/ynie/.bashrc\nconda activate gatk-4.1.9.0\n\n'
+            # content = 'module purge \nmodule load conda \nsource /shared/ifbstor1/home/ynie/.bashrc\nconda activate gatk-4.1.9.0\n\n'
+            content = 'module load gatk4/4.1.9.0\n\n'
             fo.write(content)
         
             ## Call SNPs
