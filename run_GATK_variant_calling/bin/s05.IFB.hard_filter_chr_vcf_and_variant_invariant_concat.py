@@ -22,7 +22,16 @@
 
     # v3.0.1
     # 2023-10-06 14:11:41
-    # Using double dashes (--filter-expression) instead of single dash (-filter-expression).
+    # Unfitly use double dashes (--filter-expression) rather somewhere use single dash (-filter-expression), although both forms of writing are recognized.
+
+    # v4.0.0
+    # 2023-10-12 16:52:58
+    # Add filter QUAL<30, as this can reduce the volume of the intermediate file by 60%, and the effect of the resulting filter can be eliminated  by further filters.
+
+    # v4.1.0
+    # 2023-10-30 17:09:38
+    # Update the QUAL filter expereesion, as invariant sites have no QUAL value. This filter has no effect on my test data, but it may be useful for other data.
+
 import datetime
 import os
 import sys
@@ -176,8 +185,10 @@ gatk --java-options "-Xmx{mem_gatk_java} -Djava.io.tmpdir={tmp_dir}" VariantFilt
     --filter-expression "(vc.isSNP() && ((vc.hasAttribute('FS') && FS > 60.0) || (vc.hasAttribute('SOR') &&  SOR > 3.0))) || ((vc.isIndel() || vc.isMixed()) && ((vc.hasAttribute('FS') && FS > 200.0) || (vc.hasAttribute('SOR') &&  SOR > 10.0)))" \\
     --filter-name "badMap" \\
     --filter-expression "vc.isSNP() && ((vc.hasAttribute('MQ') && MQ < 40.0) || (vc.hasAttribute('MQRankSum') && MQRankSum < -12.5))" \\
+    --filter-name "lowQUAL" \\
+    --filter-expression "(vc.isSNP() || vc.isIndel() || vc.isMixed()) && (QUAL < 30.0)" \\
     -O {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.filter_anno.vcf.gz \\
-|| {{ echo "Hard filter failed!" ; exit 1 ; }} 
+|| {{ echo "Annotate the vcf failed!" ; exit 1 ; }} 
 
 
 # Hard filter, remove entries
