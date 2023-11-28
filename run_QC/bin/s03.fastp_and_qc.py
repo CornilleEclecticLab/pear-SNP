@@ -28,7 +28,11 @@
 
     # Version: 2.0.3
     # Update: 2023-09-26 17:36:09
-    # Update this script to fit the new raw data file name
+    # Update this script to fit the new raw data file name format
+
+    # Version: 2.0.4
+    # Update: 2023-10-20 10:32:00
+    # Don't use & to run the bgzip at background, as it would cause the fastp running before the bgzip finished
 
 
 import datetime
@@ -150,11 +154,10 @@ for sample, value in dic.items():
         fq2_inputs = ' '.join([value[m][0] for m in fastq2s])
         fq2_input = s03_output_dir+"/"+value[fastq2][2]+"/"+sample+"/raw.merged."+value[fastq2][1]
         content_merge_fastq = f'''
-zcat {fq1_inputs} | bgzip -c --threads 2 > {fq1_input} &
+zcat {fq1_inputs} | bgzip -c --threads 2 > {fq1_input} 
 
-zcat {fq2_inputs} | bgzip -c --threads 2 > {fq2_input} &
+zcat {fq2_inputs} | bgzip -c --threads 2 > {fq2_input} 
 
-wait
 '''
 
     with open(s03_dir+'/'+s03_prefix+"_"+sample+".sh", 'w') as fo:
@@ -195,7 +198,7 @@ fastqc \\
             l=value[fastq1][4],
             i=fq1_input,
             I=fq2_input,
-            dir=s03_output_dir+"/"+value[fastq1][2]+"/"+sample, 
+            dir=s03_output_dir+"/"+value[fastq1][2]+"/"+sample,
             content_merge_fastq=content_merge_fastq,
             o=s03_output_dir+"/"+value[fastq1][2]+"/"+sample + # Version 2.0.0 2023-09-13 11:27:19
                 "/clean."+value[fastq1][1],                    # Version 2.0.0 2023-09-13 11:27:19
