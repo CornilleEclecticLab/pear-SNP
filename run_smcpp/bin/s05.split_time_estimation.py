@@ -23,7 +23,7 @@
 #    Book more cpu cores for the "smc++ split" command.
 
 #    Version 1.1.0: 2023-08-06 16:53:57
-#    Try to inffer split time pop2 from pop1, and use less smc files.
+#    Try to infer split time pop2 from pop1, and use less smc files.
 
 #    Version 1.2.0: 2023-08-07 22:45:11
 #    Use both pop21 and pop12 smc files (medium)
