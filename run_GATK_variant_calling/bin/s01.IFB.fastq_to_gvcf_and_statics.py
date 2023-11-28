@@ -59,7 +59,7 @@ chromosomes = input_dir+'/all_scaffolds.list'
 run = ''
 print("Welcome!")
 while run == '':
-    run = input("Please chose 1 or 2 to continue: \n\t 1) generate the scripts and run them (only availabel on IFB, submit the\njobs using sbatch)\
+    run = input("Please chose 1 or 2 to continue: \n\t 1) generate the scripts and run them (only available on IFB, submit the\njobs using sbatch)\
                 \n\t 2) only generate the scripts, without running them.\n")
     
     if run != '1' and run !='2':

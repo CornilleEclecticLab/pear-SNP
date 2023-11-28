@@ -52,8 +52,8 @@ mem_gatk_filter = '32G'
 mem_gatk_java = '30g'
 
 ## /!\ To check the output4_dir, and keep variant "group" same with the filename header /!\
-group = 'pear_July2023' # group name in the output4_dir
-group_new = 'pear_July2023' # group name in the output5_dir
+group = 'pear_23Oct2023' # group name in the output4_dir
+group_new = 'pear_23Oct2023' # group name in the output5_dir
 
 
 ## NO need to change >>
@@ -95,7 +95,7 @@ run = ''
 print("Welcome!")
 while run == '':
     run = input("Please chose 1 or 2 to continue: \
-\n\t1) generate the scripts and run them\(submit the jobs using sbatch)\
+\n\t1) generate the scripts and run them (submit the jobs using sbatch)\
 \n\t2) only generate the scripts, without running them.\n")
 
     if run != '1' and run !='2':
@@ -238,7 +238,6 @@ gatk --java-options "-Xmx{mem_gatk_java} -Djava.io.tmpdir={tmp_dir}" SelectVaria
 bcftools filter -S . -e 'FMT/DP<3 | FMT/RGQ<20 | FMT/DP>100' \\
     {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.filter_passed_sites.vcf.gz \\
 | bcftools filter -i 'ALT="."' \\
-| bcftools filter -e 'F_MISSING > 0.2' \\
     -O z4 --threads 4 \\
     -o {output5_dir}/{group_new}.{chr_base}.filtered_pixy_invariant.vcf.gz
         
@@ -249,7 +248,6 @@ bcftools filter -S . -e 'FMT/DP<3 | FMT/GQ<20 | FMT/DP>100' \\
     {output5_dir}/{group_new}.{chr_base}.rmQFI.combine.filter_passed_sites.vcf.gz \\
 | bcftools filter --SnpGap 10 \\
 | bcftools view -m2 -M2 -v snps \\
-| bcftools filter -e 'F_MISSING > 0.2' \\
     -O z4 --threads 4 \\
     -o {output5_dir}/{group_new}.{chr_base}.filtered_pixy_variant.vcf.gz
 
@@ -270,7 +268,7 @@ tabix -p vcf {output5_dir}/{group_new}.{chr_base}.filtered_pixy_concat.vcf.gz
 
     # Submit this script as a job
     if run == '1':
-        continue # Don't running the script as the hard filter threshold is unsure
+        #continue # Don't running the script as the hard filter threshold is unsure
         command = f"sbatch -p long -c 4 -A {account} --mem={mem_bcftools_filter} --dependency=afterok:{depended_job_id} {sh2}"
         submit = os.popen(command, 'r')
         current_job_id = submit.read().strip().split()[-1]

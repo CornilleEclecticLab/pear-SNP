@@ -53,7 +53,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 work_dir = '/shared/ifbstor1/projects/pear_snp3/pear/run_GATK_variant_calling'
 #groups      = 'pear.Li2021 pear.Teng pear.Wu2018AC pear.Wu2018EC pear.Zhang2021'.split()
-species = group = 'pear_23Oct2023'
+species = group = 'test_pyraster'
 
 
 ## NO need to change >>
