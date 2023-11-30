@@ -116,13 +116,13 @@ for group_name in group_individual.keys():
             warnings.warn(f'Chromosome {chr_base} is skipping...')
             continue
         in_vcf = os.path.join(gatk_filtered_vcf_dir,f'{batch}.{chr_base}.filtered_pixy_variant.vcf.gz')
-        nonadmix_vcf = os.path.join(output_dir,f'{batch}.{chr_base}.filtered_pixy_variant.{group_name}.nonadmix.vcf.gz')
-        maf_vcf = os.path.join(output_dir,f'{batch}.{chr_base}.filtered_pixy_variant.{group_name}.nonadmix.maf001.vcf')
+        nonadmix_vcf = os.path.join(output_dir,f'{batch}.{chr_base}.filtered_pixy_variant.{group_name}.non_admix.vcf.gz')
+        maf_vcf = os.path.join(output_dir,f'{batch}.{chr_base}.filtered_pixy_variant.{group_name}.non_admix.maf001.vcf')
         sub_script_basename = f'{script_basename}.{chr_base}.{group_name}'
 
         with open(os.path.join(sub_script_dir, sub_script_basename+'.sh'),'w') as fo:
             fo.write(f'{shebang}\n\n')
-            fo.write(sbatch_options.format(chr_base=chr_base,script_basename=script_basename))
+            fo.write(sbatch_options.format(chr_base=chr_base,script_basename=script_basename,sub_script_basename=sub_script_basename))
             fo.write(run_bcftools.format(script_path=script_path,vcf=in_vcf,input_dir=input_dir,nonadmix_vcf=nonadmix_vcf,maf_vcf=maf_vcf,chosen_samples=chosen_samples))
 
 
