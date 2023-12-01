@@ -32,7 +32,7 @@ print(f'{" Start ":=^79}')
 
 # Constants
 version = "2.0.2"
-threshold = 1.0 #0.8   # The threshold value that to distinguish the admixture
+threshold = 0.8 #1.0 #0.8   # The threshold value that to distinguish the admixture
 
 
 # File paths
