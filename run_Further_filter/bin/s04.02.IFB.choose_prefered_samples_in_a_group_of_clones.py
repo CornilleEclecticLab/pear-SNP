@@ -10,7 +10,6 @@
 #
 
 import datetime
-from re import sub
 import sys
 import os
 start_time = datetime.datetime.now()
@@ -55,7 +54,7 @@ with open(kinship,'r') as f:
         ind1 = line[1]
         ind2 = line[3]
         kinship = float(line[7])
- 
+
         if kinship >= 0.354:
             if ind1 in prefer_list:
                 dic_kinship[ind1] = dic_kinship.get(ind1,[])
