@@ -22,7 +22,7 @@ print("{0:=^80}".format(' Start '))
 # Set path
 user        = getpass.getuser()
 work_dir    = '/shared/ifbstor1/projects/pear_snp3/pear/run_GATK_variant_calling'
-group       = 'pear.Shuo'
+group       = 'pear.Iran'  # The input file recording fasq file list is expected as "../input/${group}.input.clean_data_list.txt"
 
 
 ## NO need to change >>
