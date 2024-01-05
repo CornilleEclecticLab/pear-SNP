@@ -52,8 +52,8 @@ mem_gatk_filter = '32G'
 mem_gatk_java = '30g'
 
 ## /!\ To check the output4_dir, and keep variant "group" same with the filename header /!\
-group = 'pear_23Oct2023' # group name in the output4_dir
-group_new = 'pear_23Oct2023' # group name in the output5_dir
+group = 'pear_Dec2023' # group name in the output4_dir
+group_new = 'pear_Dec2023' # group name in the output5_dir
 
 
 ## NO need to change >>
