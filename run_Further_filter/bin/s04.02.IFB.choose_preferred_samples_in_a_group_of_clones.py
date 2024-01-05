@@ -143,10 +143,10 @@ if len(no_substitution) > 0:
 
 # Write the substituted in_list and out_list
 with open(substitute_in_list,'w') as f:
-    f.write('\n'.join(in_list))
+    f.write('\n'.join(in_list)+'\n')
 
 with open(substitute_out_list,'w') as f:
-    f.write('\n'.join(out_list))
+    f.write('\n'.join(out_list)+'\n')
 
 
 
