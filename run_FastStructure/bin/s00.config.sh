@@ -21,7 +21,7 @@ MAX_K=15
 
 LOAD_PERL5="module load perl/5.26.2"
 
-CLUMPAK_DIR="${WORK_DIR}/bin/CLUMPAK/26_03_2015_CLUMPAK/CLUMPAK.NOGIT."
+CLUMPAK_DIR="${WORK_DIR}/bin/CLUMPAK.NOGIT./26_03_2015_CLUMPAK/CLUMPAK"
 
 # make sure the dependent perl5 lib is installed in the following path via cpanm or other methods
 export PERL5LIB="/shared/ifbstor1/home/ynie/perl5/lib/perl5":$PERL5LIB
