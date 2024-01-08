@@ -70,8 +70,8 @@ END_FSSH
 }
 
 
-open my $ou1, ">", "00launch_submits.sh" or die;
-print $ou1 "
+open my $ou1, ">", "00launch_submits.NOGIT.sh" or die;
+print $ou1 "\#!/bin/bash
 cd $output_dir
 for rep in `seq $minK $maxK`
 do
