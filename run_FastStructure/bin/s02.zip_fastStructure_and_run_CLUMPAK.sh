@@ -49,13 +49,26 @@ ${LOAD_PERL5}
 
 cd ${CLUMPAK_DIR}
 
+OUTPUT_CLUMPAK="./output_clumpak"
+
+if [ -d "${OUTPUT_CLUMPAK}" ]; then
+    rm -r "${OUTPUT_CLUMPAK}"
+fi
+
+#Xilong: If you are using the anther language, the CLUMPAK may have some bug, LC_ALL=C is changing the language to C(C for computer)
+export LC_ALL=C
+
 random_id=${RANDOM}
+
+if [ -d "tmp_clumpak_${random_id}" ]; then
+    rm -r "tmp_clumpak_${random_id}"
+fi
+
 # NOTE: "./" in the --dir paramater is necessary
 ./CLUMPAK.pl \
     --id "tmp_clumpak_${random_id}" \
-    --dir ./output_clumpak \
+    --dir "${OUTPUT_CLUMPAK}" \
     --file "${OUTPUT_DIR}/input_clumpak.zip" \
-    --inputtype admixture
-
-mv "./output_clumpak" \
-    "${OUTPUT_DIR}/"
+    --inputtype admixture \
+&& \
+mv "${OUTPUT_CLUMPAK}" "${OUTPUT_DIR}/"
