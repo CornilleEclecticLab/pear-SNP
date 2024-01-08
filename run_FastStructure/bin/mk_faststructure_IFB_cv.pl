@@ -13,6 +13,10 @@ use Getopt::Long;
 # For IFB. And Copy meanQ files to a folder for CLUMPAK
 # Edit Date: 03/08/2023 10:45
 
+# Updated by Yuqi at 2024-01-08 12:03:37
+# Don't generate the 01zip_for_clumpak.sh file anymore, 
+#   because it will be generated in another script.
+
 my $FastStructure_py = "/shared/ifbstor1/software/miniconda/envs/faststructure-1.0/bin/structure.py";
 my $usage
     = "Usage: perl $0 -b <bedfile name(not include .bed)> -minK <minK> -maxK <maxK> -r <repeat number> -o <output_dir>
@@ -75,22 +79,3 @@ do
         ls ./ | xargs -I {} sbatch -c 1 --mem=1G {}
         cd ..
 done";
-
-open my $ou2, ">", "01.zip_for_clumpak.sh" or die;
-print $ou2 "
-cd $output_dir
-mkdir result
-cp ./K*/*.meanQ ./result
-
-cd result
-for i in `seq $minK $maxK`
-do
-    zip -q K\${i}.zip *.\${i}.meanQ
-done
-
-zip -q ../input_clumpak.zip K*.zip
-
-rm -rf K*.zip
-cd $output_dir
-rm -rf ./result
-"
