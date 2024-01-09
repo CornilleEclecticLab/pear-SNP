@@ -65,4 +65,8 @@ fi
 
 
 # Combine nexus files
-cat $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus "$S02_OUTPUT_DIR/s02.taxpartitions.nex"> $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex
+cat $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus "$S02_OUTPUT_DIR/s02.taxpartitions.nex" \
+    > $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex
+
+echo 'Your output file is: ' 
+echo  "$OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex"
