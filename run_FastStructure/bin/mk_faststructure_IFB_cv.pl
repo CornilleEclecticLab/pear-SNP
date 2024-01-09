@@ -75,7 +75,7 @@ print $ou1 "\#!/bin/bash
 cd $output_dir
 for rep in `seq $minK $maxK`
 do
-        cd ./K\$rep
-        ls ./ | xargs -I {} sbatch -c 1 --mem=1G {}
-        cd ..
+    cd ./K\$rep
+    ls ./ | xargs -I {} sbatch -c 1 --mem=1G {}
+    cd ..
 done";
