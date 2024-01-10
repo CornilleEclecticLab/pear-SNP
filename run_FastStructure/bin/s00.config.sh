@@ -19,6 +19,8 @@ OUTPUT_DIR="${WORK_DIR}/output/${BATCH}"
 MIN_K=2
 MAX_K=15
 
+LOAD_GHOSTSCRIPT='source activate ghostscript'
+
 LOAD_PERL5="module load perl/5.26.2"
 
 CLUMPAK_DIR="${WORK_DIR}/bin/CLUMPAK.NOGIT./26_03_2015_CLUMPAK/CLUMPAK"
