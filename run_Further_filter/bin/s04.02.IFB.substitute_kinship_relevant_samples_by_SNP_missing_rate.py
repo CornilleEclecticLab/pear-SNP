@@ -20,10 +20,15 @@
 #   number instead of the preferred samples list. The missing number is
 #   calculated by bcftools.
 
+# @Update: V3.1.0 2024-01-12 14:36:36
+#   Check the kinship in the in_list before and after substitution.
+#   And fix a bug to prevent the substitution of the samples from
+#   introducing new kinship relevant samples.
 
 import argparse
 import textwrap
 import datetime
+from textwrap import wrap
 
 
 def wrap(text, width=79):
@@ -73,22 +78,22 @@ print(f'{" Start ":=^79}')
 bcftools_stats = args.bcftools_stats
 
 AKP = args.kinship_prefix
-in_list = AKP + '.king.cutoff.in.id'
-out_list = AKP + '.king.cutoff.out.id'
+in_list_file = AKP + '.king.cutoff.in.id'
+out_list_file = AKP + '.king.cutoff.out.id'
 kin0 = AKP + '.kin0'
 substitute_in_list = AKP + '.king.cutoff.substitute_using_SNP_missing.in.id'
 substitute_out_list = AKP + '.king.cutoff.substitute_using_SNP_missing.out.id'
 
 # Read bcftools stats files
-missing_number = {}
+SNP_missing_number = {}
 with open(bcftools_stats, 'r', encoding='utf-8') as file:
     lines = file.readlines()
     for line in lines:
         if line.strip().startswith('PSC'):
             columns = line.strip().split('\t')
             sample_id, missing = columns[2], columns[13]
-            missing_number[sample_id] = int(missing)
-            if len(missing_number) == 0:
+            SNP_missing_number[sample_id] = int(missing)
+            if len(SNP_missing_number) == 0:
                 raise ValueError(
                     f'No "PSC" filed found in the {bcftools_stats} file.'
                 )
@@ -113,8 +118,8 @@ def read_in_out_list(file):
               f'{len(f_split)}')
         return f_split
 
-in_list = read_in_out_list(in_list)
-out_list = read_in_out_list(out_list)
+in_list = read_in_out_list(in_list_file)
+out_list = read_in_out_list(out_list_file)
 
 # Read plink kin0 file
 with open(kin0, 'r', encoding='utf-8') as file:
@@ -148,27 +153,52 @@ with open(kin0, 'r', encoding='utf-8') as file:
                 dic_kinship[ind].append([ind1, ind2][1 - i])
 print(f'Number of kinship relevant samples: {len(dic_kinship)}')
 
+# Check if there are kinship-relevant samples in <in_list> before substitution
+def check_in_list(ls,file):
+    for ind in ls:
+        if ind not in dic_kinship:
+            continue
+        for relevant in dic_kinship[ind]:
+            if relevant in in_list:
+                raise ValueError(
+                    f'Unexpected sample pairs: {ind} {relevant} in the '
+                    f'file: {file} \n'
+                    f'Please check it.'
+                )
+
+check_in_list(in_list, in_list_file)
+
 # Substitute the samples in out_list with the samples in in_list
 first_substitute = True
 for i, ind in enumerate(out_list):
     for s in dic_kinship[ind]:
         if s in in_list:
-            missing_s = missing_number[s]
-            missing_ind = missing_number[ind]
+            missing_s = SNP_missing_number[s]
+            missing_ind = SNP_missing_number[ind]
             if missing_ind < missing_s:
                 if ind in out_list:
-                    if first_substitute:
-                        print(wrap("\nFollowing samples are substituted with "
-                                   "lower SNP missing samples:"))
-                        first_substitute = False
-
-                    print('\t', s, "->", ind, sep='\t')
-                    in_list[in_list.index(s)] = ind
-                    out_list[i] = s
+                    to_substitute = True
+                    for ind_r in dic_kinship[ind]:
+                        if ind_r in in_list and ind_r != s:
+                            to_substitute = False
+                            break
+                    if to_substitute:
+                        if first_substitute:
+                            print(
+                                wrap("Following samples are substituted "
+                                     "with lower SNP missing samples in the "
+                                     "in_list:"))
+                            first_substitute = False
+                        print('\t', s, "->", ind, sep='\t')
+                        in_list[in_list.index(s)] = ind
+                        out_list[i] = s
         elif s not in out_list:
             raise ValueError(
                 f'Unexpected sample {s} in the {kin0} file. '
                 f'Please check the {kin0} file.')
+
+# Check if there are kinship-relevant samples in <in_list> after substitution
+check_in_list(in_list, substitute_in_list)
 
 # Write the substituted in_list and out_list
 with open(substitute_in_list, 'w', encoding='utf-8') as f:
