@@ -25,6 +25,9 @@
 #   And fix a bug to prevent the substitution of the samples from
 #   introducing new kinship relevant samples.
 
+# @Update: V3.1.1 2024-01-12 18:08:39
+#   Update the description of the script.
+
 import argparse
 import textwrap
 import datetime
@@ -154,16 +157,18 @@ with open(kin0, 'r', encoding='utf-8') as file:
 print(f'Number of kinship relevant samples: {len(dic_kinship)}')
 
 # Check if there are kinship-relevant samples in <in_list> before substitution
-def check_in_list(ls,file):
+def check_in_list(ls,*file):
     for ind in ls:
         if ind not in dic_kinship:
             continue
         for relevant in dic_kinship[ind]:
             if relevant in in_list:
+                where_check = 'file: '+str(file) if file else 'printout'
                 raise ValueError(
-                    f'Unexpected sample pairs: {ind} {relevant} in the '
-                    f'file: {file} \n'
-                    f'Please check it.'
+                    f'Unexpected kinship-relevant sample pairs: '
+                    f'{ind} {relevant} exist in the in_list.\n'
+                    f'Please check it in the {where_check} \n'
+                    f'Substitution file will not be generated.'
                 )
 
 check_in_list(in_list, in_list_file)
@@ -198,7 +203,7 @@ for i, ind in enumerate(out_list):
                 f'Please check the {kin0} file.')
 
 # Check if there are kinship-relevant samples in <in_list> after substitution
-check_in_list(in_list, substitute_in_list)
+check_in_list(in_list)
 
 # Write the substituted in_list and out_list
 with open(substitute_in_list, 'w', encoding='utf-8') as f:
