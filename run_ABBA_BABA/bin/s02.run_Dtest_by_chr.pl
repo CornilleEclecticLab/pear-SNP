@@ -5,7 +5,6 @@ use Data::Dumper;
 use File::Basename;
 use Getopt::Long;
 use Cwd;
-use File::Basename;
 
 # By Xilong CHEN
 # Create date: 2022-08-22

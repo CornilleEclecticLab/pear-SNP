@@ -11,10 +11,10 @@ my $usage = "perl $0 <the clumpak_result folder> <min K number> <max K number> \
 die $usage if @ARGV != 3;
 
 my $re_folder = shift @ARGV;
-my $min =shift @ARGV;
+my $min = shift @ARGV;
 my $max = shift @ARGV;
 
-`mkdir input_for_pop`;
+`mkdir input_for_pophelper`;
 for my $k_f ( $min .. $max ) {
     my @Qfiles
         = glob
@@ -24,8 +24,9 @@ for my $k_f ( $min .. $max ) {
         $f =~ /\d\/(.+?Cluster\d*)/;
         my $m = $1;
         open my $in, "<", "$f";
-        print "$k_f/K.$k_f.$m.Q\n";
-        open my $ou, ">", "./input_for_pop/K.$k_f.$m.Q";
+        my $format_kf = sprintf "%02d", $k_f;
+        print "$k_f/K.$format_kf.$m.Q\n";
+        open my $ou, ">", "./input_for_pophelper/K.$format_kf.$m.Q";
         while (<$in>) {
             $_ =~ s/^.+: //;
             print $ou $_;
