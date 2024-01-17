@@ -11,7 +11,6 @@
 
 
 import datetime
-from math import pi
 import textwrap
 import sys
 import os
@@ -19,7 +18,6 @@ import pandas as pd
 
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
-
 
 
 version = "1.0.0"
@@ -41,14 +39,8 @@ window = 100000 # step * 2
 thresholds = 0.9 # 90% of the window should be mapped to the genome
 
 
-
-
-
-
-
 def warp(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
-
 
 
 if len(sys.argv) !=4:
@@ -67,10 +59,7 @@ elif len(sys.argv) == 4:
     mask = sys.argv[3]
 
 
-
 chr_size = pd.read_csv(genmap_size, sep='\t', header=None, names=['chr','size'])
-
-
 
 def read_file(file): # read a genmap.txt file
     dic_score = {}
@@ -87,12 +76,9 @@ def read_file(file): # read a genmap.txt file
 
 dic_score = read_file(genmap_txt)
 
-
-
 def get_average_score(score_list, start, end):
     average_score = sum(score_list[start:end]) / (end-start)
     return average_score
-
 
 mask = open(mask,'w')
 with open(mask_with_score,'w') as fo:
@@ -125,6 +111,7 @@ with open(mask_with_score,'w') as fo:
 
         #     # if average_score < thresholds:
         #     #     fo.write(f'{id}\t{start+1}\t{end}\t{average_score}\n')
+
 
         # Flowing strategy considers the overlap between two windows
         m_start = m_end = 0  # Masked region
@@ -172,9 +159,6 @@ with open(mask_with_score,'w') as fo:
             print(f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
 
 mask.close()
-
-
-
 
 
 end_time = datetime.datetime.now()
