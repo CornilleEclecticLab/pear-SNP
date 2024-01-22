@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH -J kinship
-#SBATCH -o s04.kinship.%J.out
-#SBATCH -e s04.kinship.%J.err
+#SBATCH -J s04.stats_missing_rate
+#SBATCH -o s04.stats_missing_rate.%J.out
+#SBATCH -e s04.stats_missing_rate.%J.err
 #SBATCH -c 8
 
 module purge
