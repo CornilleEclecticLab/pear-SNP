@@ -45,6 +45,9 @@ cat ${OUTPUT}/${PREFIX}.vcf.gz.stats.txt \
     | cut -f 3,4 \
     > ${OUTPUT}/${PREFIX}.vcf.gz.SNPs_number.txt
 
+python3 $WORKDIR/bin/s04.01.IFB.get_high_missing_rate_sample_list.py \
+    "${OUTPUT}/${PREFIX}.vcf.gz.stats.txt"
+
 # Now we don't use plink to transform vcf to bed format.
 # plink --vcf $OUTPUT/$PREFIX.vcf.gz \
 # 	--make-bed \
@@ -61,23 +64,23 @@ cat ${OUTPUT}/${PREFIX}.vcf.gz.stats.txt \
 #Add --allow-extra-chr 
     # Invalid chromosome code 'Pp01' on line 240 of --vcf file.
     # (Use --allow-extra-chr to force it to be accepted.)
-plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
-    --allow-extra-chr \
-    --make-king-table \
-    --king-cutoff 0.354 \
-    --make-bed \
-    --out $OUTPUTs04/without_clone0.354
+# plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
+#     --allow-extra-chr \
+#     --make-king-table \
+#     --king-cutoff 0.354 \
+#     --make-bed \
+#     --out $OUTPUTs04/without_clone0.354
 
-plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
-    --allow-extra-chr \
-    --make-king-table \
-    --king-cutoff 0.177 \
-    --make-bed \
-    --out $OUTPUTs04/without_1st-degree_relation0.177
+# plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
+#     --allow-extra-chr \
+#     --make-king-table \
+#     --king-cutoff 0.177 \
+#     --make-bed \
+#     --out $OUTPUTs04/without_1st-degree_relation0.177
 
-plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
-    --allow-extra-chr \
-    --make-king-table \
-    --king-cutoff 0.088 \
-    --make-bed \
-    --out $OUTPUTs04/without_2nd-degree_relation0.088
+# plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
+#     --allow-extra-chr \
+#     --make-king-table \
+#     --king-cutoff 0.088 \
+#     --make-bed \
+#     --out $OUTPUTs04/without_2nd-degree_relation0.088
