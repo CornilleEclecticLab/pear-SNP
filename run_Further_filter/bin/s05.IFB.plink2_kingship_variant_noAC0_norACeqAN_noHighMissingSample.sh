@@ -18,9 +18,9 @@ BATCH='pear_Dec2023'
 BIN=$(pwd)
 WORKDIR=$(dirname $BIN)
 INPUT="$WORKDIR/input"
-OUTPUT="$WORKDIR/output/s04.${BATCH}.variant_noAC0_norACeqAN_noHighMissingSample"
+OUTPUT="$WORKDIR/output/s05.${BATCH}.variant_noAC0_norACeqAN_noHighMissingSample"
 PREFIX="$BATCH.Combine_chr"
-OUTPUTs04=${OUTPUT}/${PREFIX}.s04.clone_filtering
+OUTPUTs04=${OUTPUT}/${PREFIX}.s05.clone_filtering
 
 mkdir -p ${OUTPUT}
 mkdir -p ${OUTPUTs04}
