@@ -72,16 +72,16 @@ plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
     --make-bed \
     --out $OUTPUTs04/without_clone0.354
 
-plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
-    --allow-extra-chr \
-    --make-king-table \
-    --king-cutoff 0.177 \
-    --make-bed \
-    --out $OUTPUTs04/without_1st-degree_relation0.177
+# plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
+#     --allow-extra-chr \
+#     --make-king-table \
+#     --king-cutoff 0.177 \
+#     --make-bed \
+#     --out $OUTPUTs04/without_1st-degree_relation0.177
 
-plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
-    --allow-extra-chr \
-    --make-king-table \
-    --king-cutoff 0.088 \
-    --make-bed \
-    --out $OUTPUTs04/without_2nd-degree_relation0.088
+# plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
+#     --allow-extra-chr \
+#     --make-king-table \
+#     --king-cutoff 0.088 \
+#     --make-bed \
+#     --out $OUTPUTs04/without_2nd-degree_relation0.088
