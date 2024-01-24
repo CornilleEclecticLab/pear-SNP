@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH -J kinship
-#SBATCH -o s04.kinship.NOGIT.%J.out
-#SBATCH -e s04.kinship.NOGIT.%J.err
+#SBATCH -o s05.kinship.NOGIT.%J.out
+#SBATCH -e s05.kinship.NOGIT.%J.err
 #SBATCH -c 8
 
 module purge
@@ -30,7 +30,7 @@ bcftools concat -f ${INPUT}/s04.${BATCH}.chr.variant.vcf.list \
     | bcftools view \
         -S ^${WORKDIR}/output/s04.pear_Dec2023_variant_noAC0_norACeqAN/pear_Dec2023.Combine_chr.vcf.gz.stats.txt.higher40_missing_rate_sample.list.txt \
         --threads 8 \
-    | bcftools filter -e 'AC==0 || AC==AN' \
+    | bcftools filter -e 'F_MISSING > 0.2 || AC==0 || AC==AN' \
         -O z4 \
         --threads 8 \
         -o ${OUTPUT}/${PREFIX}.vcf.gz
@@ -85,3 +85,7 @@ plink2 --vcf $OUTPUT/$PREFIX.vcf.gz \
 #     --king-cutoff 0.088 \
 #     --make-bed \
 #     --out $OUTPUTs04/without_2nd-degree_relation0.088
+
+python3 s05.01.IFB.substitute_kinship_relevant_samples_by_SNP_missing_rate.py \
+    -s ${OUTPUT}/${PREFIX}.vcf.gz.stats.txt \
+    -k $OUTPUTs04/without_clone0.354
