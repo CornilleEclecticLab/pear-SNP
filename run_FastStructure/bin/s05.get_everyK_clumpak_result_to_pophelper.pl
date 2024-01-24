@@ -7,6 +7,11 @@ use File::Basename;
 # By Chen Xilong
 # Create Date: 2/6/2020 15:29
 # Contact: chen_xilong@outlook.com
+
+# Updated by Yuqi to get the double digit K in the output file name.
+# Updated the regex by Yuqi to capture the correct name when 
+#   clumpak result folder name ends with a digital.
+
 my $usage = "perl $0 <the clumpak_result folder> <min K number> <max K number> \n\n";
 die $usage if @ARGV != 3;
 
@@ -21,7 +26,7 @@ for my $k_f ( $min .. $max ) {
         "$re_folder/K=$k_f/M*Cluster*/CLUMPP.files/ClumppIndFile.output";
     # print join "\n", @Qfiles;
     for my $f (@Qfiles) {
-        $f =~ /\d\/(.+?Cluster\d*)/;
+        $f =~ /K=\d+\/(.+?Cluster\d*)/;
         my $m = $1;
         open my $in, "<", "$f";
         my $format_kf = sprintf "%02d", $k_f;
