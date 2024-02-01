@@ -35,6 +35,7 @@ output_local
 .RData
 .RDataTmp
 .vscode
+.ipynb_checkpoints/
 
 #### rsync scripts and their logs
 rsync\.*.sh
