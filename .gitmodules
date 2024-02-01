@@ -16,3 +16,6 @@
 [submodule "run_MSMC2/bin/MappabilityMask/msmc2_scripts"]
 	path = run_MSMC2/bin/MappabilityMask/msmc2_scripts
 	url = https://github.com/jessicarick/msmc2_scripts.git
+[submodule "run_MSMC2/bin/msmc-tools"]
+	path = run_MSMC2/bin/msmc-tools
+	url = https://github.com/stschiff/msmc-tools.git
