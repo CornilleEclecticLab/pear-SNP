@@ -11,12 +11,14 @@
 module purge
 module load bcftools/1.14
 
+# Define the number of threads for parallel processing
+THREADS=8
 
 # Define input and output paths and filenames
 # WORK_DIR="/shared/home/ynie/work/pear/run_SVDQuartets" # Replace with the actual path to your input directory
 WORK_DIR="../"
-PREFIX="pear_Jul2023_noclone"   # Replace with your desired prefix
-MIDDLE="Combine_Chr.geno20_maf005.anno.syno.thin8k"
+PREFIX="pear_Dec2023.noclone"   # Replace with your desired prefix
+MIDDLE="Combine_chr.geno20_maf005.anno.syno.thin8k"
 INPUT_VCF="$WORK_DIR/input/$PREFIX.$MIDDLE.vcf.gz"
 OUTPUT_DIR="$WORK_DIR/output/s03.extract_pure_sample_filter_geno_maf_to_nex"
 OUTPUT_VCF="$OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.vcf.gz"
@@ -28,9 +30,6 @@ RENAME_LIST="$S02_OUTPUT_DIR/s02.non_admixed_rename_list.txt"  # or SAMPLE_LIST=
 
 # Define filtering criteria
 FILTER_EXPRESSION='F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN'
-
-# Define the number of threads for parallel processing
-THREADS=8
 
 echo 'Your input file is: ' $INPUT_VCF
 
@@ -67,6 +66,8 @@ fi
 # Combine nexus files
 cat $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus "$S02_OUTPUT_DIR/s02.taxpartitions.nex" \
     > $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex
+
+rm $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus
 
 echo 'Your output file is: ' 
 echo  "$OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex"
