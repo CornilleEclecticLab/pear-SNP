@@ -7,3 +7,9 @@
 [submodule "run_ABBA_BABA/bin/Dsuit"]
 	path = run_ABBA_BABA/bin/Dsuit
 	url = https://github.com/millanek/Dsuite.git
+[submodule "run_ABBA_BABA/bin/genomics_general"]
+	path = run_ABBA_BABA/bin/genomics_general
+	url = https://github.com/simonhmartin/genomics_general
+[submodule "run_ABBA_BABA/bin/tutorials"]
+	path = run_ABBA_BABA/bin/tutorials
+	url = https://github.com/millanek/tutorials.git
