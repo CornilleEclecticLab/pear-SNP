@@ -21,7 +21,3 @@ cd "$OUTDIR" || exit 1
 perl "${WORKDIR}/bin/bin.calculate_pve.pl" "$set"
 
 
-#mv ./plink.* $OUTDIR
-#mv ./*.eigenv* $OUTDIR
-#mv ./pca_input.data $OUTDIR
-#mv ./${set}.pac* $OUTDIR
