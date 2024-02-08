@@ -32,7 +32,7 @@ print(f'{" Start ":=^79}')
 
 # Constants
 version = "2.0.2"
-threshold = 1.0 #0.8   # The threshold value that to distinguish the admixture, which is the maximum value of Qs for each individual to be considered as non-admixture. This value should be set according to the Q file.
+threshold = 0.8 #0.8   # The threshold value that to distinguish the admixture, which is the maximum value of Qs for each individual to be considered as non-admixture. This value should be set according to the Q file.
 
 
 # File paths
@@ -73,7 +73,9 @@ with open(input_file_id_map, 'r') as fi:
     uni_ids = [i.split()[1] for i in lines]
 
 # Check ids in fam and id_map
+## TODO Using enumerate to check the index of ids
 if len(ids) != len(uni_ids) or len(ids) != len(map_ids):
+    print(len(ids), len(uni_ids), len(map_ids))
     warn(wrap(f'ERROR: Incompatible two input files'))
     sys.exit(1)
 for id, map_id in zip(ids,map_ids):
