@@ -17,15 +17,15 @@
 #   Make the script robust to the case that the random id is not unique 
 #   in the runnning directory
 
-####################
+###########################
 # Load config file
-####################
+###########################
 source s00.config.sh
 
 
-####################
+###########################
 # Zip FastStructure output
-####################
+###########################
 cd "${OUTPUT_DIR}" || exit 1
 
 random_id=${RANDOM}
@@ -61,9 +61,9 @@ cd ${OUTPUT_DIR} || exit 1
 rmdir "${TEMP_RESULT_DIR}"
 
 
-####################
+###########################
 # run CLUMPAK
-####################
+###########################
 # Load perl5 and ghostscript
 ${LOAD_PERL5}
 ${LOAD_GHOSTSCRIPT}
@@ -91,13 +91,16 @@ fi
     --inputtype admixture \
 && mv "${OUTPUT_CLUMPAK}" "${OUTPUT_DIR}/" 
 
-# Get clumpak for pophelper
+
+###########################
+# Get clumpak result for pophelper
+###########################
 cd "${OUTPUT_DIR}" || exit 1
 
 if [ -d "input_for_pophelper" ]; then
     echo "ERROR: folder \"${OUTPUT_DIR}/input_for_pophelper\" exist" && exit 1
 fi
-OUTPUT_CLUMPAK='output_clumpak_25'
+
 perl "${WORK_DIR}/bin/get_everyK_clumpak_result_to_pophelper.pl" \
     "${OUTPUT_CLUMPAK}" \
     $MIN_K \
