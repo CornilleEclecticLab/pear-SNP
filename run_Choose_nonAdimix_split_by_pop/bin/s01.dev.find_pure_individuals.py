@@ -21,11 +21,18 @@
 # 2. Rename some variables
 
 # Update v3.0.0: 2024-02-08 11:12:26
+# 1.Update the script to be compatible with multiple datasets
+
+# Update v3.1.0: 2024-02-16 15:02:58
+# 1.Update color pallets
+# 2.Update the sample order logic, make sure the samples all in fam file
+# 3.Fixed a bug, but I forgot what's that
+# 4.Output the file without Q values.
 
 
 import argparse
 import datetime
-import os
+# import os
 import sys
 import textwrap
 from warnings import warn
@@ -36,8 +43,9 @@ print(f'{" Start ":=^79}')
 
 
 # Constants
-version = "3.0.0"
+version = "3.1.0"
 threshold = 0.8 #0.8   # The threshold value that to distinguish the admixture, which is the maximum value of Qs for each individual to be considered as non-admixture. This value should be set according to the Q file.
+
 
 
 # File paths
@@ -60,7 +68,9 @@ def wrap(text, width=79):
 
 # Read arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--color_pallet')
+parser.add_argument('-c', '--color_pallet', 
+                    choices=['F', 'A', 'E'],
+                    action='extend', nargs='+')
 parser.add_argument('-i', '--id_map', required=True)
 parser.add_argument('-o', '--order_group')
 parser.add_argument('-g', '--group_map')
@@ -73,35 +83,53 @@ parser.add_argument('-f', '--fam', action='extend', nargs='+',
 
 args = parser.parse_args()
 
+
 # Define the color palette
-if args.color_pallet is None:
-    color_pallet = [
-        "#648fff",
-        "#785ef0",
-        "#dc267f",
-        "#fe6100",
-        "#ffb000",
-        "#FFA07A",
-        "#FF69B4",
-        "#00FF7F",
-        "#1E90c8",  # changed from #1E90ff
-        "#DC143C",
-        "#8B008B",
-        "#32CD32",
-        "#00CED1",
-        "#FF1493",
-        "#9ACD32",
-        "#FF00FF",
-        "#4B0082",
-        "#FFD700"]
-    color_pallet_version = '# 2024-02-05'
-else:
-    with open(argparse.color_pallete, 'r') as fi:
-        color_pallet = [i.strip() for i in fi.readlines()]
-        color_pallet_version = 'Customized'
+# TODO 
+# Update the color_pallet to version 2024-02-19
+color_pallet_default = [
+        "#648fff",  # Full-00
+        "#785ef0",  # Full-01
+        "#dc267f",  # Full-02
+        "#fe6100",  # Full-03
+        "#ffb000",  # Full-04
+        "#FFA07A",  # Full-05
+        "#FF69B4",  # Full-06
+        "#1E90c8",  # Full-07
+        "#DC143C",  # Full-08
+        "#8B008B",  # Full-09
+        "#32CD32",  # Full-10
+        "#00CED1",  # Full-11
+        "#FF1493",  # Full-12
+        "#00FF7F",  # Full-13
+        "#9ACD32",  # Full-14
+        "#FF00FF",  # Full-15
+        "#4B0082",  # Full-16
+        "#FFD700"]  # Full-17
+color_pallet_version = '# 2024-02-15'
+
+color_pallet_F = color_pallet_default
+color_pallet_A = [color_pallet_default[i] for i in [0,2,3,4,6,8,9,10,11,12,13,14,15,16,1,5,7,17]]
+color_pallet_E = [color_pallet_default[i] for i in [1,5,7,17,9,10,11,12,13,14,15,16,0,2,3,4,6,8]]
+
+# if args.color_pallet is None:
+#     color_pallet = color_pallet_default
+# else:
+#     with open(argparse.color_pallete, 'r') as fi:
+#         color_pallet = [i.strip() for i in fi.readlines()]
+#         color_pallet_version = 'Customized'
 
 print(wrap("Using the color pallet version:"+color_pallet_version))
 
+def get_color_pallet(color_pallet):
+    if color_pallet == 'F':
+        return color_pallet_F
+    elif color_pallet == 'A':
+        return color_pallet_A
+    elif color_pallet == 'E':
+        return color_pallet_E
+    else:
+        return color_pallet_default
 
 # Read IDs from .fam and id_map files
 ids_vcf_full = []
@@ -128,8 +156,11 @@ with open(args.id_map, 'r') as fi:
         elif id2 in ids_vcf_full:
             id_vcf_uni_map[id2] = id1
             id_uni_vcf_map[id1] = id2
-        else:
+
+    for id in ids_vcf_full:
+        if id not in id_vcf_uni_map.keys():
             warn(wrap(f'WARNING: Incompatible id_map and fam file'))
+            print(id1,id2)
             sys.exit(1)
 
 # Read group orders if defined
@@ -179,25 +210,34 @@ if order_group is not None and group_map is not None:
         try:
             ids = group_map[group]
             for id in ids:
-                samples_order.append(id)
+                if id in id_uni_vcf_map.keys() or id in id_vcf_uni_map.keys():
+                    samples_order.append(id)
         except KeyError:
             continue
     for i in Qs:
         if len(i.keys()) > len(samples_order):
-            print(len(i.keys(), len(samples_order)))
-            raise ValueError('More samples in Q_file than group_order')
+            raise ValueError(
+                f'More samples in Q_file {len(i.keys())} '
+                f'than samples_order {len(samples_order)}')
 
 if samples_order is None:
     samples_order = set([i for i in ids_vcf_full])
 
 # Output file
-header = \
-    'ID_vcf\tID_uni\tGroup\t' \
-    + "\t".join([f'BestCluster_dataset{str(i+1)}\tColor_dataset{str(i+1)}' 
-                 for i in range(len(Qs))]) + "\t"\
-    + '\t'.join([f'dataset{str(i+1)}_Cluster{str(k+1)}' 
-                 for i in range(len(Qs)) for k in range(Qk[i])])\
-    + '\n'\
+header2 = \
+    'ID_vcf\tID_uni\tGroup\tSpecies\t' \
+    + "\t".join([f'BestCluster_dataset{str(i+1)}\tColor_dataset{str(i+1)}\t'
+                 +f'SpeciesAndCluster_dataset{str(i+1)}' 
+                 for i in range(len(Qs))]) \
+
+header = header2 + "\t" + '\t'.join([f'dataset{str(i+1)}_Cluster{str(k+1)}'
+                                    for i in range(len(Qs)) for k in range(Qk[i])
+                                    ]) + '\n'
+
+header2 += '\n'
+
+fo2 = open('find_pure_individuals_without_Q.txt', 'w')
+fo2.write(header2)
 
 with open('find_pure_individuals.txt', 'w') as fo:
     fo.write(header)
@@ -208,14 +248,22 @@ with open('find_pure_individuals.txt', 'w') as fo:
         elif id in id_uni_vcf_map.keys():
             uni_id = id
             vcf_id = id_uni_vcf_map[id]
+        # else:
+        #     warn(wrap(f'WARNING: Incompatible id_map and fam file'))
+        #     print(id)
+        #     sys.exit(1)
+
         if id_group_map is not None:
             group = id_group_map[uni_id]
         else:
             raise ValueError('Incompatible group_map and fam file')
 
+        species = uni_id[:4] + uni_id[-5]
         cluster_and_color = ''
         Q_values = ''
         for i, Qi in enumerate(Qs):
+            color_pallet = get_color_pallet(args.color_pallet[i])
+
             if vcf_id in Qi.keys():
                 Q = Qi[vcf_id]
                 Q = Q.split()
@@ -225,13 +273,15 @@ with open('find_pure_individuals.txt', 'w') as fo:
                 color = '"#888888"'
                 for j in range(Qk[i]):
                     if Q[j] >= threshold:
-                        best_cluster = 'Cluster'+str(j+1)
+                        best_cluster = 'Dataset'+str(i+1)+'Cluster'+str(j+1)
                         color = f'"{color_pallet[j]}"'
+                        species_and_cluster = species + '_D'+str(i+1)+'C'+str(j+1)
                         break
                     elif Q[j] > 0:
                         admixed_cluster += '+Cluster'+str(j+1)
                 if best_cluster == 'Admixed':
                     best_cluster += admixed_cluster
+                    species_and_cluster = species+'_Admixed'
                 if Q_values == '':
                     Q_values = '\t'.join([str(i) for i in Q])
                 else:
@@ -240,16 +290,22 @@ with open('find_pure_individuals.txt', 'w') as fo:
             elif vcf_id not in Qi.keys():
                 best_cluster = 'NA'
                 color = 'NA'
+                species_and_cluster = 'NA'
                 if Q_values == '':
                     Q_values = '\t'+'\t'.join(['NA' for i in range(Qk[i])])
                 else:
                     Q_values =\
                         Q_values+'\t'+'\t'.join(['NA' for i in range(Qk[i])])
-            cluster_and_color += f'{best_cluster}\t{color}\t'
+            cluster_and_color += f'{best_cluster}\t{color}\t{species_and_cluster}\t'
 
+        cluster_and_color = cluster_and_color.strip()
 
-        line = f'{vcf_id}\t{uni_id}\t{group}\t{cluster_and_color}{Q_values}\n'
+        line2 = f'{vcf_id}\t{uni_id}\t{group}\t{species}\t{cluster_and_color}\n'
+        line = line2.strip() + f'\t{cluster_and_color}\t{Q_values}\n'
+
         fo.write(line)
+        fo2.write(line2)
+fo2.close()
 
 
 # # Check ids in fam and id_map
