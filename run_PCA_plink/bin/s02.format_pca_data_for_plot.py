@@ -135,7 +135,7 @@ for id in pca_data.keys():
 
 
 # Output data
-with open(args.eigenvec+'.input_pca_lot.data', 'w') as fo:
+with open(args.eigenvec+'.input_PCA_plot.data', 'w') as fo:
     fo.write(header)
     for i, (id, pca_dts) in enumerate(pca_data.items()):
         pca_dt = '\t'.join(pca_dts)
