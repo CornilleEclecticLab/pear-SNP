@@ -11,6 +11,8 @@
 #       1. Using argparse to parse command line arguments
 #       2. Allow id_map contains full dataset
 #       3. Output file contains more information
+#     Update version to 2.1.0 2024-02-23 11:00:59
+#       1. Not change the group name in id_map following the color panel.
 
 import datetime
 import sys
@@ -138,8 +140,8 @@ with open(args.eigenvec+'.input_pca_lot.data', 'w') as fo:
         pca_dt = '\t'.join(pca_dts)
         group = group_map[id]
         color = color_panel[i]
-        if color == '#888888':
-            group = 'Admixed'
+        # if color == '#888888':
+        #     group = 'Admixed'
         fo.write(f'{id}\t{id_map[id]}\t{group}\t"{color}"\t{pca_dt}\n')
 
 
