@@ -13,6 +13,7 @@
 #       3. Output file contains more information
 #     Update version to 2.1.0 2024-02-23 11:00:59
 #       1. Not change the group name in id_map following the color panel.
+#       2. Not need color panel file.
 
 import datetime
 import sys
@@ -25,7 +26,7 @@ print(f'{" Start ":=^79}')
 
 
 # Global variables
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -58,12 +59,12 @@ parser.add_argument(
          'e.g. "Species_Country_Group122", or give the group name in the '
          'third column.')
 
-parser.add_argument(
-    '-c', '--color_panel',
-    required=True,
-    help='Color panel file. This is a no header file, contains color in '
-         'HEX format with #, each line for one sample, the samples order '
-         'should follow the plink PCA results.')
+# parser.add_argument(
+#     '-c', '--color_panel',
+#     required=True,
+#     help='Color panel file. This is a no header file, contains color in '
+#          'HEX format with #, each line for one sample, the samples order '
+#          'should follow the plink PCA results.')
 
 args = parser.parse_args()
 
@@ -94,8 +95,8 @@ with open(args.id_map, 'r') as fi:
                 group_map[a] = c
                 group_map[b] = c
 
-with open(args.color_panel, 'r') as fi:
-    color_panel = fi.read().strip().splitlines()
+# with open(args.color_panel, 'r') as fi:
+#     color_panel = fi.read().strip().splitlines()
 
 with open(args.eigenvec, 'r') as fi:
     pca_data = dict()
@@ -109,8 +110,8 @@ with open(args.eigenvec, 'r') as fi:
             id = line[1]
             pca_data[id] = line[2:]
 pcs = '\tPC'.join([str(n) for n in range(1, len(line)-1)])
-##### To update
-header = f"ID_vcf\tID\tGroup\tColor\tPC{pcs}\n"
+
+header = f"ID_vcf\tID_uni\tGroup\tPC{pcs}\n"
 
 
 # Check data
@@ -125,12 +126,12 @@ for id in pca_data.keys():
 
         break
 
-if len(pca_data) != len(color_panel):
-    print(
-        wrap('Error: The number of samples not equal in color_panel and'
-             'pca_data!')
-          )
-    sys.exit(1)
+# if len(pca_data) != len(color_panel):
+#     print(
+#         wrap('Error: The number of samples not equal in color_panel and'
+#              'pca_data!')
+#           )
+#     sys.exit(1)
 
 
 # Output data
@@ -139,10 +140,10 @@ with open(args.eigenvec+'.input_pca_lot.data', 'w') as fo:
     for i, (id, pca_dts) in enumerate(pca_data.items()):
         pca_dt = '\t'.join(pca_dts)
         group = group_map[id]
-        color = color_panel[i]
+        # color = color_panel[i]
         # if color == '#888888':
         #     group = 'Admixed'
-        fo.write(f'{id}\t{id_map[id]}\t{group}\t"{color}"\t{pca_dt}\n')
+        fo.write(f'{id}\t{id_map[id]}\t{group}\t{pca_dt}\n')
 
 
 end_time = datetime.datetime.now()
