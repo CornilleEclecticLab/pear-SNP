@@ -29,6 +29,12 @@
 # 3.Fixed a bug, but I forgot what's that
 # 4.Output the file without Q values.
 
+# Update v3.2.0: 2024-02-20 22:19
+# 1.Update color pallets to version 2024-02-19
+
+# Update v3.3.0: 2024-02-21 10:28
+# 1.Fix a bug where the output data would be duplicated.
+
 
 import argparse
 import datetime
@@ -87,30 +93,90 @@ args = parser.parse_args()
 # Define the color palette
 # TODO 
 # Update the color_pallet to version 2024-02-19
-color_pallet_default = [
-        "#648fff",  # Full-00
-        "#785ef0",  # Full-01
-        "#dc267f",  # Full-02
-        "#fe6100",  # Full-03
-        "#ffb000",  # Full-04
-        "#FFA07A",  # Full-05
-        "#FF69B4",  # Full-06
-        "#1E90c8",  # Full-07
-        "#DC143C",  # Full-08
-        "#8B008B",  # Full-09
-        "#32CD32",  # Full-10
-        "#00CED1",  # Full-11
-        "#FF1493",  # Full-12
-        "#00FF7F",  # Full-13
-        "#9ACD32",  # Full-14
-        "#FF00FF",  # Full-15
-        "#4B0082",  # Full-16
-        "#FFD700"]  # Full-17
-color_pallet_version = '# 2024-02-15'
+# color_pallet_default = [
+#         "#648fff",  # Full-00
+#         "#785ef0",  # Full-01
+#         "#dc267f",  # Full-02
+#         "#fe6100",  # Full-03
+#         "#ffb000",  # Full-04
+#         "#FFA07A",  # Full-05
+#         "#FF69B4",  # Full-06
+#         "#1E90c8",  # Full-07
+#         "#DC143C",  # Full-08
+#         "#8B008B",  # Full-09
+#         "#32CD32",  # Full-10
+#         "#00CED1",  # Full-11
+#         "#FF1493",  # Full-12
+#         "#00FF7F",  # Full-13
+#         "#9ACD32",  # Full-14
+#         "#FF00FF",  # Full-15
+#         "#4B0082",  # Full-16
+#         "#FFD700"]  # Full-17
+# color_pallet_version = '# 2024-02-15'
 
-color_pallet_F = color_pallet_default
-color_pallet_A = [color_pallet_default[i] for i in [0,2,3,4,6,8,9,10,11,12,13,14,15,16,1,5,7,17]]
-color_pallet_E = [color_pallet_default[i] for i in [1,5,7,17,9,10,11,12,13,14,15,16,0,2,3,4,6,8]]
+# color_pallet_F = color_pallet_default
+# color_pallet_A = [color_pallet_default[i] for i in [0,2,3,4,6,8,9,10,11,12,13,14,15,16,1,5,7,17]]
+# color_pallet_E = [color_pallet_default[i] for i in [1,5,7,17,9,10,11,12,13,14,15,16,0,2,3,4,6,8]]
+
+color_pallet_F = [
+     "#960558",
+     "#442CF4",
+     "#FFA07A",
+     "#5E4734",
+     "#FF5800",
+     "#27bc40",
+     "#FFB727",
+     "#E599F7",
+     "#9A51FF",
+     "#00CED1",
+     "#648FFF",
+     "#1E90c8",
+     "#FF69B4",
+     "#DC143C",
+     "#8B008B",
+     "#FF00FF",
+     "#80a492",
+     "#033303" 
+ ] 
+
+color_pallet_A=[
+     "#960558",
+     "#FFA07A",
+     "#5E4734",
+     "#FF5800",
+     "#FFB727",
+     "#FFC9C9",
+     "#FD79A8",
+     "#B2F2BB",
+     "#91FBEF",
+     "#99daf7",
+     "#27bc40",
+     "#FF69B4",
+     "#4D2547",
+     "#033303",
+     "#DC143C",
+     "#648FFF" 
+]
+
+color_pallet_E=[
+    "#442CF4",
+    "#27bc40",
+    "#E599F7",
+    "#033303",
+    "#9b59b6",
+    "#DC143C",
+    "#648FFF",
+    "#00CED1",
+    "#1E90c8",
+    "#8B008B",
+    "#9A51FF",
+    "#960558",
+    "#FFA07A",
+    "#5E4734",
+    "#FF5800",
+    "#FFB727" 
+]
+color_pallet_version = '# 2024-02-19'
 
 # if args.color_pallet is None:
 #     color_pallet = color_pallet_default
@@ -195,6 +261,7 @@ for i, q_file in enumerate(args.Q_file):
         Q = fi.read().strip().split('\n')
         k = len(Q[0].split())
         if len(Q) != fam_count[i]:
+            print(len(Q), fam_count[i])
             raise ValueError('Incompatible Q file and fam file')
         q_dic = {}
         for m in range(fam_count[i]):
@@ -301,7 +368,7 @@ with open('find_pure_individuals.txt', 'w') as fo:
         cluster_and_color = cluster_and_color.strip()
 
         line2 = f'{vcf_id}\t{uni_id}\t{group}\t{species}\t{cluster_and_color}\n'
-        line = line2.strip() + f'\t{cluster_and_color}\t{Q_values}\n'
+        line = line2.strip() + f'\t{Q_values}\n'
 
         fo.write(line)
         fo2.write(line2)
