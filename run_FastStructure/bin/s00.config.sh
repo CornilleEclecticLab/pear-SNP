@@ -32,6 +32,7 @@
 
 # s01 has been run
 # s02 has been run
+# s03 has been run
 # BATCH="branch15.batch31.Asia.removeConflicts"
 # BASE_PREFIX="pear_Dec2023.Asia.Combine_chr.geno20_maf005.anno.syno.thin8k"
 

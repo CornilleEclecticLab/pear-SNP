@@ -2,7 +2,7 @@ rm(list = ls())
 library(ggplot2)
 library(cowplot)
 
-data_all <- read.table("fastst_cv_k10.data", header = T, sep = "\t")
+data_all <- read.table("fastst_cv.data", header = T, sep = "\t")
 
 data_summary <- function(data, varname, groupnames) {
   require(plyr)
@@ -38,6 +38,6 @@ p <- ggplot(df2, aes(y = CV_error, x = K)) +
   xlab("K ancestry") + ylab("Cross balidation error") +
   theme_half_open()
 
-pdf(file = "cv10.pdf")
-p
+pdf(file = "fastst_cv.pdf")
+
 dev.off()
