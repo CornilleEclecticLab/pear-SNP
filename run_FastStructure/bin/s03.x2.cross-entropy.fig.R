@@ -39,5 +39,5 @@ p <- ggplot(df2, aes(y = CV_error, x = K)) +
   theme_half_open()
 
 pdf(file = "fastst_cv.pdf")
-
+p
 dev.off()
