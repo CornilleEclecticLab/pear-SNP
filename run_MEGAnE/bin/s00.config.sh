@@ -1,0 +1,1 @@
+export sif=/shared/ifbstor1/projects/pear_snp3/pear/run_MEGAnE/bin/MEGAnE.sif
