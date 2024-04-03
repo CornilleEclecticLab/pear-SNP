@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-#SBATCH -J s01.run_stacks.sh
-#SBATCH -o s01.run_stacks.sh.%J.out
-#SBATCH -e s01.run_stacks.sh.%J.err
+#SBATCH -J s01.run_stacks_populations.sh
+#SBATCH -o s01.run_stacks_populations.sh.%J.out
+#SBATCH -e s01.run_stacks_populations.sh.%J.err
 
-# @File     :   s01.run_stacks.sh
+# @File     :   s01.run_stacks_populations.sh
 # @Version  :   1.0.0
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
@@ -19,5 +19,5 @@ populations \
     -k \
     -V ../input/pear_Dec2023.noClone.Combine_chr.geno20_maf005.anno.syno.thin8k.vcf \
     -M ../input/sample_tab_population.txt \
-    -O ../output/
+    -O ../output/s01.run_stacks_populations
 
