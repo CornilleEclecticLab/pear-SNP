@@ -7,4 +7,4 @@
 module purge
 module load samtools/1.14
 
-samtools faidx genome_file.fasta
+samtools faidx ../input/ref_genome.fa
