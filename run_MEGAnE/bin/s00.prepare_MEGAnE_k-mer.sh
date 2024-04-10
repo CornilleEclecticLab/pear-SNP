@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-#SBATCH -J s01.prepear_MEGAnE_k-mer.sh
-#SBATCH -o s01.prepear_MEGAnE_k-mer.sh.%J.out
-#SBATCH -e s01.prepear_MEGAnE_k-mer.sh.%J.err
+#SBATCH -J s00.prepare_MEGAnE_k-mer.sh
+#SBATCH -o s00.prepare_MEGAnE_k-mer.sh.%J.out
+#SBATCH -e s00.prepare_MEGAnE_k-mer.sh.%J.err
 
-# @File     :   s01.prepear_MEGAnE_k-mer.sh
+# @File     :   s00.prepear_MEGAnE_k-mer.sh
 # @Version  :   1.0.0
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
@@ -15,7 +15,8 @@
 source s00.config.sh
 module load tmux
 
+
 singularity exec ${sif} build_kmerset \
--fa genome_file.fasta \
+-fa ../input/ref_genome.fa \
 -prefix reference_Pyrifolia_Cuiguan \
--outdir megane_kmer_set
+-outdir ../input/megane_kmer_set
