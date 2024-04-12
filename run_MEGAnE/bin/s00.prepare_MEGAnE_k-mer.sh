@@ -3,6 +3,8 @@
 #SBATCH -J s00.prepare_MEGAnE_k-mer.sh
 #SBATCH -o s00.prepare_MEGAnE_k-mer.sh.%J.out
 #SBATCH -e s00.prepare_MEGAnE_k-mer.sh.%J.err
+#SBATCH -c 1
+#SBATCH --mem=20G
 
 # @File     :   s00.prepear_MEGAnE_k-mer.sh
 # @Version  :   1.0.0
