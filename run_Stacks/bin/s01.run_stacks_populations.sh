@@ -15,9 +15,11 @@
 module load gcc/11.2.0
 source activate stacks
 
+OUT_DIR="../output/s01.run_stacks_populations"
+mkdir -p  "${OUT_DIR}"
+
 populations \
     -k \
     -V ../input/pear_Dec2023.noClone.Combine_chr.geno20_maf005.anno.syno.thin8k.vcf \
     -M ../input/sample_tab_population.txt \
-    -O ../output/s01.run_stacks_populations
-
+    -O "$OUT_DIR"
