@@ -2,12 +2,15 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s01.generage_MEGAnE_genotype_calling_scripts.py
-# @Version  : 1.0.0
+# @Version  : 1.0.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/08 11:25:00
 # @Description:
 #     
+# @Update:
+#   v1.0.1
+#   Change the input table format
 
 import datetime
 import textwrap
@@ -22,7 +25,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -43,8 +46,10 @@ def wrap79(text, width=79):
 
 
 # Read the input individuals list
-# Table content:
-# ID_vcf    Pop    Depth    Reads_length
+# Individuals list Table content:
+# ID_vcf    ID_uni  Pop    Depth    Reads_length
+
+# Note: the ID_uni is not used in this script
 pop_dic = {}
 ind_list = []
 with open(os.path.join(input_dir,"s01.individuals_table.txt"), "r") as fr:
@@ -56,7 +61,8 @@ with open(os.path.join(input_dir,"s01.individuals_table.txt"), "r") as fr:
         if line=='':
             continue
         line = line.split()
-        id, pop, depth, reads_length = line
+        # Here id_uni is not used in this script.
+        id, id_uni, pop, depth, reads_length = line
 
         if float(depth) < 20:
             raise ValueError("Depth is less than 20 for ID: {}".format(id))
@@ -101,7 +107,7 @@ for path in cram_paths:
 for id in ind_list:
     file_name_str = '\t'.join(file_names)
     if id not in file_name_str:
-        raise ValueError("Didn't find the cram/bam file path for this ID: {id}")
+        raise ValueError(f"Didn't find the cram/bam file path for this ID: {id}")
 
 
 # Write the sub_script for running MEGAnE by individuals
