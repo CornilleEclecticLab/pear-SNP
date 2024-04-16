@@ -17,7 +17,7 @@ module load conda
 source activate TE_AID
 
 # Run TE-Aid
-./TE-Aid/TE-Aid \
+./TE-Aid.NOGIT./TE-Aid \
     --query ../input/reduced_Inpactor2_library_c10.fasta \
     --genome ../input/GWHBAOS00000000.genome.fasta \
     --output ../output \

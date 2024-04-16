@@ -2,7 +2,10 @@
 
 git clone https://github.com/clemgoub/TE-Aid.git
 
-cd TE-Aid
+# Change name to reject git track
+mv TE-Aid TE-Aid.NOGIT.
+
+cd TE-Aid.NOGIT.
 
 # Set the conda channel priority as default, "flexible" 
 conda config --describe channel_priority
