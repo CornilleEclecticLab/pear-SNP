@@ -17,19 +17,20 @@ THREADS=8
 # Define input and output paths and filenames
 # WORK_DIR="/shared/home/ynie/work/pear/run_SVDQuartets" # Replace with the actual path to your input directory
 WORK_DIR="../"
-PREFIX="pear_Dec2023.noclone"   # Replace with your desired prefix
-MIDDLE="Combine_chr.geno20_maf005.anno.syno.thin8k"
-INPUT_VCF="$WORK_DIR/input/$PREFIX.$MIDDLE.vcf.gz"
+PREFIX="pear_Dec2023.noClone.Combine_chr.geno20_maf005.anno.syno.thin8k"   # Replace with your desired prefix
+INPUT_VCF="$WORK_DIR/input/$PREFIX.vcf.gz"
 OUTPUT_DIR="$WORK_DIR/output/s03.extract_pure_sample_filter_geno_maf_to_nex"
-OUTPUT_VCF="$OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.vcf.gz"
+OUTPUT_VCF="$OUTPUT_DIR/$PREFIX.pure.vcf.gz"
 S02_OUTPUT_DIR="$WORK_DIR/output/s02.choose_pure_samples_manually"
 
 # Define the sample list file
 SAMPLE_LIST="$S02_OUTPUT_DIR/s02.non_admixed_list.txt"  # or SAMPLE_LIST="^PATH", where ^ means exclude
 RENAME_LIST="$S02_OUTPUT_DIR/s02.non_admixed_rename_list.txt"  # or SAMPLE_LIST="^PATH", where ^ means exclude
 
-# Define filtering criteria
-FILTER_EXPRESSION='F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN'
+# Define filtering expression
+# FILTER_EXPRESSION='F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN'
+# Update on 2024-04-16 15:38:39, as MAF and F_MISSING filters have been applied in the previous step
+FILTER_EXPRESSION='AC==0 || AC==AN'
 
 echo 'Your input file is: ' $INPUT_VCF
 
@@ -64,10 +65,10 @@ fi
 
 
 # Combine nexus files
-cat $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus "$S02_OUTPUT_DIR/s02.taxpartitions.nex" \
-    > $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex
+cat $OUTPUT_DIR/$PREFIX.pure.*.nexus "$S02_OUTPUT_DIR/s02.taxpartitions.nex" \
+    > $OUTPUT_DIR/$PREFIX.pure.parts.nex
 
-rm $OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.*.nexus
+rm $OUTPUT_DIR/$PREFIX.pure.*.nexus
 
 echo 'Your output file is: ' 
-echo  "$OUTPUT_DIR/$PREFIX.$MIDDLE.Nomix.parts.nex"
+echo  "$OUTPUT_DIR/$PREFIX.pure.parts.nex"
