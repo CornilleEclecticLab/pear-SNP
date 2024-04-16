@@ -79,18 +79,18 @@ for chr, var, invar in zip(chromosome_list, variant_list, invariant_list):
 # Load modules
 module load bcftools/1.14
 
-# # Filter variant
-# bcftools view \\
-#     {var} \\
-#     -S {keep_list} \\
-#     --threads 4 \\
-# | bcftools filter \\
-#     -e 'F_MISSING > 0.2' \\
-#     -Oz4 \\
-#     --threads 4 \\
-#     -o {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
+# Filter variant
+bcftools view \\
+    {var} \\
+    -S {keep_list} \\
+    --threads 4 \\
+| bcftools filter \\
+    -e 'F_MISSING > 0.2' \\
+    -Oz4 \\
+    --threads 4 \\
+    -o {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
 
-# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
+tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
 
 # # Filter variant to remove MAF <= 0.05
 # bcftools filter \\
@@ -108,23 +108,23 @@ module load bcftools/1.14
 # ########################################################################
 
 # # Filter invariant
-# bcftools view \\
-#     {invar} \\
-#     -S {keep_list} \\
-#     --threads 4 \\
-#     -Oz4 \\
-#     -o {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
+bcftools view \\
+    {invar} \\
+    -S {keep_list} \\
+    --threads 4 \\
+    -Oz4 \\
+    -o {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
 
-# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
+tabix -f -p vcf {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
 
-# bcftools filter \\
-#     {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')} \\
-#     -e 'F_MISSING > 0.2' \\
-#     -Oz4 \\
-#     --threads 4 \\
-#     -o {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
+bcftools filter \\
+    {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')} \\
+    -e 'F_MISSING > 0.2' \\
+    -Oz4 \\
+    --threads 4 \\
+    -o {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
 
-# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
+tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
 
 # Concatenate
 bcftools concat \\
@@ -137,16 +137,17 @@ bcftools concat \\
 
 tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')}
 
-bcftools concat \\
-    --allow-overlaps \\
-    {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_temp.variant.vcf.gz')} \\
-    {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')} \\
-    -Oz4 \\
-    --threads 4 \\
-    -o {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')}
+# bcftools concat \\
+#     --allow-overlaps \\
+#     {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_temp.variant.vcf.gz')} \\
+#     {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')} \\
+#     -Oz4 \\
+#     --threads 4 \\
+#     -o {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')}
 
-tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')}
+# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')}
 
+#
 # # Filter variant to remove invariant sites
 # bcftools filter \\
 #     {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')} \\
@@ -154,9 +155,10 @@ tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.
 #     --threads 4 \\
 #     -Oz4 \\
 #     -o {os.path.join(output_dir,sub_script+'.geno20.variant.vcf.gz')}
-
+#
 # tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.variant.vcf.gz')}
-
+#
+#
 # # Filter variant after MAF to remove invariant sites
 # bcftools filter \\
 #     {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_temp.variant.vcf.gz')} \\
@@ -164,13 +166,13 @@ tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.
 #     --threads 4 \\
 #     -Oz4 \\
 #     -o {os.path.join(output_dir,sub_script+'.geno20.maf005.variant.vcf.gz')}
-
+#
 # tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.maf005.variant.vcf.gz')}
 
 
 # # Stats
-# bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')} \\
-# | wc -l > {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.count.txt')}
+bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')} \\
+| wc -l > {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.count.txt')}
 
 # bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.variant.vcf.gz')} \\
 # | wc -l > {os.path.join(output_dir,sub_script+'.geno20.variant.count.txt')}
@@ -178,15 +180,15 @@ tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.
 # bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_temp.variant.vcf.gz')} \\
 # | wc -l > {os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_temp.variant.count.txt')}
 
-# bcftools view -H {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')} \\
-# | wc -l > {os.path.join(output_dir,sub_script+'.invariant.count.txt')}
+bcftools view -H {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')} \\
+| wc -l > {os.path.join(output_dir,sub_script+'.invariant.count.txt')}
 
-# bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')} \\
-# | wc -l > {os.path.join(output_dir,sub_script+'.geno20.invariant.count.txt')}
+bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')} \\
+| wc -l > {os.path.join(output_dir,sub_script+'.geno20.invariant.count.txt')}
 ''')
 
     concat_file_list.write(os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')+'\n')
-    concat_maf005_file_list.write(os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')+'\n')
+    # concat_maf005_file_list.write(os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')+'\n')
 
 
 end_time = datetime.datetime.now()
