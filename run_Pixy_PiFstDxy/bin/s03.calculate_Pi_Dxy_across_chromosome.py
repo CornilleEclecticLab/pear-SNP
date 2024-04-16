@@ -1,0 +1,259 @@
+#!/usr/bin/env python3
+# _*_ coding: utf-8 _*_
+
+# @File     : s03.calculate_Pi_Dxy_across_chromosome.py
+# @Version  : 1.0.0
+# @Author   : NIE Yuqi
+# @Email    : nieyuqi.cn@gmail.com
+# @Time(CET): 2024/03/23 12:54:37
+# @Description:
+#     
+
+import datetime
+import argparse
+import sys
+import textwrap
+import os
+start_time = datetime.datetime.now()
+print(f'{" Start ":=^79}')
+
+
+
+version = "1.0.0"
+script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+bin_dir = script_path
+work_dir = os.path.dirname(script_path)
+input_dir = os.path.join(work_dir,'input')
+output_dir = os.path.join(work_dir,'output',script_basename)
+sub_script_dir = os.path.join(bin_dir,script_basename)
+
+# Ensure output directory exists
+os.makedirs(output_dir, exist_ok=True)
+
+# Function to wrap text to 79 characters
+def wrap79(text, width=79):
+    return textwrap.fill(text, width=width, subsequent_indent=' '*4)
+
+# Read the input file
+parser = argparse.ArgumentParser(description=wrap79(f'''
+    Calculate Pi and Fst across chromosome from the output of Pixy and Dxy from Stacks (If provided).
+'''))
+parser.add_argument('input', 
+                    nargs='+',
+                    type=argparse.FileType('r'),
+                    help=wrap79(f'''
+                        The results files from Pixy to be readin, 
+                        as well as the slurm *.out (summary) for running Stacks file.
+                    '''))
+
+args=parser.parse_args()
+
+# Define the function to read Pi from Pixy
+def read_Pi(dic, dic_chr, io):
+    lines = io.readlines()[1:] if io.readline().startswith('pop') else io.readlines()
+    for line in lines:
+        ls = line.split()
+        pop = ls[0]
+        chr = ls[1]
+        diff = int(ls[6] if ls[6] != 'NA' else 0)
+        comparisons = int(ls[7] if ls[7] != 'NA' else 0)
+
+        dic[pop] = dic.get(pop,[0,0])
+        dic[pop][0] += diff
+        dic[pop][1] += comparisons
+
+        dic_chr[pop] = dic_chr.get(pop,{})
+        dic_chr[pop][chr] = dic_chr[pop].get(chr,[0,0])
+        dic_chr[pop][chr][0] += diff
+        dic_chr[pop][chr][1] += comparisons
+    return dic, dic_chr
+
+# Define the function to read Dxy from Pixy
+def read_Dxy(dic,dic_chr,io):
+    lines = io.readlines()[1:] if io.readline().startswith('pop') else io.readlines()
+    for line in lines:
+        ls = line.split()
+        pop1 = ls[0]
+        pop2 = ls[1]
+        pops = (pop1,pop2)
+        chr = ls[2]
+        diff = int(ls[7] if ls[7] != 'NA' else 0)
+        comparisons = int(ls[8] if ls[8] != 'NA' else 0)
+
+        dic[pops] = dic.get((pop1,pop2),[0,0])
+        dic[pops][0] += diff
+        dic[pops][1] += comparisons
+        dic_chr[pops] = dic_chr.get(pops,{})
+        dic_chr[pops][chr] = dic_chr[pops].get(chr,[0,0])
+        dic_chr[pops][chr][0] += diff
+        dic_chr[pops][chr][1] += comparisons
+
+    return dic, dic_chr
+
+
+# Define the function to read Fst from stacks
+def read_Fst_stacks(dic,io):
+    Fst_dict = dic
+    records_start = False
+    for line in io:
+        line = line.strip()
+
+        if line.startswith('Population pair divergence'):
+            records_start = True
+            continue
+
+        if records_start and line == '':
+            records_start = False
+
+        if records_start:
+            info = line.split(';')[0]
+            print(info)
+            pop1,pop2 = info.split(': mean Fst: ')[0].split('-')
+            Fst = info.split(': mean Fst: ')[1]
+            Fst_dict[(pop1,pop2)] = Fst
+            Fst_dict[(pop2,pop1)] = Fst
+    return Fst_dict
+
+
+# Define the function to calculate Pi or Dxy
+def cul_pi_dxy(diff,comparisons):
+    if comparisons == 0:
+        return 'NA'
+    else:
+        return str(diff/comparisons)
+
+Pi_dic = {}
+Pi_dic_chr = {}
+Dxy_dic = {}
+Dxy_dic_chr = {}
+Fst_dic_Pixy = {}
+Fst_dic_stacks = {}
+for i in args.input:
+    if i.name.endswith('_pi.txt'):
+        Pi_dic, Pi_dic_chr = read_Pi(Pi_dic, Pi_dic_chr, i)
+
+    elif i.name.endswith('_dxy.txt'):
+        Dxy_dic, Dxy_dic_chr = read_Dxy(Dxy_dic, Dxy_dic_chr, i)
+
+    elif i.name.endswith('_fst.txt'): 
+        # TODO: Read Fst from Pixy
+        continue
+    elif i.name.endswith('.out'):
+        Fst_dic_stacks = read_Fst_stacks(Fst_dic_stacks,i)
+
+    else:
+        print('Unknown file type. Please check the file name.')
+        print('The file name should end with "_pi.txt", "_dxy.txt" or "_fst.txt".')
+        print('The file name is:',i.name)
+        sys.exit(1)
+
+    # print(i)        # Get the file object
+    # print(i.name)   # Get the file name
+    # print(i.read()) # Read the entire file
+    # print(i.tell()) # Get the current file position
+    # i.close()       # Close the file
+
+
+# Calculate Pi and Dxy and output the results into files
+opi = open(os.path.join(output_dir,'Pi.txt'),'w')
+opic = open(os.path.join(output_dir,'Pi_chr.txt'),'w')
+
+opi.write('pop\tPi\n')
+
+header = ''
+for pop in Pi_dic:
+    Pi = cul_pi_dxy(Pi_dic[pop][0],Pi_dic[pop][1])
+    print(f'Pi for {pop} is {Pi}')
+
+    opi.write(f'{pop}\t{Pi}\n')
+
+    if header == '':
+        header = 'pop'+ '\t'.join(Pi_dic_chr[pop].keys()) + '\n'
+        opic.write(header)
+
+    elif header != 'pop'+ '\t'.join(Pi_dic_chr[pop].keys()) + '\n':
+        print('The chromosome is not the same in different populations.')
+        sys.exit(1)
+
+    Pi_chr = []
+    for chr in list(Pi_dic_chr[pop].keys()):
+        Pi = cul_pi_dxy(Pi_dic_chr[pop][chr][0],Pi_dic_chr[pop][chr][1])
+
+        print(f'Pi for {pop} in chromosome {chr} is {Pi}')
+
+        Pi_chr.append(Pi)
+
+    opic.write(f'{pop}\t' + '\t'.join(Pi_chr) + '\n')
+opi.close()
+opic.close()
+
+
+
+odxy = open(os.path.join(output_dir,'Dxy.txt'),'w')
+odxyc = open(os.path.join(output_dir,'Dxy_chr.txt'),'w')
+
+odxy.write('\t'+ '\t'.join(Pi_dic.keys()) + '\n')
+
+Dxy_result = {}
+for pop1 in Pi_dic:
+    content = pop1 + '\t'
+    for pop2 in Pi_dic:
+        if pop1 == pop2:
+            continue
+
+        pops = (pop1,pop2)
+        if pops not in Dxy_dic:
+            pops = (pop2,pop1)
+
+        Dxy = cul_pi_dxy(Dxy_dic[pops][0],Dxy_dic[pops][1])
+        print(f'Dxy between {pop1} and {pop2} is {Dxy}')
+        content += Dxy + '\t'
+        Dxy_result[(pop1,pop2)] = Dxy
+
+        for chr in list(Dxy_dic_chr[pops].keys()):
+            Dxy = cul_pi_dxy(Dxy_dic_chr[pops][chr][0],Dxy_dic_chr[pops][chr][1])
+            print(f'Dxy between {pop1} and {pop2} in chromosome {chr} is {Dxy}')
+            odxyc.write(f'{pop1}\t{pop2}\t{chr}\t{Dxy}\n')   
+    odxy.write(content + '\n')
+odxy.close()
+odxyc.close()
+
+
+
+# Ouput the Dxy and Fst mixed matrix
+populations = list(Pi_dic.keys())
+header = '\t'+'\t'.join(populations) + '\n'
+content = ''
+for m in range(len(populations)):
+    pop1 = populations[m]
+    line = pop1 
+    for n in range(len(populations)):
+        pop2 = populations[n]
+        if m==n:    # pop1 == pop2, diagonal, skip
+            line += '\t-'
+            continue
+        elif m > n: # Lower triangle, for Dxy
+            # line += '\t-' 
+            # continue
+            pops = (pop1,pop2) if (pop1,pop2) in Dxy_dic else (pop2,pop1)
+            Dxy = Dxy_result.get(pops,'NA')
+            Dxy = str(round(float(Dxy),6)) if Dxy != 'NA' else 'NA' # Round to 5 decimal places
+            line += '\t' + Dxy
+
+        elif m < n: # Upper triangle, for Fst
+            pops = (pop1,pop2) if (pop1,pop2) in Fst_dic_stacks else (pop2,pop1)
+            Fst = Fst_dic_stacks.get(pops,'NA')
+            Fst = str(round(float(Fst),6)) if Fst != 'NA' else 'NA' # Round to 5 decimal places
+            line += '\t' + Fst
+            print(f'{pop1}\t{pop2}\t{Fst}')
+    line += '\n'
+    content += line
+open('Fst_in_Upper_and_Dxy_in_Lower_matrix.tsv','w').write(header+content)
+
+
+
+end_time = datetime.datetime.now()
+print('')
+print(' END '.center(79,'='))
+print(str(end_time-start_time).center(79))
