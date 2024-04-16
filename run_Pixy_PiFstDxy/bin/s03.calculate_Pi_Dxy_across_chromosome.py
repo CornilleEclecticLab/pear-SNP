@@ -2,12 +2,18 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s03.calculate_Pi_Dxy_across_chromosome.py
-# @Version  : 1.0.0
+# @Version  : 1.1.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/03/23 12:54:37
 # @Description:
-#     
+#     Calculate Pi and Fst across chromosome from the output of Pixy and read Dxy from Stacks results (If provided).
+# @Update: 1.1.0 2024-04-16 11:36:27
+#   1. NEW: Accept the group order in the input file.
+#   2. NEW: Count N values in the output.
+#   3. Change the output file path.
+
+
 
 import datetime
 import argparse
@@ -19,7 +25,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -37,19 +43,43 @@ def wrap79(text, width=79):
 
 # Read the input file
 parser = argparse.ArgumentParser(description=wrap79(f'''
-    Calculate Pi and Fst across chromosome from the output of Pixy and Dxy from Stacks (If provided).
-'''))
+    Calculate Pi and Fst across chromosome from the output of Pixy and 
+    read Dxy from Stacks results (If provided).'''))
 parser.add_argument('input', 
-                    nargs='+',
-                    type=argparse.FileType('r'),
+                    nargs='+', 
+                    type=argparse.FileType('r'), 
                     help=wrap79(f'''
-                        The results files from Pixy to be readin, 
+                        The results files from Pixy to be read in, 
                         as well as the slurm *.out (summary) for running Stacks file.
                     '''))
+parser.add_argument('-o', '--order', 
+                    help='The group order file.', 
+                    dest='order', 
+                    type=argparse.FileType('r'))
+
+parser.add_argument('-s', '--sample_pop',
+                    help=wrap79(f'''The sample and population name in the input file for s02. 
+                    e.g. "../input/s02.sample_tab_population.txt"'''),
+                    dest='sample_pop',
+                    type=argparse.FileType('r'))
 
 args=parser.parse_args()
 
-# Define the function to read Pi from Pixy
+
+# Read group order for the outputs
+group_order = None
+if args.order:
+    group_order = [line.strip() for line in args.order.read().strip().split('\n')]
+
+# Read sample and population name for the outputs
+pop_count = {}
+if args.sample_pop:
+    for line in args.sample_pop:
+        sample, pop = line.strip().split()
+        pop_count[pop] = pop_count.get(pop,0) + 1
+
+
+# Define the function to read diff and comparisons for Pi from Pixy
 def read_Pi(dic, dic_chr, io):
     lines = io.readlines()[1:] if io.readline().startswith('pop') else io.readlines()
     for line in lines:
@@ -69,7 +99,8 @@ def read_Pi(dic, dic_chr, io):
         dic_chr[pop][chr][1] += comparisons
     return dic, dic_chr
 
-# Define the function to read Dxy from Pixy
+
+# Define the function to read diff and comparisons for Dxy from Pixy
 def read_Dxy(dic,dic_chr,io):
     lines = io.readlines()[1:] if io.readline().startswith('pop') else io.readlines()
     for line in lines:
@@ -88,7 +119,6 @@ def read_Dxy(dic,dic_chr,io):
         dic_chr[pops][chr] = dic_chr[pops].get(chr,[0,0])
         dic_chr[pops][chr][0] += diff
         dic_chr[pops][chr][1] += comparisons
-
     return dic, dic_chr
 
 
@@ -121,8 +151,10 @@ def cul_pi_dxy(diff,comparisons):
     if comparisons == 0:
         return 'NA'
     else:
-        return str(diff/comparisons)
+        return str(round(diff / comparisons, 6))  # Round to 5 decimal places
 
+
+# Read the input files (results from Pixy and Stacks)
 Pi_dic = {}
 Pi_dic_chr = {}
 Dxy_dic = {}
@@ -136,7 +168,7 @@ for i in args.input:
     elif i.name.endswith('_dxy.txt'):
         Dxy_dic, Dxy_dic_chr = read_Dxy(Dxy_dic, Dxy_dic_chr, i)
 
-    elif i.name.endswith('_fst.txt'): 
+    elif i.name.endswith('_fst.txt'):
         # TODO: Read Fst from Pixy
         continue
     elif i.name.endswith('.out'):
@@ -148,30 +180,26 @@ for i in args.input:
         print('The file name is:',i.name)
         sys.exit(1)
 
-    # print(i)        # Get the file object
-    # print(i.name)   # Get the file name
-    # print(i.read()) # Read the entire file
-    # print(i.tell()) # Get the current file position
-    # i.close()       # Close the file
-
 
 # Calculate Pi and Dxy and output the results into files
 opi = open(os.path.join(output_dir,'Pi.txt'),'w')
 opic = open(os.path.join(output_dir,'Pi_chr.txt'),'w')
-
-opi.write('pop\tPi\n')
-
+opi.write('pop\tPi\tN\n') if pop_count else opi.write('pop\tPi\n')
 header = ''
-for pop in Pi_dic:
-    Pi = cul_pi_dxy(Pi_dic[pop][0],Pi_dic[pop][1])
-    print(f'Pi for {pop} is {Pi}')
+group_order = group_order if group_order else list(Pi_dic.keys())
+if len(group_order) != len(Pi_dic):
+    raise ValueError(wrap79('The group order is not the same as'
+                            'the populations in the input file.'))
 
-    opi.write(f'{pop}\t{Pi}\n')
+for pop in group_order:
+    N = pop_count.get(pop,0)
+    Pi = cul_pi_dxy(Pi_dic[pop][0],Pi_dic[pop][1])
+    print(f'Pi for {pop} is {Pi}, N={N}')
+    opi.write(f'{pop}\t{Pi}\t{N}\n') if pop_count else opi.write(f'{pop}\t{Pi}\n')
 
     if header == '':
         header = 'pop'+ '\t'.join(Pi_dic_chr[pop].keys()) + '\n'
         opic.write(header)
-
     elif header != 'pop'+ '\t'.join(Pi_dic_chr[pop].keys()) + '\n':
         print('The chromosome is not the same in different populations.')
         sys.exit(1)
@@ -179,32 +207,25 @@ for pop in Pi_dic:
     Pi_chr = []
     for chr in list(Pi_dic_chr[pop].keys()):
         Pi = cul_pi_dxy(Pi_dic_chr[pop][chr][0],Pi_dic_chr[pop][chr][1])
-
-        print(f'Pi for {pop} in chromosome {chr} is {Pi}')
-
         Pi_chr.append(Pi)
+        print(f'Pi for {pop} in chromosome {chr} is {Pi}')
 
     opic.write(f'{pop}\t' + '\t'.join(Pi_chr) + '\n')
 opi.close()
 opic.close()
 
 
-
 odxy = open(os.path.join(output_dir,'Dxy.txt'),'w')
 odxyc = open(os.path.join(output_dir,'Dxy_chr.txt'),'w')
-
 odxy.write('\t'+ '\t'.join(Pi_dic.keys()) + '\n')
-
 Dxy_result = {}
-for pop1 in Pi_dic:
+for pop1 in group_order:
     content = pop1 + '\t'
-    for pop2 in Pi_dic:
+    for pop2 in group_order:
         if pop1 == pop2:
             continue
 
-        pops = (pop1,pop2)
-        if pops not in Dxy_dic:
-            pops = (pop2,pop1)
+        pops = (pop1,pop2) if (pop1,pop2) in Dxy_dic else (pop2,pop1)
 
         Dxy = cul_pi_dxy(Dxy_dic[pops][0],Dxy_dic[pops][1])
         print(f'Dxy between {pop1} and {pop2} is {Dxy}')
@@ -214,22 +235,20 @@ for pop1 in Pi_dic:
         for chr in list(Dxy_dic_chr[pops].keys()):
             Dxy = cul_pi_dxy(Dxy_dic_chr[pops][chr][0],Dxy_dic_chr[pops][chr][1])
             print(f'Dxy between {pop1} and {pop2} in chromosome {chr} is {Dxy}')
-            odxyc.write(f'{pop1}\t{pop2}\t{chr}\t{Dxy}\n')   
+            odxyc.write(f'{pop1}\t{pop2}\t{chr}\t{Dxy}\n')
     odxy.write(content + '\n')
 odxy.close()
 odxyc.close()
 
 
-
 # Ouput the Dxy and Fst mixed matrix
-populations = list(Pi_dic.keys())
-header = '\t'+'\t'.join(populations) + '\n'
+header = '\t'+'\t'.join(group_order) + '\n'
 content = ''
-for m in range(len(populations)):
-    pop1 = populations[m]
+for m in range(len(group_order)):
+    pop1 = group_order[m]
     line = pop1 
-    for n in range(len(populations)):
-        pop2 = populations[n]
+    for n in range(len(group_order)):
+        pop2 = group_order[n]
         if m==n:    # pop1 == pop2, diagonal, skip
             line += '\t-'
             continue
@@ -238,18 +257,17 @@ for m in range(len(populations)):
             # continue
             pops = (pop1,pop2) if (pop1,pop2) in Dxy_dic else (pop2,pop1)
             Dxy = Dxy_result.get(pops,'NA')
-            Dxy = str(round(float(Dxy),6)) if Dxy != 'NA' else 'NA' # Round to 5 decimal places
             line += '\t' + Dxy
 
         elif m < n: # Upper triangle, for Fst
             pops = (pop1,pop2) if (pop1,pop2) in Fst_dic_stacks else (pop2,pop1)
             Fst = Fst_dic_stacks.get(pops,'NA')
-            Fst = str(round(float(Fst),6)) if Fst != 'NA' else 'NA' # Round to 5 decimal places
             line += '\t' + Fst
             print(f'{pop1}\t{pop2}\t{Fst}')
     line += '\n'
     content += line
-open('Fst_in_Upper_and_Dxy_in_Lower_matrix.tsv','w').write(header+content)
+open(os.path.join(output_dir, 'Fst_in_Upper_and_Dxy_in_Lower_matrix.tsv'), 
+     'w').write(header+content)
 
 
 
