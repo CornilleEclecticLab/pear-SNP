@@ -7,3 +7,6 @@ The functionality of this script "./bin/s01.find_pure_individuals.py" has been s
 3. run s03.sh
 4. follow s04.md
 5. run s05.sh
+
+# Reference:
+https://github.com/ForBioPhylogenomics/tutorials/tree/main/species_tree_inference_with_snp_data
