@@ -64,8 +64,6 @@ heder = f'''#!/usr/bin/env bash
 '''
 
 for chr in chrs:
-    for rep in record_dic.keys():
-        sub_script_name = os.path.join(sub_script_dir, f'{script_basename}.{chr}.{rep}.sh')
     with open(sub_script_name,'w') as fo:
         # Define the vcf files
         vcf_files = [os.path.join(work_dir, "output",
@@ -91,7 +89,7 @@ python3 {os.path.join(bin_dir,"msmc-tools","generate_multihetsep.py")} \\
     --chr {chr} \\
     --mask {mask_positive} \\
     {vcf_files} \\
-> {os.path.join(output_dir,f'{chr}.{rep}.multihetsep.txt')} 
+> {os.path.join(output_dir,f'{chr}.multihetsep.txt')} 
 ''')
 
 
