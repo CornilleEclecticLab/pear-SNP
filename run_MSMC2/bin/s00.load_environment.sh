@@ -4,6 +4,8 @@ export PATH=/shared/ifbstor1/projects/pear_snp3/pear/run_MSMC2_infer_population/
 module load bcftools/1.14
 
 
+
+############## For test ##############
 # Set work path
 WORK_BIN=$(pwd)
 WORK_DIR=$(dirname ${WORK_BIN})
@@ -13,3 +15,4 @@ CHR="chr76"
 
 # Set run name for output file
 RUN_NAME="chr76_A301_P11-1"
+############ END For test ############
