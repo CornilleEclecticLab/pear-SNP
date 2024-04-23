@@ -10,6 +10,14 @@ use List::Util qw(sum);
 # Create date: 2021-12-24
 # Contact: chen_xilong@outlook.com
 
+# This had two ISSUEs:
+#  1. The start position of bed file should be 0-based.
+#  2. This script calculate the scores from 0 and 0+step seperatelly. 
+# When the scaffold smaller than one window size, the sencond parts (0+steps to end) no needs calculated. 
+
+# Update: 2024-04-23 17:23:24
+# Fix the issue 1.
+
 my $infile = shift @ARGV;
 my $seed = int(rand() * 1000000);
 my $tmp0 = "$seed.NOGIT.tmp0";
@@ -23,28 +31,29 @@ my $window = 100000;
 my $step = 50000;
 $/ = ">";
 <$in>;
+
 while (<$in>) {
     chomp;
     my ( $chr, $seq ) = split /\n/, $_, 2;
     my @values = split / /, $seq;
-    for ( my $i = 0 ; $i < ( $#values ) ; $i += $window ) {
-        my $j     = $i + $window - 1;
-        $j = $#values if $j > $#values;
-        my @slice = @values[ $i .. $j ];
+    for ( my $i = 0 ; $i < ( $@values ) ; $i += $window ) {
+        my $j     = $i + $window;
+        $j = $@values if $j > $@values;
+        my @slice = @values[ $i .. $j - 1];
         my $avg   = sum(@slice) / @slice;
-        my $start = $i + 1;
-        my $end   = $j + 1;
+        my $start = $i;
+        my $end   = $j;
         if ( $avg < 0.9 ) {
             print $ou0 "$chr\t$start\t$end\t$avg\n";
         }
     }
-        for ( my $i = $step ; $i < ( $#values ) ; $i += $window ) {
-        my $j     = $i + $window - 1;
-        $j = $#values if $j > $#values;
-        my @slice = @values[ $i .. $j ];
+        for ( my $i = $step ; $i < ( $@values ) ; $i += $window ) {
+        my $j     = $i + $window;
+        $j = $@values if $j > $@values;
+        my @slice = @values[ $i .. $j - 1 ];
         my $avg   = sum(@slice) / @slice;
-        my $start = $i + 1;
-        my $end   = $j + 1;
+        my $start = $i;
+        my $end   = $j;
         if ( $avg < 0.9 ) {
             print $ou1 "$chr\t$start\t$end\t$avg\n";
         }
