@@ -28,7 +28,7 @@ group       = 'pear.Zhang2021_b3'
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix      = 's01.fastq_to_gvcf_and_statics.'+group
+prefix      = 's01.fastq_to_gvcf_and_stat.'+group
 scripts_dir = work_dir+'/bin/'+prefix
 output_dir  = output_dir+'/'+prefix
 ## NO need to change Change <<

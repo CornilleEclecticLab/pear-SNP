@@ -28,7 +28,7 @@ group       = 'pear.Iran'  # The input file recording fasq file list is expected
 ## NO need to change >>
 input_dir   = work_dir+'/input'
 output_dir  = work_dir+'/output'
-prefix      = 's01.fastq_to_gvcf_and_statics.'+group
+prefix      = 's01.fastq_to_gvcf_and_stat.'+group
 scripts_dir = work_dir+'/bin/'+prefix
 output_dir  = output_dir+'/'+prefix
 tmp_dir     = work_dir+'/gatk_tmp'
