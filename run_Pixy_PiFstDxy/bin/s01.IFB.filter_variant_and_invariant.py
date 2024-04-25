@@ -8,6 +8,8 @@
 # @Time(CET): 2024/01/22 17:19:35
 # @Description:
 #     
+# @Update: v1.0.2 2024-04-25 17:47:35
+#    Remove the "batch" variable in the script.
 
 import datetime
 import sys
@@ -18,7 +20,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.0.2"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -30,11 +32,10 @@ sub_script_dir = os.path.join(bin_dir,script_basename)
 ########################################################################
 # Set input files
 ########################################################################
-batch = 'pear_Dec2023'
-chromosome_list = os.path.join(input_dir,'s01.'+batch+'.chromosome_list.txt')
-variant_file = os.path.join(input_dir,'s01.'+batch+'.variant_vcf.txt')
-invariant_file = os.path.join(input_dir,'s01.'+batch+'.invariant_vcf.txt')
-keep_list = os.path.join(input_dir,'s01.'+batch+'.keep_pure_samples.txt')
+chromosome_list = os.path.join(input_dir,'s01.chromosome_list.txt')
+variant_file = os.path.join(input_dir,'s01.variant_vcf.txt')
+invariant_file = os.path.join(input_dir,'s01.invariant_vcf.txt')
+keep_list = os.path.join(input_dir,'s01.keep_pure_samples.txt')
 concat_file_list = open(os.path.join(input_dir,'s02.concat_chr_vcf_list.txt'),'w')
 concat_maf005_file_list =open(os.path.join(input_dir,'s02.concat_maf005_chr_vcf_list.txt'),'w')
 
