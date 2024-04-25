@@ -7,7 +7,11 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/19 14:30:37
 # @Description:
-#     
+# 
+# @Update: v1.1.0 2024-04-22 14:48:40
+#     1. Because the Out of Memory error, I have to reduce the input vcf files by Repetition.
+#     2. Use --as_phased to reduce the resource.
+#     3. Fix some typos.
 
 import datetime
 import sys
@@ -17,43 +21,66 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
 work_dir = os.path.dirname(script_path)
-input_dir = os.path.join(work_dir,'input')
-output_dir = os.path.join(work_dir,'output',script_basename)
-sub_script_dir = os.path.join(bin_dir,script_basename)
+input_dir = os.path.join(work_dir, 'input')
+output_dir = os.path.join(work_dir, 'output', script_basename)
+sub_script_dir = os.path.join(bin_dir, script_basename)
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(sub_script_dir, exist_ok=True)
 
 # Function to wrap text to 79 characters
+
+
 def wrap79(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
 
 
 # Read the chromosomes list
-with open(os.path.join(input_dir,'s02.chromosome_list.txt'),'r') as fi:
+with open(os.path.join(input_dir, 's02.chromosome_list.txt'), 'r') as fi:
     chrs = [line.strip() for line in fi]
 
 
-# Read the individual list
-with open(os.path.join(input_dir,'s02.random_individual_population.txt'),'r') as fi:
-    inds = []
+# # Read the individual list
+# with open(os.path.join(input_dir,'s02.random_individual_population.txt'),'r') as fi:
+#     inds = []
+#     for line in fi:
+#         line = line.strip()
+#         if line.startswith('#') or line == '':
+#             continue
+#         else:
+#             ind = line.split('\t')[0]
+#             if ind not in inds:
+#                 inds.append(ind)
+#             else:
+#                 raise ValueError(f'Duplicated individual: {ind}')
+
+# Read individual list
+with open(os.path.join(input_dir,
+                       "s01.random_individual_population.txt"), 'r') as fi:
+    record_dic = {}    # {REP1: [{POP1:[ind1,ind2,ind3]}], REP2: [POP3, POP4]}
+    repeats = []
     for line in fi:
         line = line.strip()
         if line.startswith('#') or line == '':
             continue
         else:
-            ind = line.split('\t')[0]
-            if ind not in inds:
-                inds.append(ind)
-            else:
-                raise ValueError(f'Duplicated individual: {ind}')
+            Individual, Population, Individual_number, Haplotype1_number,	Haplotype2_number, Repeat_number \
+                = line.split('\t')
+
+            reps = Repeat_number.split(',')
+            for rep in reps:
+                if rep not in repeats:
+                    repeats.append(rep)
+                record_dic[rep] = record_dic.get(rep, {})
+                record_dic[rep][Population] = record_dic[rep].get(
+                    Population, [])
+                record_dic[rep][Population].append(Individual)
 
 
 # Generate the multihetsep command
@@ -64,37 +91,43 @@ heder = f'''#!/usr/bin/env bash
 '''
 
 for chr in chrs:
-    with open(sub_script_name,'w') as fo:
-        # Define the vcf files
-        vcf_files = [os.path.join(work_dir, "output",
-                          "s02.split_vcf_by_individual_and_chromosome",
-                          f'{chr}.{ind}.vcf.gz') for ind in inds]
-        vcf_files = ' \\\n    '.join(vcf_files)
+    for rep in record_dic.keys():
+        sub_script_name = os.path.join(
+            sub_script_dir, f'{script_basename}.{chr}.{rep}.sh')
+        with open(sub_script_name, 'w') as fo:
+            # Define the vcf files
+            inds = []
+            for ind_ls in record_dic[rep].values():
+                inds.extend(ind_ls)
+            vcf_files = [os.path.join(work_dir, "output",
+                                      "s02.split_vcf_by_individual_and_chromosome",
+                                      f'{chr}.{ind}.vcf.gz') for ind in inds]
+            vcf_files = ' \\\n    '.join(vcf_files)
 
-        # Define the mask file
-        mask_positive = os.path.join(input_dir,"mask",f'GWHBAOS00000000.genome.{chr}.chromosome.genmap.mask.bed.pass.bed')
+            # Define the mask file
+            mask_positive = os.path.join(
+                input_dir, "mask", f'GWHBAOS00000000.genome.{chr}.chromosome.genmap.mask.bed.pass.bed')
 
-        fo.write(heder)
-        fo.write(f'''
+            fo.write(heder)
+            fo.write(f'''
 #SBATCH -J {chr}
 #SBATCH -o {sub_script_name}.%J.out
 #SBATCH -e {sub_script_name}.%J.err
-#SBATCH -p long
-#SBATCH -c 2
-#SBATCH --mem=1490G
+#SBATCH -c 1
+#SBATCH --mem=2G
 
 module load python/3.9
 
 python3 {os.path.join(bin_dir,"msmc-tools","generate_multihetsep.py")} \\
+    --as_phased \\
     --chr {chr} \\
     --mask {mask_positive} \\
     {vcf_files} \\
-> {os.path.join(output_dir,f'{chr}.multihetsep.txt')} 
+> {os.path.join(output_dir,f'{chr}.{rep}.multihetsep.txt')} 
 ''')
-
 
 
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(79,'='))
+print(' END '.center(79, '='))
 print(str(end_time-start_time).center(79))

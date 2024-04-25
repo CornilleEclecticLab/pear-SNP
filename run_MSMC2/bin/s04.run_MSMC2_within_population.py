@@ -8,6 +8,11 @@
 # @Time(CET): 2024/04/19 15:30:26
 # @Description:
 #     
+# @Update: v1.0.1 2024-04-23 13:25:00
+#     1. Update the input files name.
+#     2. Fix some path errors.
+#     3. Have checked the haplotype numbers match the same individual.
+#     4. Fix some typos.
 
 import datetime
 import sys
@@ -18,7 +23,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -39,7 +44,7 @@ def wrap79(text, width=79):
 
 # Read individual list
 with open(os.path.join(input_dir,
-                       "s02.random_individual_population.txt"),'r') as fi:
+                       "s01.random_individual_population.txt"),'r') as fi:
     record_dic = {}    # {REP1: [{POP1:[ind1,ind2,ind3]}], REP2: [POP3, POP4]}
     repeats = []
     for line in fi:
@@ -47,7 +52,7 @@ with open(os.path.join(input_dir,
         if line.startswith('#') or line == '':
             continue
         else:
-            Indvidual,Population,Indvidual_number,Haplotype1_number,	Haplotype2_number,Repeat_number \
+            Individual,Population,Individual_number,Haplotype1_number,Haplotype2_number,Repeat_number \
                 = line.split('\t')
 
             reps = Repeat_number.split(',')
@@ -63,20 +68,15 @@ with open(os.path.join(input_dir,"s02.chromosome_list.txt"), 'r') as fi:
     chrs = [line.strip() for line in fi]
 
 
-# Define the input file list
-multihetsep_files = [os.path.join(work_dir,
-                                  's03.generate_multihetsep', 
-                                  f'{chr}.multihetsep.txt') for chr in chrs]
-
-multihetsep_files = ' \\\n    '.join(multihetsep_files)
-
-
 # Function, haplotype number to string
-def hap_num_to_str(hap_nums):   
-    hap_str = ''
-    for j in hap_nums:
-        hap_str += f'{j},'
-    return hap_str.strip(',')       # flavor: 0,1,2,3,4,5
+unphased = True
+
+if not unphased:
+    def hap_num_to_str(hap_nums):
+        hap_str = ''
+        for j in hap_nums:
+            hap_str += f'{j},'
+        return hap_str.strip(',')       # flavor: 0,1,2,3,4,5
 
 # In the second flavor, you can give a list of pairs, like
 # this: "-I 0-1,2-3,4-5". In this case, the
@@ -84,8 +84,7 @@ def hap_num_to_str(hap_nums):
 # used to run on a number of unphased genomes, to avoid pairs
 # of haplotypes from different individuals. 
 
-unphased = True
-if unphased:
+elif unphased:
     def hap_num_to_str(hap_nums):   
         hap_str = ''
         for i in range(0,len(hap_nums),2):
@@ -104,7 +103,17 @@ header = f'''#!/usr/bin/env bash
 
 for rep in repeats:
     for pop in record_dic[rep].keys():
+        # Define the output script for running msmc2
         out_script = os.path.join(sub_script_dir,f's04.{pop}.{rep}.run_MSMC2.sh')
+
+        # Define the input file list
+        multihetsep_files = [os.path.join(work_dir,"output",
+                                  's03.generate_multihetsep',
+                                  f'{chr}.{rep}.multihetsep.txt') for chr in chrs]
+
+        multihetsep_files = ' \\\n    '.join(multihetsep_files)
+
+        # Define the output file
         msmc2_output = os.path.join(output_dir,f'{pop}.{rep}.msmc2')
 
         with open(f'{out_script}','w') as f:
@@ -118,7 +127,7 @@ for rep in repeats:
 
 source {os.path.join(bin_dir,'s00.load_environment.sh')}
 
-msmc2 \\
+msmc2_Linux \\
     -t 6 \\
     -i 50 \\
     -p 1*2+40*1+1*2 \\

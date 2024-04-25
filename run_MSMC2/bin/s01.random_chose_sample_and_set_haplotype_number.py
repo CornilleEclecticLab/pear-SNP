@@ -12,6 +12,8 @@
 #     If the population has less than 9 but more than 3 individuals, choose all individuals.
 #     This script would assign haplotype number for each individual, and set repeat number(s) for each individual.
 
+# @Update: v1.1.0 2024-04-22 15:41:42
+#     Generated new format output, that count haplotype number within each repeat. Because the Out of Memory error, I have to reduce the input vcf files by Repetition.
 
 import datetime
 import sys
@@ -23,7 +25,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -70,55 +72,109 @@ for pop, inds in pop_dic.items():
     random_inds[pop] = inds
 
 
+# Assign haplotype number for each individual for each Repeat
+rep_ind_pop_dic = {} # {REP1: {POP1: [ind1,ind2,ind3]}}
+for pop, inds in random_inds.items():
+    ind_n = 0
+    for ind in inds:
+        ind_n += 1
+        if len(inds) == 9:
+            rep_n = ind_n % 3 if ind_n % 3 != 0 else 3
+        else:
+            times = 9 // len(inds)
+            remain = 9 % len(inds)
+            use_times = times + 1 if ind_n <= remain else times
+
+            if use_times == 1:
+                rep_n = ind_n % 3 if ind_n % 3 != 0 else 3
+
+            elif use_times == 2:
+                rep_n = str(ind_n % 3 if ind_n % 3 != 0 else 3) + ',' + str(ind_n % 3 + 1)
+
+            elif use_times == 3:
+                rep_n = '1,2,3'
+
+        rep_n = str(rep_n)
+        reps = [str(i) for i in rep_n.split(',')]
+        for rep in reps:
+            rep = 'REP' + rep
+            rep_ind_pop_dic[rep] = rep_ind_pop_dic.get(rep, {})
+            rep_ind_pop_dic[rep][pop] = rep_ind_pop_dic[rep].get(pop, [])
+            rep_ind_pop_dic[rep][pop].append(ind)
 
 # Write the random individuals to file
 output_file = os.path.join(input_dir,'s01.random_individual_population.txt')
 if os.path.exists(output_file):
     print("Output file already exists. Skipping writing operation.")
+    exit(0)
 else:
-    with open(output_file),'w') as fo:
+    with open(output_file,'w') as fo:
         fo.write("#Indvidual\tPopulation\tIndvidual_number\tHaplotype1_number\tHaplotype2_number\tRepeat_number\n")
-        hap_n = 0
-        for pop, inds in random_inds.items():
+        for rep, pop_inds in rep_ind_pop_dic.items():
+            hap_n = 0
             ind_n = 0
-            # check_rep = {}
-            for ind in inds:
-                hap1_n = hap_n 
-                hap2_n = hap_n + 1
-                hap_n += 2
-                ind_n += 1
-                if len(inds) == 9:
-                    rep_n = ind_n % 3 if ind_n % 3 != 0 else 3
-                    # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
+            for pop, inds in pop_inds.items():
+                for ind in inds:
+                    hap1_n = hap_n
+                    hap2_n = hap_n + 1
+                    hap_n += 2
+                    ind_n += 1
+                    fo.write(f"{ind}\t{pop}\t{ind_n}\t{hap1_n}\t{hap2_n}\t{rep}\n")
 
-                else:
-                    times = 9 // len(inds)
-                    remain= 9 % len(inds) 
-                    use_times = times + 1 if ind_n <= remain else times
 
-                    if use_times == 1:
-                        rep_n = ind_n%3 if ind_n%3 != 0 else 3
-                        # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
 
-                    elif use_times == 2:
-                        rep_n = str(ind_n%3 if ind_n%3!=0 else 3)+','+str(ind_n%3+1)
-                        # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
 
-                    elif use_times == 3:
-                        rep_n = '1,2,3'
-                        # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
 
-                rep_n = str(rep_n)
-                rep = 'REP' + ',REP'.join([str(i) for i in rep_n.split(',')])
-                fo.write(f"{ind}\t{pop}\t{ind_n}\t{hap1_n}\t{hap2_n}\t{rep}\n")
 
-            # # For Developing: Check the repeat number 
-            # for rep, count in check_rep.items():
-            #     if count > 3:
-            #         raise ValueError(f'Repeat {rep} has more than 3 individuals in population {pop}')
-            #     for r in str(rep).split(','):
-            #         if int(r) > 3:
-            #             raise ValueError(f'Population {pop} has more than 3 repeats,{rep}')
+
+# # Write the random individuals to file
+# output_file = os.path.join(input_dir,'s01.random_individual_population.txt')
+# if os.path.exists(output_file):
+#     print("Output file already exists. Skipping writing operation.")
+# else:
+#     with open(output_file),'w') as fo:
+#         fo.write("#Indvidual\tPopulation\tIndvidual_number\tHaplotype1_number\tHaplotype2_number\tRepeat_number\n")
+#         hap_n = 0
+#         for pop, inds in random_inds.items():
+#             ind_n = 0
+#             # check_rep = {}
+#             for ind in inds:
+#                 hap1_n = hap_n 
+#                 hap2_n = hap_n + 1
+#                 hap_n += 2
+#                 ind_n += 1
+#                 if len(inds) == 9:
+#                     rep_n = ind_n % 3 if ind_n % 3 != 0 else 3
+#                     # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
+
+#                 else:
+#                     times = 9 // len(inds)
+#                     remain= 9 % len(inds) 
+#                     use_times = times + 1 if ind_n <= remain else times
+
+#                     if use_times == 1:
+#                         rep_n = ind_n%3 if ind_n%3 != 0 else 3
+#                         # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
+
+#                     elif use_times == 2:
+#                         rep_n = str(ind_n%3 if ind_n%3!=0 else 3)+','+str(ind_n%3+1)
+#                         # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
+
+#                     elif use_times == 3:
+#                         rep_n = '1,2,3'
+#                         # check_rep[rep_n] = check_rep.get(rep_n, 0) + 1
+
+#                 rep_n = str(rep_n)
+#                 rep = 'REP' + ',REP'.join([str(i) for i in rep_n.split(',')])
+#                 fo.write(f"{ind}\t{pop}\t{ind_n}\t{hap1_n}\t{hap2_n}\t{rep}\n")
+
+#             # # For Developing: Check the repeat number 
+#             # for rep, count in check_rep.items():
+#             #     if count > 3:
+#             #         raise ValueError(f'Repeat {rep} has more than 3 individuals in population {pop}')
+#             #     for r in str(rep).split(','):
+#             #         if int(r) > 3:
+#             #             raise ValueError(f'Population {pop} has more than 3 repeats,{rep}')
 
 
 
