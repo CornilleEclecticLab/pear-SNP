@@ -2,12 +2,14 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s01.run_pixy_by_chromosome.py
-# @Version  : 1.0.0
+# @Version  : 1.0.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/01/17 18:07:55
 # @Description:
 #     
+# @Update: v1.0.1 2024-04-25 17:35:10
+#   Don't hard code batch name in the script. 
 
 import datetime
 import sys
@@ -18,7 +20,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -30,9 +32,8 @@ sub_script_dir = os.path.join(bin_dir,script_basename)
 ########################################################################
 # Set input files
 ########################################################################
-batch = 'pear_Dec2023'
 chr_vcf_list = os.path.join(input_dir,'s02.concat_chr_vcf_list.txt')
-chr_list = os.path.join(input_dir,f's01.{batch}.chromosome_list.txt')
+chr_list = os.path.join(input_dir,f's01.chromosome_list.txt')
 pop_path = os.path.join(input_dir,'s02.sample_tab_population.txt')
 
 # Ensure output directory exists
