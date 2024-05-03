@@ -36,7 +36,10 @@
 # 1.Fix a bug where the output data would be duplicated.
 
 # Update v3.4.0: 2024-03-18 11:28:53
-# 1. Update the color pallets to version 2024-03-15
+# 1.Update the color pallets to version 2024-03-15.
+
+# Update v3.5.0: 2024-03-18 15:07:01
+# 1.Update the species_and_cluster to include the country code and type.
 
 import argparse
 import datetime
@@ -306,7 +309,8 @@ with open('find_pure_individuals.txt', 'w') as fo:
         else:
             raise ValueError('Incompatible group_map and fam file')
 
-        species = uni_id[:4] + uni_id[-5]
+        # species = uni_id[:4] + uni_id[-5] # Update v3.5.0
+        species = uni_id[:10] # Update v3.5.0
         cluster_and_color = ''
         Q_values = ''
         for i, Qi in enumerate(Qs):
