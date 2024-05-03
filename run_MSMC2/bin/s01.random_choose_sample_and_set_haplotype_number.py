@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-# @File     : s01.random_chose_sample_and_set_haplotype_number.py
+# @File     : s01.random_choose_sample_and_set_haplotype_number.py
 # @Version  : 1.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
