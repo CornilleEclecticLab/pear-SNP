@@ -3,6 +3,8 @@
 #SBATCH -J s01.run_TE-Aid.sh
 #SBATCH -o s01.run_TE-Aid.sh.%J.out
 #SBATCH -e s01.run_TE-Aid.sh.%J.err
+#SBATCH -c 10
+#SBATCH --mem=60G
 
 # @File     :   s01.run_TE-Aid.sh
 # @Version  :   1.0.0
