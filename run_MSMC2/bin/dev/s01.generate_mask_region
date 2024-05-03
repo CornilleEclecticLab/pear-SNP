@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#SBATCH -J s01.generate_mask_region
+#SBATCH -o s01.generate_mask_region.%J.out
+#SBATCH -e s01.generate_mask_region.%J.err
+
+# @File     :   s01.generate_mask_region
+# @Version  :   1.0.0
+# @Author   :   NIE Yuqi
+# @Email    :   nieyuqi.cn@gmail.com
+# @Time(CET):   2023/11/09 21:05:14
+#Description:
+	# 
+
+WORK_DIR=/shared/ifbstor1/projects/pear_snp3/pear/run_MSMC2_infer_population
+
+source ~/.bashrc
+mamba activate msmc2
+export PATH=$WORK_DIR/bin/msmc-tools:$PATH
+
+msmc2_Linux \
+	-t 16 \
+	-o $WORK_DIR/chr76_A301_P11-1.msmc2 \
+	-s 1000000 \
+	-p 1*2+25*1+1*2 \
+	$WORK_DIR/txt
