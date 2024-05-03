@@ -7,6 +7,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
+module load conda
 source activate bioconvert
 
 bioconvert nexus2newick "$1" "$1.nwk"
