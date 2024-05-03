@@ -35,8 +35,9 @@ p <- ggplot(df2, aes(y = CV_error, x = K)) +
     position = position_dodge(0.05)
   ) +
   scale_x_continuous(breaks = c(1:20)) +
-  xlab("K ancestry") + ylab("Cross balidation error") +
+  xlab("K ancestry") + ylab("Cross validation error") +
   theme_half_open()
+  # theme_classic()
 
 pdf(file = "fastst_cv.pdf")
 p
