@@ -7,11 +7,13 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/19 14:30:37
 # @Description:
-# 
+#
 # @Update: v1.1.0 2024-04-22 14:48:40
 #     1. Because the Out of Memory error, I have to reduce the input vcf files by Repetition.
 #     2. Use --as_phased to reduce the resource.
 #     3. Fix some typos.
+# @Update: v1.1.1 2024-04-29 14:44:21
+#     1. Remove the full path for the Slurm err and out files, only remain the file name.
 
 import datetime
 import sys
@@ -92,8 +94,9 @@ heder = f'''#!/usr/bin/env bash
 
 for chr in chrs:
     for rep in record_dic.keys():
+        sub_script_base = f'{script_basename}.{chr}.{rep}'
         sub_script_name = os.path.join(
-            sub_script_dir, f'{script_basename}.{chr}.{rep}.sh')
+            sub_script_dir, f'{sub_script_base}.sh')
         with open(sub_script_name, 'w') as fo:
             # Define the vcf files
             inds = []
@@ -111,8 +114,8 @@ for chr in chrs:
             fo.write(heder)
             fo.write(f'''
 #SBATCH -J {chr}
-#SBATCH -o {sub_script_name}.%J.out
-#SBATCH -e {sub_script_name}.%J.err
+#SBATCH -o {sub_script_base}.%J.out
+#SBATCH -e {sub_script_base}.%J.err
 #SBATCH -c 1
 #SBATCH --mem=2G
 

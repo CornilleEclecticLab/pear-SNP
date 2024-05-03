@@ -7,12 +7,14 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/19 15:30:26
 # @Description:
-#     
+#
 # @Update: v1.0.1 2024-04-23 13:25:00
 #     1. Update the input files name.
 #     2. Fix some path errors.
 #     3. Have checked the haplotype numbers match the same individual.
 #     4. Fix some typos.
+# @Update: v1.0.2 2024-04-29 14:40:05
+#     1. Remove the full path for the Slurm err and out files, only remain the file name.
 
 import datetime
 import sys
@@ -22,15 +24,14 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-
 version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
 work_dir = os.path.dirname(script_path)
-input_dir = os.path.join(work_dir,'input')
-output_dir = os.path.join(work_dir,'output',script_basename)
-sub_script_dir = os.path.join(bin_dir,script_basename)
+input_dir = os.path.join(work_dir, 'input')
+output_dir = os.path.join(work_dir, 'output', script_basename)
+sub_script_dir = os.path.join(bin_dir, script_basename)
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -44,7 +45,7 @@ def wrap79(text, width=79):
 
 # Read individual list
 with open(os.path.join(input_dir,
-                       "s01.random_individual_population.txt"),'r') as fi:
+                       "s01.random_individual_population.txt"), 'r') as fi:
     record_dic = {}    # {REP1: [{POP1:[ind1,ind2,ind3]}], REP2: [POP3, POP4]}
     repeats = []
     for line in fi:
@@ -52,19 +53,22 @@ with open(os.path.join(input_dir,
         if line.startswith('#') or line == '':
             continue
         else:
-            Individual,Population,Individual_number,Haplotype1_number,Haplotype2_number,Repeat_number \
+            Individual, Population, Individual_number, Haplotype1_number, Haplotype2_number, Repeat_number \
                 = line.split('\t')
 
             reps = Repeat_number.split(',')
             for rep in reps:
                 if rep not in repeats:
                     repeats.append(rep)
-                record_dic[rep] = record_dic.get(rep,{})
-                record_dic[rep][Population] = record_dic[rep].get(Population,[])
-                record_dic[rep][Population].extend([Haplotype1_number,Haplotype2_number])
+                record_dic[rep] = record_dic.get(rep, {})
+                record_dic[rep][Population] = record_dic[rep].get(
+                    Population, [])
+                record_dic[rep][Population].extend(
+                    [Haplotype1_number, Haplotype2_number])
+            del rep, reps
 
 # Read the chromosome list
-with open(os.path.join(input_dir,"s02.chromosome_list.txt"), 'r') as fi:
+with open(os.path.join(input_dir, "s02.chromosome_list.txt"), 'r') as fi:
     chrs = [line.strip() for line in fi]
 
 
@@ -82,14 +86,16 @@ if not unphased:
 # this: "-I 0-1,2-3,4-5". In this case, the
 # program will run only those specified pairs. This can be
 # used to run on a number of unphased genomes, to avoid pairs
-# of haplotypes from different individuals. 
+# of haplotypes from different individuals.
 
 elif unphased:
-    def hap_num_to_str(hap_nums):   
+    def hap_num_to_str(hap_nums):
         hap_str = ''
-        for i in range(0,len(hap_nums),2):
-            if eval(f"{hap_nums[i]}-{hap_nums[i+1]}") != -1:  # check if the haplotype pairs are from the same individual
-                raise ValueError(f'Unphased haplotype pairs from different individuals: {hap_nums[i]}-{hap_nums[i+1]}')
+        for i in range(0, len(hap_nums), 2):
+            # check if the haplotype pairs are from the same individual
+            if eval(f"{hap_nums[i]}-{hap_nums[i+1]}") != -1:
+                raise ValueError(
+                    f'Unphased haplotype pairs from different individuals: {hap_nums[i]}-{hap_nums[i+1]}')
             hap_str += f'{hap_nums[i]}-{hap_nums[i+1]},'
         return hap_str.strip(',')    # flavor: 0-1,2-3,4-5
 
@@ -104,24 +110,26 @@ header = f'''#!/usr/bin/env bash
 for rep in repeats:
     for pop in record_dic[rep].keys():
         # Define the output script for running msmc2
-        out_script = os.path.join(sub_script_dir,f's04.{pop}.{rep}.run_MSMC2.sh')
+        out_base = f's04.{pop}.{rep}.run_MSMC2'
+        out_script = os.path.join(
+            sub_script_dir, f'{out_base}.sh')
 
         # Define the input file list
-        multihetsep_files = [os.path.join(work_dir,"output",
-                                  's03.generate_multihetsep',
-                                  f'{chr}.{rep}.multihetsep.txt') for chr in chrs]
+        multihetsep_files = [os.path.join(work_dir, "output",
+                                          's03.generate_multihetsep',
+                                          f'{chr}.{rep}.multihetsep.txt') for chr in chrs]
 
         multihetsep_files = ' \\\n    '.join(multihetsep_files)
 
         # Define the output file
-        msmc2_output = os.path.join(output_dir,f'{pop}.{rep}.msmc2')
+        msmc2_output = os.path.join(output_dir, f'{pop}.{rep}.msmc2')
 
-        with open(f'{out_script}','w') as f:
+        with open(f'{out_script}', 'w') as f:
             f.write(f'{header}')
             f.write(f'''
-##SBATCH -J {pop}.{rep}
-#SBATCH -o {out_script}.%J.out
-#SBATCH -e {out_script}.%J.err
+#SBATCH -J {out_base}
+#SBATCH -o {out_base}.%J.out
+#SBATCH -e {out_base}.%J.err
 #SBATCH -c 6
 #SBATCH --mem=20G
 
@@ -137,8 +145,7 @@ msmc2_Linux \\
 ''')
 
 
-
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(79,'='))
+print(' END '.center(79, '='))
 print(str(end_time-start_time).center(79))
