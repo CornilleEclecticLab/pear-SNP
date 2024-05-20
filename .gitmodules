@@ -14,7 +14,7 @@
 	path = run_ABBA_BABA/bin/tutorials
 	url = https://github.com/millanek/tutorials.git
 [submodule "run_MSMC2/bin/MappabilityMask/msmc2_scripts"]
-	path = run_MSMC2/bin/MappabilityMask/msmc2_scripts
+	path = run_MSMC2/bin/MappabilityMask.NOGIT.unused/msmc2_scripts
 	url = https://github.com/jessicarick/msmc2_scripts.git
 [submodule "run_MSMC2/bin/msmc-tools"]
 	path = run_MSMC2/bin/msmc-tools
