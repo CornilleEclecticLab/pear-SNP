@@ -12,8 +12,15 @@
 #   1. NEW: Accept the group order in the input file.
 #   2. NEW: Count N values in the output.
 #   3. Change the output file path.
+
 # @Update: 1.2.0 2024-04-29 17:46:33
 #   1. NEW: Accept the pixy Fst results.
+
+# @Update: 1.2.1 2024-05-10 
+#   1. Finish editting in the last version.
+#   2. Changed the output header.
+
+
 
 
 import datetime
@@ -25,7 +32,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.2.0"
+version = "1.2.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -293,7 +300,7 @@ odxyc.close()
 
 # Output the Dxy_pixy and Fst_stack mixed matrix
 # Stacks
-header = '\t'+'\t'.join(group_order) + '\n'
+header = 'Pops\t'+'\t'.join(group_order) + '\n'
 content = ''
 for m in range(len(group_order)):
     pop1 = group_order[m]
@@ -324,7 +331,7 @@ open(os.path.join(output_dir, 'Fst_Stacks_in_Upper_and_Dxy_Pixy_in_Lower_matrix.
 
 # Output the Dxy_pixy and Fst_pixy mixed matrix
 # Pixy
-header = '\t'+'\t'.join(group_order) + '\n'
+header = 'Pops\t'+'\t'.join(group_order) + '\n'
 content = ''
 fst_chr_out = open(os.path.join(output_dir, 'Fst_Pixy_chr.txt'), 'w')
 for m in range(len(group_order)):
