@@ -1,6 +1,6 @@
 source ~/.bashrc
 mamba activate msmc2
-export PATH=/shared/ifbstor1/projects/pear_snp3/pear/run_MSMC2_infer_population/bin/msmc-tools:$PATH
+export PATH=/shared/projects/pear_snp3/pear/run_MSMC2/bin/msmc-tools:$PATH
 module load bcftools/1.14
 
 
