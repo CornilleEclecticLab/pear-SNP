@@ -45,7 +45,7 @@ with open(os.path.join(input_dir,'s02.chromosome_list.txt'),'r') as fi:
     chr_list = fi.read().strip().split('\n')
 
 # Read individual list
-with open(os.path.join(input_dir,'s02.random_individual_population.txt'),'r') as fi:
+with open(os.path.join(input_dir,'s01.random_individual_population.txt'),'r') as fi:
     ind_list = [line.strip().split()[0] 
                 for line in fi.read().strip().split('\n') 
                 if not line.startswith('#')]
