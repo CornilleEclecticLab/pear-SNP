@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s02.find_mask.py
-# @Version  : 1.1.0
+# @Version  : 2.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/07/18 21:35:05
@@ -14,6 +14,8 @@
 #   3. Fix the bug that the last window pass region is repeated.
 #   4. Fix the issue that joint lines of genmap results using empty string, normally the result is single line for each chromosome.
 
+# @Update: v2.0.0 2024-05-22 14:54:17
+#    1. Update the output filename.
 
 
 import datetime
@@ -26,7 +28,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.1.0"
+version = "2.0.0"
 script_basename = "s02.find_mask"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -49,6 +51,8 @@ genmap_txt = genmap_out_base+".txt"
 genmap_size = genmap_out_base+".chrom.sizes"
 mask = genmap_out_base+".mask.bed"
 mask_with_score = genmap_out_base+".mask_with_score.bed"
+mask_pass = genmap_out_base+".pass.bed"
+mask_pass_with_score = genmap_out_base+".pass_with_score.bed"
 
 
 if len(sys.argv) !=4:
@@ -89,8 +93,8 @@ def get_average_score(score_list, start, end):
     return average_score
 
 
-pass_region = open(mask+'.pass.bed','w')
-pass_with_score = open(mask+'.pass_with_score.bed','w')
+pass_region = open(mask_pass,'w')
+pass_with_score = open(mask_pass_with_score,'w')
 mask = open(mask, 'w')
 with open(mask_with_score,'w') as fo:
     for id, scores in dic_score.items():
