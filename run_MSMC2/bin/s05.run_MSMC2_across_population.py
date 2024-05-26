@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s05.run_MSMC2_across_population.py
-# @Version  : 1.0.1
+# @Version  : 1.1.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/19 17:11:09
@@ -18,6 +18,9 @@
 #   1. Remove the full path for the Slurm err and out files, only remain the file name.
 #   2. Reduce the haplotype number to 10 pairs.
 #   3. Fix a bug where reference WRONG rep number.
+# @Update: v1.1.1 2024-05-22 21:43:26
+#   1. Add the "--skipAmbiguous" option.
+
 
 
 import datetime
@@ -30,7 +33,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.2"
+version = "1.1.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -153,6 +156,7 @@ msmc2_Linux \\
     -t 16 \\
     -i 20 \\
     -p 1*2+40*1+1*2 \\
+    --skipAmbiguous \\
     -I {hap_num_to_random_str(record_dic[rep_a][pop1],record_dic[rep_a][pop2])} \\
     -o {msmc2_output} \\
     {multihetsep_files}
