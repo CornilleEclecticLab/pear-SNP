@@ -16,6 +16,9 @@
 # @Update: v1.0.2 2024-04-29 14:40:05
 #     1. Remove the full path for the Slurm err and out files, only remain the file name.
 
+# @Update: v1.1.0 2024-05-22 14:12:20
+
+
 import datetime
 import sys
 import textwrap
@@ -24,7 +27,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.1"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -137,8 +140,8 @@ source {os.path.join(bin_dir,'s00.load_environment.sh')}
 
 msmc2_Linux \\
     -t 6 \\
-    -i 50 \\
-    -p 1*2+40*1+1*2 \\
+    -i 10 \\
+    -p 1*2+40*1+1*2+1*3 \\
     -I {hap_num_to_str(record_dic[rep][pop])} \\
     -o {msmc2_output} \\
     {multihetsep_files}

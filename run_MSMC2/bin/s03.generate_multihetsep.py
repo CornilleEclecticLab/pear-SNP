@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s03.generate_multihetsep.py
-# @Version  : 1.0.0
+# @Version  : 1.1.2
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/19 14:30:37
@@ -14,6 +14,8 @@
 #     3. Fix some typos.
 # @Update: v1.1.1 2024-04-29 14:44:21
 #     1. Remove the full path for the Slurm err and out files, only remain the file name.
+# @Update: v1.1.2 2024-05-22 19:15:11
+#     1. Update the mask file name.
 
 import datetime
 import sys
@@ -23,7 +25,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.1.0"
+version = "1.1.2"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -109,7 +111,7 @@ for chr in chrs:
 
             # Define the mask file
             mask_positive = os.path.join(
-                input_dir, "mask", f'GWHBAOS00000000.genome.{chr}.chromosome.genmap.mask.bed.pass.bed')
+                input_dir, "mask", f'{chr}.mask_pass.bed')
 
             fo.write(heder)
             fo.write(f'''

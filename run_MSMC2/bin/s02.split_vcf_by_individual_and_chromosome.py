@@ -2,12 +2,15 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s02.split_vcf_by_individual_and_chromosome.py
-# @Version  : 1.0.0
+# @Version  : 1.0.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/17 22:36:48
 # @Description:
 #     
+
+# v1.0.1 Update 2024-05-22 18:45:20
+#   1. Update the input files name.
 
 import datetime
 import sys
@@ -18,7 +21,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -37,7 +40,7 @@ def wrap79(text, width=79):
 
 
 # define the merged VCF file
-in_vcf = os.path.join(input_dir,'s02.merged.geno20.vcf.gz')
+in_vcf = os.path.join(input_dir,'s02.input.vcf.gz')
 
 
 # Read chromosome list
