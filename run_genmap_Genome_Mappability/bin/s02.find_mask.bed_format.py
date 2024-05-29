@@ -2,7 +2,6 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s02.find_mask.py
-# @Version  : 2.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/07/18 21:35:05
@@ -17,18 +16,20 @@
 # @Update: v2.0.0 2024-05-22 14:54:17
 #    1. Update the output filename.
 
+# @Update: v3.0.0 2024-05-28 21:54:23
+#    1. Negative score is priority to be masked, i.e. check the final average score of the region that supposed to pass.
 
 import datetime
 import textwrap
 import sys
 import os
-import pandas as pd
+# import pandas as pd
 
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.0.0"
+version = "3.0.0"
 script_basename = "s02.find_mask"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -37,8 +38,8 @@ output_dir = os.path.join(work_dir, 'output')
 
 # Parameters
 step = 50000
-window = 100000 # step * 2
-thresholds = 0.9 # 90% of the window should be mapped to the genome
+window = 100000   # step * 2
+threshold = 0.9  # 90% of the window should be mapped to the genome
 
 
 def warp(text, width=79):
@@ -55,12 +56,12 @@ mask_pass = genmap_out_base+".pass.bed"
 mask_pass_with_score = genmap_out_base+".pass_with_score.bed"
 
 
-if len(sys.argv) !=4:
-    message=f'''Usage: python3 {sys.argv[0]} [ <.genmap_chrom.sizes> <.genmap.txt> <output_mask.bed> ]'''
+if len(sys.argv) != 4:
+    message = f'''Usage: python3 {sys.argv[0]} [ <.genmap_chrom.sizes> <.genmap.txt> <output_mask.bed> ]'''
     print(warp(message))
 
     if len(sys.argv) == 1:
-        message=f'''Now running with default parameters: {sys.argv[0]} {genmap_size} {genmap_txt} {mask}'''
+        message = f'''Now running with default parameters: {sys.argv[0]} {genmap_size} {genmap_txt} {mask}'''
         print(warp(message))
     else:
         sys.exit(1)
@@ -70,36 +71,52 @@ elif len(sys.argv) == 4:
     genmap_txt = sys.argv[2]
     mask = sys.argv[3]
 
+# Load genome size use pandas, or not. The file is small, so it's not necessary to use pandas.
+# chr_size = pd.read_csv(genmap_size, sep='\t', header=None, names=['chr','size'])
+chr_size = {}
+with open(genmap_size, 'r') as fo:
+    lines = fo.readlines()
+    [chr_size.setdefault(line.split('\t')[0], line.split('\t')[1])
+     for line in lines]
 
-chr_size = pd.read_csv(genmap_size, sep='\t', header=None, names=['chr','size'])
 
-def read_file(file): # read a genmap.txt file
+# Function: Read genmap results
+def read_file(file):
     dic_score = {}
 
-    with open(file,'r') as fo:
-        content=fo.read().strip().split('>')
+    with open(file, 'r') as fo:
+        content = fo.read().strip().split('>')
         for sequences in content[1:]:
-            lines=sequences.strip().split('\n')
+            lines = sequences.strip().split('\n')
             id = lines[0].split()[0]
             seq = ' '.join(lines[1:])
             dic_score[id] = [float(score) for score in seq.split()]
+            # If use pandas, the code is:
+            # dic_score[id] = pd.Series([float(score) for score in seq.split()])
 
     return dic_score
 
+
 dic_score = read_file(genmap_txt)
 
+# Function: get average score for a region
+
+
 def get_average_score(score_list, start, end):
-    average_score = sum(score_list[start:end]) / (end-start)
-    return average_score
+    return sum(score_list[start:end]) / (end-start)
+    # Here if use pandas, the code is: but is slower than the above code.
+    # return score_list[start:end].mean()
 
 
-pass_region = open(mask_pass,'w')
-pass_with_score = open(mask_pass_with_score,'w')
+# Output
+pass_region = open(mask_pass, 'w')
+pass_with_score = open(mask_pass_with_score, 'w')
 mask = open(mask, 'w')
-with open(mask_with_score,'w') as fo:
+with open(mask_with_score, 'w') as fo:
     for id, scores in dic_score.items():
-
-        length  = int(chr_size.loc[chr_size['chr'] == id, 'size'].values[0])
+        # If read the genome size using pandas:
+        # length  = int(chr_size.loc[chr_size['chr'] == id, 'size'].values[0])
+        length = int(chr_size[id])
 
         # # Xilong's strategy
         # for m in range(0,length-window+1, window):
@@ -114,7 +131,6 @@ with open(mask_with_score,'w') as fo:
 
         # sort and merge file1 and file2
 
-
         # # My strategy
         # for i in range(0, max(1,length-window+1), step):
         #     start = i
@@ -127,64 +143,86 @@ with open(mask_with_score,'w') as fo:
         #     # if average_score < thresholds:
         #     #     fo.write(f'{id}\t{start+1}\t{end}\t{average_score}\n')
 
-
         # Flowing strategy considers the overlap between two windows
         m_start = m_end = 0  # Masked region
         p_start = p_end = 0  # Passed region (unmask, or high score)
-        # for i in range(0,max(1,length-window+1), step):
-        for i in range(0,length, step):
+
+        for i in range(0, length, step):
             start = i
             end = min(i+window, length)
             average_score = get_average_score(scores, start, end)
 
-            if average_score < thresholds:
+            if average_score < threshold:
                 p_end = min(start, p_end)
                 if m_start == m_end == 0:
                     m_start = start
                     m_end = end
-
                     if p_start != p_end:
-                        p_average_score = get_average_score(scores, p_start, p_end)
+                        p_average_score = get_average_score(
+                            scores, p_start, p_end)
                         pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
-                        pass_with_score.write(f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
-                        print(f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
-
+                        pass_with_score.write(
+                            f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
+                        print(
+                            f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
+                        if p_average_score < threshold:
+                            raise ValueError(
+                                'BUG:The average score of the passed region is lower than the threshold.')
                 elif start <= m_end:
-                    m_start = m_start
+                    # m_start = m_start
                     m_end = end
 
+                # elif start > m_end:
+                #     m_average_score = get_average_score(scores, m_start, m_end)
+                #     mask.write(f'{id}\t{m_start}\t{m_end}\n')
+                #     fo.write(f'{id}\t{m_start}\t{m_end}\t{m_average_score}\n')
+                #     p_average_score = get_average_score(scores, p_start, p_end)
+                #     pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
+                #     pass_with_score.write(
+                #                     f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
+                #     print(f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
+                #     if p_average_score < threshold:
+                #         raise ValueError(
+                #             'BUG[2]:The average score of the passed region is lower than the threshold.')
                 elif start > m_end:
+                    p_average_score = get_average_score(scores, p_start, p_end)
+                    if p_average_score < threshold:
+                        m_end = max(m_end, p_end)
+                    elif p_average_score >= threshold:
+                        pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
+                        pass_with_score.write(
+                            f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
+                        print(
+                            f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
                     m_average_score = get_average_score(scores, m_start, m_end)
                     mask.write(f'{id}\t{m_start}\t{m_end}\n')
                     fo.write(f'{id}\t{m_start}\t{m_end}\t{m_average_score}\n')
 
-                    p_average_score = get_average_score(scores, p_start, p_end)
-                    pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
-                    pass_with_score.write(
-                                    f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
-                    print(f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
-
                     m_start = start
                     m_end = end
 
-            elif average_score >= thresholds:
-                    p_start = max(p_start, m_end) if m_end != 0 else p_start
-                    p_end = end
+            elif average_score >= threshold:
+                p_start = max(p_start, m_end) if m_end != 0 else p_start
+                p_end = end
 
             if end == length:
                 break
+
+        if p_start != p_end and m_end != end:
+            p_average_score = get_average_score(scores, p_start, p_end)
+            if p_average_score < threshold:
+                m_end = max(m_end, p_end)
+            elif p_average_score >= threshold:
+                pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
+                pass_with_score.write(
+                    f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
+                print(
+                    f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
 
         if m_start != m_end:
             m_average_score = get_average_score(scores, m_start, m_end)
             mask.write(f'{id}\t{m_start}\t{m_end}\n')
             fo.write(f'{id}\t{m_start}\t{m_end}\t{m_average_score}\n')
-
-
-        if p_start != p_end and m_end != end:
-            p_average_score = get_average_score(scores, p_start, p_end)
-            pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
-            pass_with_score.write(f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
-            print(f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
 
 mask.close()
 pass_with_score.close()
@@ -193,5 +231,5 @@ pass_region.close()
 
 end_time = datetime.datetime.now()
 print('')
-print(' END '.center(79,'='))
+print(' END '.center(79, '='))
 print(str(end_time-start_time).center(79))
