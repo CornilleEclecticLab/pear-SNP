@@ -19,6 +19,9 @@
 # @Update: v3.0.0 2024-05-28 21:54:23
 #    1. Negative score is priority to be masked, i.e. check the final average score of the region that supposed to pass.
 
+# @Update: v3.0.1 2024-05-30 00:49:01
+#    1. Fix an issue that some continues regions are not merged.
+
 import datetime
 import textwrap
 import sys
@@ -29,7 +32,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "3.0.0"
+version = "3.0.1"
 script_basename = "s02.find_mask"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -186,23 +189,27 @@ with open(mask_with_score, 'w') as fo:
                 #             'BUG[2]:The average score of the passed region is lower than the threshold.')
                 elif start > m_end:
                     p_average_score = get_average_score(scores, p_start, p_end)
+                    to_write_result = True
                     if p_average_score < threshold:
-                        m_end = max(m_end, p_end)
+                        m_end = max(end, p_end)
+                        to_write_result = False
                     elif p_average_score >= threshold:
                         pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
                         pass_with_score.write(
                             f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
                         print(
                             f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
-                    m_average_score = get_average_score(scores, m_start, m_end)
-                    mask.write(f'{id}\t{m_start}\t{m_end}\n')
-                    fo.write(f'{id}\t{m_start}\t{m_end}\t{m_average_score}\n')
+                        m_average_score = get_average_score(
+                            scores, m_start, m_end)
+                        mask.write(f'{id}\t{m_start}\t{m_end}\n')
+                        fo.write(
+                            f'{id}\t{m_start}\t{m_end}\t{m_average_score}\n')
 
-                    m_start = start
-                    m_end = end
+                        m_start = start
+                        m_end = end
 
             elif average_score >= threshold:
-                p_start = max(p_start, m_end) if m_end != 0 else p_start
+                p_start = max(p_start, m_end)
                 p_end = end
 
             if end == length:
