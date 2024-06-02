@@ -18,7 +18,7 @@ THREADS=8
 # Define input and output paths and filenames
 # WORK_DIR="/shared/home/ynie/work/pear/run_SVDQuartets" # Replace with the actual path to your input directory
 WORK_DIR="../"
-PREFIX="pear_Dec2023.noClone.Combine_chr.geno20_maf005.anno.syno.thin8k"   # Replace with your desired prefix
+PREFIX="merged_pear_loquat.merge_snps.biallelic.Combine_chr.geno20_maf005.anno.syno.thin8k"   # Replace with your desired prefix
 INPUT_VCF="$WORK_DIR/input/$PREFIX.vcf.gz"
 OUTPUT_DIR="$WORK_DIR/output/s03.extract_pure_sample_filter_geno_maf_to_nex"
 OUTPUT_VCF="$OUTPUT_DIR/$PREFIX.pure.vcf.gz"
