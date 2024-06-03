@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s04.vcf2smc_to_prepare_for_split.py
-# @Version  : 1.0.2
+# @Version  : 1.0.3
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023-07-06 17:28:47
@@ -18,6 +18,11 @@
 #     Polished the warning message.
 
 
+#     version 1.0.3: 2024-05-21 18:13:17
+#     Don't need load singularity module.
+
+
+
 import datetime
 import os
 import sys
@@ -28,7 +33,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.2"
+version = "1.0.3"
 script_basename = "s04.vcf2smc_to_prepare_for_split"
 s05_script = 's05.split_time_estimation.py'
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -39,12 +44,12 @@ sub_script_dir = os.path.join(work_dir,'bin',script_basename)
 
 
 
-mask = os.path.join(input_dir,"GWHBAOS00000000.genome.genmap.mask.bed.gz")
+mask = os.path.join(input_dir,"s01.mask.bed.gz")
 vcf = input_dir+"/s01.input.vcf.gz"
-chromosome_list = input_dir+"/s01.scaffolds_list.txt"  
+chromosome_list = input_dir+"/s01.scaffolds_list.txt"
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
-load_singularity = 'module load system/singularity-3.7.3'
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
 
 
 

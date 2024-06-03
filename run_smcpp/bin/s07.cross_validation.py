@@ -12,6 +12,9 @@
 #     version 1.0.1: 2023-07-06 15:00:22
 #     Polished the code style.
 
+#     version 1.0.2: 2024-05-21 18:19:26
+#     Don't need load singularity module.
+
 
 
 
@@ -39,7 +42,7 @@ sub_script_dir = work_dir+'/bin/'+script_basename
 vcf = input_dir+"/s01.input.vcf.gz"
 chromosome_list = input_dir+"/s01.scaffolds_list.txt"
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
-load_singularity = 'module load system/singularity-3.7.3'
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
 
 
 
