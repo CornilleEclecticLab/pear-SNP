@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s01.vcf2smc_by_chr.py
-# @Version  : 1.0.2
+# @Version  : 1.1.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/07/05 15:45:10
@@ -19,6 +19,9 @@
 #     version 1.1.0: 2023-07-26 22:03:54
 #     add the "--mask" option
 
+#     version 1.1.1: 2024-05-21 17:59:10
+#     I changed the input mask file.
+
 import datetime
 import os
 import sys
@@ -26,7 +29,7 @@ import textwrap
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "1.1.0"
+version = "1.1.1"
 
 script_basename = "s01.vcf2smc_by_chr"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -36,11 +39,14 @@ output_dir = os.path.join(work_dir, 'output', script_basename)
 sub_script_dir = os.path.join(work_dir, 'bin', script_basename)
 
 
-mask = os.path.join(input_dir,"GWHBAOS00000000.genome.genmap.mask.bed.gz")
+mask = os.path.join(
+    input_dir, "s01.mask.bed.gz")
 vcf = os.path.join(input_dir, "s01.input.vcf.gz")
-chromosome_list = os.path.join(input_dir, "s01.scaffolds_list.txt") 
-individual_population_list = os.path.join(input_dir,"s01.individuals_and_populations_list.txt") # Format: individual_name population_name
-load_singularity = '# module load system/singularity-3.7.3' # singularity is installed on the cluster
+chromosome_list = os.path.join(
+    input_dir, "s01.scaffolds_list.txt") 
+individual_population_list = os.path.join(
+    input_dir,"s01.individuals_and_populations_list.txt") # Format: individual_name population_name
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
 
 
 
@@ -60,14 +66,14 @@ population_dict = {}
 with open(individual_population_list,'r') as fr:
     for line in fr:
         if line.startswith("#") or line.strip()=='':
-            continue 
+            continue
         line = line.strip().split()
         individual = line[0]
         population = line[1]
         info=f'Reading the "individuals_and_populations_list": {individual} {population}'
         print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
-        population_dict[population] = population_dict.get(population,list())
+        population_dict[population] = population_dict.get(population, list())
         population_dict[population].append(individual)
 
 

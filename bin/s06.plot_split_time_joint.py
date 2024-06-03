@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s06.plot_split_time_joint.py
-# @Version  : 1.1.0
+# @Version  : 1.2.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023-07-11 14:31:15
@@ -13,6 +13,9 @@
 
 #   Version 1.2.0: 2023-08-07 22:42:19
 #   Test using less both pop12 and 21 files (medium).
+
+#   Version 1.2.1: 2024-05-21 18:18:38
+#   Don't need load singularity module.
 
 
 
@@ -28,9 +31,11 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.2.0"
+version = "1.2.1"
 
 # Set the parameters
+generation_time = "7.5"  # The generation time of the species in years
+cpu = '1'
 script_basename = "s06.plot_split_time_joint"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -48,7 +53,8 @@ vcf = input_dir+"/s01.input.vcf.gz"
 chromosome_list = input_dir+"/s01.scaffolds_list.txt"
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
-load_singularity = 'module load system/singularity-3.7.3'
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
+
 
 
 
@@ -158,8 +164,8 @@ for (pop1,pop2) in population_pair_list:
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_base}.pdf \\
-        -g 7.5 \\
-        --cores 1 \\
+        -g {generation_time} \\
+        --cores {cpu} \\
         -c \\
         {s05_output_dir}/{pop1}.{pop2}/model.final.json
 '''
@@ -185,8 +191,8 @@ singularity run -B  {work_dir}:{work_dir} \\
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_base}.pdf \\
-        -g 7.5 \\
-        --cores 1 \\
+        -g {generation_time} \\
+        --cores {cpu} \\
         -c \\
         {s05_output_dir}/{pop2}.{pop1}/model.final.json
 '''
@@ -213,8 +219,8 @@ singularity run -B  {work_dir}:{work_dir} \\
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_base}.pdf \\
-        -g 7.5 \\
-        --cores 1 \\
+        -g {generation_time} \\
+        --cores {cpu} \\
         -c \\
         {s05_output_dir}/{pop1}.{pop2}.less/model.final.json
 '''
@@ -240,8 +246,8 @@ singularity run -B  {work_dir}:{work_dir} \\
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_base}.pdf \\
-        -g 7.5 \\
-        --cores 1 \\
+        -g {generation_time} \\
+        --cores {cpu} \\
         -c \\
         {s05_output_dir}/{pop2}.{pop1}.less/model.final.json
 '''
@@ -269,8 +275,8 @@ singularity run -B  {work_dir}:{work_dir} \\
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_base}.pdf \\
-        -g 7.5 \\
-        --cores 1 \\
+        -g {generation_time} \\
+        --cores {cpu} \\
         -c \\
         {s05_output_dir}/{pop1}.{pop2}.medium/model.final.json
 '''
@@ -296,8 +302,8 @@ singularity run -B  {work_dir}:{work_dir} \\
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_base}.pdf \\
-        -g 7.5 \\
-        --cores 1 \\
+        -g {generation_time} \\
+        --cores {cpu} \\
         -c \\
         {s05_output_dir}/{pop2}.{pop1}.medium/model.final.json
 '''

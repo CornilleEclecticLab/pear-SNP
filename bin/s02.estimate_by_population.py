@@ -2,22 +2,27 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s02.estimate_by_population.py
-# @Version  : 1.0.3
+# @Version  : 2.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/07/05 19:13:09
 # @Description:
 #     This script is used to generate sub-scripts for the "smc++ estimate" command.
 
-#     version 1.0.1: 2023-07-06 15:00:22
+#    version 1.0.1: 2023-07-06 15:00:22
 #     Polished the code style.
 
-#     version 1.0.2: 2023-07-09 10:37:26
+#    version 1.0.2: 2023-07-09 10:37:26
 #     Shortened the slurm job file name
 
-#     version 1.0.3: 2023-07-10 22:13:26
+#    version 1.0.3: 2023-07-10 22:13:26
 #     Fixed bugs, the parameter --output should be --outdir.
 
+#    version 1.0.4: 2024-05-21 18:06:15
+#     Don't need load singularity module.
+
+#    version 2.0.0: 2024-05-27 20:14:27
+#     Support different spline types, piecewise, cubic, pchip.
 
 
 import datetime
@@ -27,11 +32,13 @@ import textwrap
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
+# The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
+# The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
+spline_type = ("piecewise","cubic","pchip")[1]  # piecewise, cubic, pchip
 
-
-version = "1.0.2"
+version = "2.0.0"
 cpu_cores = '20'
-script_basename = "s02.estimate_by_population"
+script_basename = "s02.estimate_by_population_"+spline_type
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
 input_dir = work_dir+'/input/'
@@ -41,12 +48,12 @@ sub_script_dir = work_dir+'/bin/'+script_basename
 
 
 
+
 vcf = input_dir+"/s01.input.vcf.gz"
 chromosome_list = input_dir+"/s01.scaffolds_list.txt"
-individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
-load_singularity = 'module load system/singularity-3.7.3'
-
-
+individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt"  # Format: individual_name population_name
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
+mutation_rate = '3.9e-8'   # The mutation rate of the species per generation
 
 os.system("mkdir -p "+sub_script_dir)
 os.system("mkdir -p "+output_dir)
@@ -100,11 +107,11 @@ for pop, inds in population_dict.items():
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif estimate \\
         --cores {cpu_cores} \\
-        --timepoints 100 1e7 \\
+        --timepoints 100 1e5 \\
         --outdir {output_dir}/{pop}/ \\
-        --spline piecewise \\
+        --spline {spline_type} \\
         --polarization-error 0.5 \\
-        3.9e-08 \\
+        {mutation_rate} \\
         {smc_list}
 '''
             fo.write(content)

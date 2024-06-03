@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s05.split_time_estimation.py
-# @Version  : 1.1.0
+# @Version  : 1.2.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023-07-06 19:32:47
@@ -28,6 +28,9 @@
 #    Version 1.2.0: 2023-08-07 22:45:11
 #    Use both pop21 and pop12 smc files (medium)
 
+#    Version 1.2.1: 2024-05-21 18:13:50
+#    Don't need load singularity module.
+
 
 import datetime
 import os
@@ -39,7 +42,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.2.0"
+version = "1.2.1"
 s01_script_basename = "s01.vcf2smc_by_chr"
 s02_script_basename = "s02.estimate_by_population"
 s04_script_basename = "s04.vcf2smc_to_prepare_for_split"
@@ -56,10 +59,10 @@ s04_output_dir = work_dir+'/output/'+s04_script_basename
 
 
 vcf = input_dir+"/s01.input.vcf.gz"
-chromosome_list = input_dir+"/s01.scaffolds_list.txt"  
+chromosome_list = input_dir+"/s01.scaffolds_list.txt"
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
 population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
-load_singularity = 'module load system/singularity-3.7.3'
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
 cpu_cores = "20"
 
 

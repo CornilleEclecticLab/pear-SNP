@@ -2,19 +2,21 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s03.plot_estimate.py
-# @Version  : 1.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023-07-11 14:30:50
 # @Description:
 #    
 
+#   version 1.0.1: 2024-05-21 18:06:15
+#   Don't need load singularity module.
 
+#   version 2.0.0: 2024-05-27 21:04:48
+#   Support different spline types, piecewise, cubic, pchip.
 
 
 
 import datetime
-from email.mime import base
 import os
 import sys
 import textwrap
@@ -23,14 +25,16 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "2.0.0"
 
 # Set the parameters
-script_basename = "s03.plot_estimate"
+spline_type = 'cubic'  # piecewise, cubic, pchip
+
+script_basename = "s03.plot_estimate_" + spline_type
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
 input_dir = work_dir+'/input/'
-s02_output_dir = work_dir+'/output/s02.estimate_by_population'
+s02_output_dir = work_dir+'/output/s02.estimate_by_population_' + spline_type
 output_dir = work_dir+'/output/'+script_basename
 sub_script_dir = work_dir+'/bin/'+script_basename
 
@@ -40,7 +44,8 @@ sub_script_dir = work_dir+'/bin/'+script_basename
 vcf = input_dir+"/s01.input.vcf.gz"
 chromosome_list = input_dir+"/s01.scaffolds_list.txt"
 individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
-load_singularity = 'module load system/singularity-3.7.3'
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
+generation_time = "7.5"  # The generation time of the species in years
 
 
 
@@ -104,7 +109,7 @@ with open(sub_script,"w") as fo:
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_basename}.pdf \\
-        -g 7.5 \\
+        -g {generation_time} \\
         --cores 1 \\
         -c \\
         {get_json_list_for_plot_by_pop()}
@@ -134,7 +139,7 @@ for pop in population_dict.keys():
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif plot \\
         {output_dir}/{sub_script_basename}.pdf \\
-        -g 7.5 \\
+        -g {generation_time} \\
         --cores 1 \\
         -c \\
         {s02_output_dir}/{pop}/model.final.json
