@@ -8,6 +8,8 @@
 # @Description:
 #    
 
+# Update v1.1.0 2024-06-03 16:20:07
+#   - Add reheader step to add chromosome length in the header of the phased vcf files.
 
 import datetime
 import sys
@@ -17,7 +19,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -52,6 +54,7 @@ header = f"""#!/usr/bin/env bash
 for chr in chr_list:
     sub_script_base = script_basename + f'.{chr}'
     input_vcf = os.path.join(work_dir, 'output','s01.split_vcf_by_chromosomes', f'{chr}.vcf.gz')
+    fai_file = os.path.join(input_dir, 'fai_files', f'{chr}.fasta.fai')
     output_vcf_prefix = os.path.join(output_dir, f'{chr}.phased')
     with open(os.path.join(sub_script_dir, sub_script_base+'.sh'), 'w') as fo:
         fo.write(header)
@@ -62,14 +65,17 @@ for chr in chr_list:
 #SBATCH -c 10
 #SBATCH --mem=64G
 
-module load java-jdk/11.0.9.1
+source {bin_dir}/s00.load_modules.sh
 
 java -Xmx60g -jar {beagle_jar} \\
     gt="{input_vcf}" \\
     out="{output_vcf_prefix}"
 
-
 tabix -p vcf {output_vcf_prefix}.vcf.gz
+
+bcftools reheader --fai {fai_file}  {output_vcf_prefix}.vcf.gz -o {output_vcf_prefix}.reheader.vcf.gz 
+
+tabix -p vcf {output_vcf_prefix}.reheader.vcf.gz
 """)
 
 
