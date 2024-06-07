@@ -22,6 +22,9 @@
 # @Update: v3.0.1 2024-05-30 00:49:01
 #    1. Fix an issue that some continues regions are not merged.
 
+# @Update: v3.0.2 2024-06-07 16:42:10
+#    1. Fix the bug that happened in the first window not masked.
+
 import datetime
 import textwrap
 import sys
@@ -32,7 +35,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "3.0.1"
+version = "3.0.2"
 script_basename = "s02.find_mask"
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -42,7 +45,7 @@ output_dir = os.path.join(work_dir, 'output')
 # Parameters
 step = 50000
 window = 100000   # step * 2
-threshold = 0.9  # 90% of the window should be mapped to the genome
+threshold = 0.9   # window average mappability score
 
 
 def warp(text, width=79):
@@ -163,14 +166,17 @@ with open(mask_with_score, 'w') as fo:
                     if p_start != p_end:
                         p_average_score = get_average_score(
                             scores, p_start, p_end)
-                        pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
-                        pass_with_score.write(
-                            f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
-                        print(
-                            f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
                         if p_average_score < threshold:
-                            raise ValueError(
-                                'BUG:The average score of the passed region is lower than the threshold.')
+                            m_start = min(start, p_start)
+                            m_end = max(end, p_end)
+                            # raise ValueError(
+                            #     'BUG:The average score of the passed region is lower than the threshold.')
+                        elif p_average_score >= threshold:
+                            pass_region.write(f'{id}\t{p_start}\t{p_end}\n')
+                            pass_with_score.write(
+                            f'{id}\t{p_start}\t{p_end}\t{p_average_score}\n')
+                            print(
+                                f'Passed region:  {id}\t{p_start}\t{p_end}\t{p_average_score}')
                 elif start <= m_end:
                     # m_start = m_start
                     m_end = end
