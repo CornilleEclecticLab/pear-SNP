@@ -1,25 +1,34 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
  
-# @File     : s02.generate_run_OmegaPlus.py
-# @Version  : 1.0.0
+# @File     : s03.generate_run_OmegaPlus.py
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/11/27 21:14:08
 # @Description:
 #     
+# @Update: v1.1.0 2024-06-25 00:11:38
+#     1. Previous version used the vcf files get from ru_Choose_non_admix_split_by_pop. 
+#        Now, the vcf files are from s01.get_vcf_file by pop from a merged vcf file.
+#        The s01 script is included in the same directory with this script.
+#     2. The batch variable is now import from s00, rather defined in the script.
+#     3. Using grid size according to the chromosome size.
 
 import datetime
 import sys
 import textwrap
 import os
 import random
+from s00_config import batch, individual_pop_map_filename, chromosomes_list_filename
+
+
+
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -28,14 +37,9 @@ input_dir = os.path.join(work_dir,'input')
 output_dir = os.path.join(work_dir,'output',script_basename)
 sub_script_dir = os.path.join(bin_dir,script_basename)
 
-batch = 'pear_July2023'
+id_pop_file = os.path.join(input_dir, individual_pop_map_filename)
 
-grids = ['1000','2000','3000','4000','5000','6000','7000','8000','9000','10000']
-
-id_group_file = os.path.join(input_dir,'s02.non_admix_individuals.id_group_map.txt')
-
-chr_list_file = os.path.join(input_dir,'s02.chr_list.txt')
-
+chr_list_file = os.path.join(input_dir, chromosomes_list_filename)
 
 
 # Ensure output directory exists
@@ -47,18 +51,26 @@ def wrap(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
 
 
+grids_windows = ['1000', '2000', '3000', '4000', '5000',
+         '6000', '7000', '8000', '9000', '10000']
 
-group_id = {}
-with open(id_group_file,'r') as file:
+def read_grid_file(chr, grid_file):
+    dic = {}
+    with open(grid_file,'r') as file:
+        dic = {line.split()[0]: line.split()[1] for line in file.readlines()}
+    return dic[chr]
+
+
+pop_id = {}
+with open(id_pop_file,'r') as file:
     for line in file:
         line = line.strip()
         if line.startswith('#'):
             continue
         else:
-            id,group = line.split()[0:2]
-            group_id[group] = group_id.get(group,[])
-            group_id[group].append(id)
-
+            id,pop = line.split()[0:2]
+            pop_id[pop] = pop_id.get(pop,[])
+            pop_id[pop].append(id)
 
 
 chr_list = []
@@ -71,12 +83,14 @@ with open(chr_list_file,'r') as file:
             chr_list.append(line)
 
 
-
-for groups, ids in group_id.items():
+for pop, ids in pop_id.items():
     for chr in chr_list:
-        for grid in grids:
-            sub_script_prefix = f's02.run_OmegaPlus.{groups}.{chr}.grid{str(grid)}'
-            vcf_prefix = os.path.join(input_dir,'vcf',f'{batch}.{chr}.filtered_pixy_variant.{group}.nonadmix.maf001')
+        for grid_window in grids_windows:
+            grid_num = read_grid_file(chr, os.path.join(
+                input_dir, f'grid_chr.{grid_window}.txt'))
+            sub_script_prefix = f's02.run_OmegaPlus.{pop}.{chr}.grid{str(grid_window)}'
+            vcf_prefix = os.path.join(output_dir,'s01.get_vcf_by_pop',f'{batch}.{chr}.{pop}')
+            random_seed = random.randint(100000, 999999)
             with open(os.path.join(sub_script_dir,sub_script_prefix+'.sh'),'w') as file:
                 file.write(
                     f'''#!/usr/bin/env bash
@@ -92,60 +106,72 @@ source {bin_dir}/s00.load_OmegaPlus.sh
 
 # Run OmegaPlus
 OmegaPlus-M \\
+    -name {sub_script_prefix}.min5K.max100K \\
+    -input {vcf_prefix}.vcf \\
+    -grid {grid_num} \\
+    -minwin 5000 \\
+    -maxwin 100000 \\
+    -all \\
+    -minsnps 5 \\
+    -threads 4 \\
+    -seed {random_seed} 
+
+
+OmegaPlus-M \\
     -name {sub_script_prefix}.min2500 \\
     -input {vcf_prefix}.vcf \\
-    -grid {grid} \\
+    -grid {grid_num} \\
     -minwin 2500 \\
     -maxwin 10000 \\
     -all \\
     -minsnps 5 \\
     -threads 4 \\
-    -seed {random.randint(100000,999999)} 
+    -seed {random_seed} 
 
 
 OmegaPlus-M \\
     -name {sub_script_prefix}.min1000 \\
     -input {vcf_prefix}.vcf \\
-    -grid {grid} \\
+    -grid {grid_num} \\
     -minwin 1000 \\
     -maxwin 10000 \\
     -all \\
     -minsnps 5 \\
     -threads 4 \\
-    -seed {random.randint(100000,999999)} 
+    -seed {random_seed} 
 
 OmegaPlus-M \\
     -name {sub_script_prefix}.min2000 \\
     -input {vcf_prefix}.vcf \\
-    -grid {grid} \\
+    -grid {grid_num} \\
     -minwin 2000 \\
     -maxwin 10000 \\
     -all \\
     -minsnps 5 \\
     -threads 4 \\
-    -seed {random.randint(100000,999999)} 
+    -seed {random_seed} 
 
 OmegaPlus-M \\
     -name {sub_script_prefix}.min4000 \\
     -input {vcf_prefix}.vcf \\
-    -grid {grid} \\
+    -grid {grid_num} \\
     -minwin 4000 \\
     -maxwin 10000 \\
     -all \\
     -minsnps 5 \\
     -threads 4 \\
-    -seed {random.randint(100000,999999)}
+    -seed {random_seed}
 
 OmegaPlus-M \\
     -name {sub_script_prefix}.min5000 \\
     -input {vcf_prefix}.vcf \\
-    -grid {grid}\\
+    -grid {grid_num}\\
     -minwin 5000 \\
     -maxwin 10000 \\
     -all \\
     -minsnps 5 \\
     -threads 4 \\
-    -seed {random.randint(100000,999999)}
+    -seed {random_seed}
 
 mv OmegaPlus_*.{sub_script_prefix}.min* {output_dir} 
 ''')

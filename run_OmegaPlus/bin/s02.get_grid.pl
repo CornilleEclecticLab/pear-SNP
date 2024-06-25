@@ -24,7 +24,7 @@ print $oulog join ' ', @LOG;
 print $oulog "\n";
 
 my $workdir =
-  "/shared/home/ynie/work/pear/run_RAiSD/";
+  "/shared/home/ynie/work/pear/run_OmegaPlus";
 my $input = "$workdir/input";
 
 my %karyo_hash;
