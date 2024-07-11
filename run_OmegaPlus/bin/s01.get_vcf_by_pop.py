@@ -71,9 +71,8 @@ sbatch_options = '''
 #SBATCH -c 4
 #SBATCH --mem=10G
 '''
-
 run_bcftools = '''
-
+source {bin_dir}/s00.load_bcftools.sh
 
 bcftools view \\
     {vcf} \\
@@ -84,7 +83,6 @@ bcftools view \\
     -O v \\
     -o {nonadmix_vcf}
 
-tabix {nonadmix_vcf} && \\
 bcftools view -H {nonadmix_vcf} \\
 | wc -l > {nonadmix_vcf}.num.txt
 
@@ -95,7 +93,6 @@ bcftools filter \\
     -O v \\
     -o {maf_vcf}
 
-tabix {maf_vcf} && \\
 bcftools view -H {maf_vcf} \\
 | wc -l > {maf_vcf}.num.txt
 '''
@@ -122,7 +119,8 @@ for pop_name, ids in pop_individual.items():
             fo.write(sbatch_options.format(chr_base=chr_base,
                                            script_basename=script_basename, sub_script_basename=sub_script_basename)
                      )
-            fo.write(run_bcftools.format(script_path=script_path,
+            fo.write(run_bcftools.format(bin_dir=bin_dir,
+                                         script_path=script_path,
                                          vcf=input_merged_vcf_path,
                                          input_dir=input_dir,
                                          nonadmix_vcf=nonadmix_vcf,

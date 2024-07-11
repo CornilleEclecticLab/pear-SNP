@@ -89,7 +89,7 @@ for pop, ids in pop_id.items():
             grid_num = read_grid_file(chr, os.path.join(
                 input_dir, f'grid_chr.{grid_window}.txt'))
             sub_script_prefix = f's02.run_OmegaPlus.{pop}.{chr}.grid{str(grid_window)}'
-            vcf_prefix = os.path.join(output_dir,'s01.get_vcf_by_pop',f'{batch}.{chr}.{pop}')
+            vcf_prefix = os.path.join(work_dir,'output','s01.get_vcf_by_pop',f'{batch}.{chr}.{pop}')
             random_seed = random.randint(100000, 999999)
             with open(os.path.join(sub_script_dir,sub_script_prefix+'.sh'),'w') as file:
                 file.write(
