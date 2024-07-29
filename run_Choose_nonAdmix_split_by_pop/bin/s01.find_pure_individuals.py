@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s01.find_pure_individuals.py
-# @Version  : 3.0.0
+# @Version  : 3.6.1
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/09/15 11:35:21
@@ -40,6 +40,13 @@
 
 # Update v3.5.0: 2024-03-18 15:07:01
 # 1.Update the species_and_cluster to include the country code and type.
+
+# Update v3.6.0: 2024-07-28 21:08:20
+# 1. Update the color pallets (Europe) to version 2024-07-28.
+# 2. Update the error message to be more informative.
+
+# Update v3.6.1: 2024-07-29 11:39:00
+# 1. Update the color pallet (Europe) to version 2024-07-29.
 
 import argparse
 import datetime
@@ -147,20 +154,20 @@ color_pallet_E=[
     "#27bc40",
     "#91FBEF",
     "#035b03",
-    "#b2f2bb",
     "#DC143C",
+    "#b2f2bb",
     "#648FFF",
-    "#00CED1",
     "#1E90c8",
     "#8B008B",
     "#9b59b6",
     "#960558",
     "#FFA07A",
+    "#00CED1",
     "#5E4734",
     "#FF5800",
     "#FFB727"
 ]
-color_pallet_version = '# 2024-03-15'
+color_pallet_version = '# 2024-07-29'
 
 # if args.color_pallet is None:
 #     color_pallet = color_pallet_default
@@ -307,7 +314,7 @@ with open('find_pure_individuals.txt', 'w') as fo:
         if id_group_map is not None:
             group = id_group_map[uni_id]
         else:
-            raise ValueError('Incompatible group_map and fam file')
+            raise ValueError('Error: Please provide the group_map file')
 
         # species = uni_id[:4] + uni_id[-5] # Update v3.5.0
         species = uni_id[:10] # Update v3.5.0
