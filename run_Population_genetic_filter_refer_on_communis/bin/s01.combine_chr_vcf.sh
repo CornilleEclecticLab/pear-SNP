@@ -22,4 +22,7 @@ mkdir -p $OUTPUT
 bcftools concat -f $INPUT/pear.Jul2024.ref_on_communis.chr.variant.vcf.list.txt \
 -O z4 \
 --threads 8 \
--o $OUTPUT/pear_Jul2024_ref_comm.Combine_Chr.vcf.gz
+-o $OUTPUT/pear_Jul2024_ref_comm.Combine_chr.vcf.gz
+
+tabix -p vcf $OUTPUT/pear_Jul2024_ref_comm.Combine_chr.vcf.gz
+

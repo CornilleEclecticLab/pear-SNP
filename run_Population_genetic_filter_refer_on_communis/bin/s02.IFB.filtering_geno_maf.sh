@@ -24,4 +24,6 @@ bcftools view \
     -e 'F_MISSING > 0.2 || MAF <= 0.05 || AC==0 || AC==AN' \
     -O z4 \
     --threads 8 \
-    -o $OUTPUT/$PREFIX.Combine_chr.geno20_maf005.vcf.gz 
+    -o $OUTPUT/$PREFIX.Combine_chr.geno20_maf005.vcf.gz
+
+tabix -p vcf $OUTPUT/$PREFIX.Combine_chr.geno20_maf005.vcf.gz
