@@ -1,0 +1,5 @@
+INPUT="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter/output/branch15.batch19.pear_Dec2023_noclone_but_keep_name_conflict_individuals/pear_Dec2023_noclone_but_keep_name_conflict_individuals.Combine_chr.geno20_maf005.anno.syno.thin8k"
+INPUT="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter/output/branch15.batch20.pear_Dec2023.noclone_noUnclearWild.but_keep_w23_forChecking.CheckedSplitTree/pear_Dec2023.noclone_noUnclearWild.but_keep_w23_forChecking.CheckedSplitTree.Combine_chr.geno20_maf005.anno.syno.thin8k"
+INPUT="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter/output/branch15.batch21.pear_Dec2023.noclone/pear_Dec2023.noclone.Combine_chr.geno20_maf005.anno.syno.thin8k"
+INPUT="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter/output/branch15.batch31.Asia.removeConflicts/pear_Dec2023.Asia.Combine_chr.geno20_maf005.anno.syno.thin8k"
+INPUT="/shared/ifbstor1/projects/pear_snp3/pear/run_Population_genetic_filter/output/branch15.batch30.noclone.removeConflictss/pear_Dec2023.noClone.Combine_chr.geno20_maf005.anno.syno.thin8k"

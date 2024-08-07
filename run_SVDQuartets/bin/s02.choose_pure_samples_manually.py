@@ -7,7 +7,15 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/09/18 14:52:50
 # @Description:
-#     
+# OUTPUT:
+#     This script is used to generate the "taxpartitions.nex" file for PAUP analysis, and the "s02.non_admixed_list.txt" for bcftools.
+#     It will also generate a "s02.non_admixed_rename_list.txt" file, which is used to rename the sample names if "-" in the name, change it to "_" to avoid PAUP error.
+
+# INPUT:
+#     It will directly read the file $input_file_sample_list, which is the output file from "s01.find_pure_individuals.py" or "../../run_Choose_nonAdmix_split_by_pop" (Recommended), but after manual checking. 
+#     The input file context is like:
+#         # id    species/population
+
 
 # Updates:
 # Version 2.0.0 2023-09-20 10:58:57
@@ -47,7 +55,18 @@ Usage:  python3 {script_basename}.py
 '''))
 print('')
 print(wrap(f'''
-Before running this script, you should have run s01.find_pure_individuals.py, and have manually edited the intput file {input_file_sample_list} ready.'''))
+Before running this script, 
+you should have run "s01.find_pure_individuals.py", 
+or 
+"../../run_Choose_nonAdmix_split_by_pop" (Recommended) 
+to find the pure individuals,
+and have manually checked or provided the input file:
+"{input_file_sample_list}".
+
+In the input file, the first two column content should be like:
+    # id    species/population
+'''))
+
 inputs = input('Please confirm that you have done the above steps. (y/n): ')
 if inputs != 'y':
     print('Program terminated.')
@@ -74,8 +93,8 @@ with open(input_file_sample_list,'r') as fi:
                 continue
             else:
                 line = line.split()
-                id = line[0]
-                sp = line[1]
+                id = line[0] # sample id
+                sp = line[1] # species name
                 dict_species[sp] = dict_species.get(sp,[])
                 dict_species[sp].append(id)
 

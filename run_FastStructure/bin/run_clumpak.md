@@ -12,7 +12,7 @@ perl CLUMPAK.pl --id <job_name> --dir <output_dir> --file <your CLUMPAK_zip file
 ## if your input file are genrate from admixture or fastStructure
 perl CLUMPAK.pl --id <job_name> --dir <output_dir> --file <your CLUMPAK_zip file> --inputtype admixture
 ```
-You can give any name for <job_name>, eg “mydata123”. But the <output_dir> must be a folder in CLUMPAK folder, eg ./output_test
+You can give any name for <job_name>, eg “mydata123”. But the <output_dir> must be a folder in CLUMPAK folder, eg ./output_test, here the "./" in the output_dir is necessary.
 But the output_dir should be different from job_name
 
 The job will run about 3 to 4 hours on a K2 to K15 by repeating 20 runs of a dataset containing thirteen markers among 800 individuals. 
@@ -31,3 +31,6 @@ Update 2022
 if the STRUCTURE result didn't have Lable column, the CLUMPAK will fail
 This script can convert it to admixture result
 the output file will be name to input_file.Q
+
+Update 2024-01-05
+The "./" in the output_dir is necessary.

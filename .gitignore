@@ -20,11 +20,14 @@ gitignore
 *.condor.log
 *.condor.out
 
-#### input dir
-input
+#### slurm jobs
+*[0-9][0-9][0-9].err
+*[0-9][0-9][0-9].out
 
-#### output dir
+#### input and output dir
+input
 output
+
 
 #### local dir
 output_local
@@ -32,6 +35,7 @@ output_local
 .RData
 .RDataTmp
 .vscode
+.ipynb_checkpoints/
 
 #### rsync scripts and their logs
 rsync\.*.sh

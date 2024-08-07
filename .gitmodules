@@ -4,3 +4,21 @@
 [submodule "run_smcpp"]
 	path = run_smcpp
 	url = git@forgemia.inra.fr:yuqi/run_smcpp.git
+[submodule "run_ABBA_BABA/bin/Dsuit"]
+	path = run_ABBA_BABA/bin/Dsuit
+	url = https://github.com/millanek/Dsuite.git
+[submodule "run_ABBA_BABA/bin/genomics_general"]
+	path = run_ABBA_BABA/bin/genomics_general
+	url = https://github.com/simonhmartin/genomics_general
+[submodule "run_ABBA_BABA/bin/tutorials"]
+	path = run_ABBA_BABA/bin/tutorials
+	url = https://github.com/millanek/tutorials.git
+[submodule "run_MSMC2/bin/MappabilityMask/msmc2_scripts"]
+	path = run_MSMC2/bin/MappabilityMask.NOGIT.unused/msmc2_scripts
+	url = https://github.com/jessicarick/msmc2_scripts.git
+[submodule "run_MSMC2/bin/msmc-tools"]
+	path = run_MSMC2/bin/msmc-tools
+	url = https://github.com/stschiff/msmc-tools.git
+[submodule "plot_map/bin/ww_tvol_study"]
+	path = plot_map/bin/ww_tvol_study
+	url = https://github.com/rhugonnet/ww_tvol_study.git
