@@ -5,7 +5,7 @@
 	path = run_smcpp
 	url = git@forgemia.inra.fr:yuqi/run_smcpp.git
 [submodule "run_ABBA_BABA/bin/Dsuit"]
-	path = run_ABBA_BABA/bin/Dsuit
+	path = run_ABBA_BABA/bin/Dsuite
 	url = https://github.com/millanek/Dsuite.git
 [submodule "run_ABBA_BABA/bin/genomics_general"]
 	path = run_ABBA_BABA/bin/genomics_general
