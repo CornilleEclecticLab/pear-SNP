@@ -29,6 +29,7 @@ my $shdir = "s02.run_Dtest_by_chr.test";
 print "Creat folder $shdir\n";
 `/bin/rm -rf $shdir`;
 `mkdir $shdir`;
+`mdkir "$output/$shdir"`
 
 open my $chr_r, "<", $chr_f or die "Could not open $chr_f:$!\n";
 my @chrs;
@@ -41,7 +42,7 @@ close $chr_f;
 
 for my $chr (@chrs) {
     my $input_vcfgz =
-      "$bin/test_run_Dsuit/$chr.test.vcf.gz";
+      "$bin/test_run_Dsuit/$chr.choosing.test.vcf.gz";
     my $out_prefix = "$output/$shdir/$chr";
     my $job = "$shdir.$chr";
     my $sh  = << "SH_END";
