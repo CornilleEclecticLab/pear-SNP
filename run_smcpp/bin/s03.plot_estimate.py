@@ -14,29 +14,44 @@
 #   version 2.0.0: 2024-05-27 21:04:48
 #   Support different spline types, piecewise, cubic, pchip.
 
+#   version 2.0.1: 2024-06-06 15:23:07
+#   Support a parameter for choosing spline types.
 
 
 import datetime
 import os
 import sys
 import textwrap
+import argparse
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
 
-version = "2.0.0"
-
-# Set the parameters
-spline_type = 'cubic'  # piecewise, cubic, pchip
-
-script_basename = "s03.plot_estimate_" + spline_type
+version = "2.0.1"
+script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
 input_dir = work_dir+'/input/'
-s02_output_dir = work_dir+'/output/s02.estimate_by_population_' + spline_type
-output_dir = work_dir+'/output/'+script_basename
-sub_script_dir = work_dir+'/bin/'+script_basename
+
+
+# The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
+# The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
+default_spline = ("piecewise","cubic","pchip")[0]  # piecewise, cubic, pchip
+parser = argparse.ArgumentParser(description='Generate sub-scripts for the "smc++ estimate" command.')
+parser.add_argument('-s','--spline',
+                    type=str, 
+                    default=default_spline,
+                    choices=['piecewise', 'cubic', 'pchip'],
+                    help='The type of spline to use for the analysis, "piecewise","cubic", or "pchip"')
+args = parser.parse_args()
+spline_type = args.spline
+print(f'The spline type is: {spline_type}')
+
+# Set the output directories
+s02_output_dir = work_dir+'/output/s02.estimate_by_population_'+spline_type
+output_dir = work_dir+'/output/'+script_basename+'_'+spline_type
+sub_script_dir = work_dir+'/bin/'+script_basename+'_'+spline_type
 
 
 

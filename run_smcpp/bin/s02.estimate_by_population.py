@@ -2,7 +2,6 @@
 # _*_ coding: utf-8 _*_
  
 # @File     : s02.estimate_by_population.py
-# @Version  : 2.0.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2023/07/05 19:13:09
@@ -24,28 +23,39 @@
 #    version 2.0.0: 2024-05-27 20:14:27
 #     Support different spline types, piecewise, cubic, pchip.
 
+#    version 2.1.0: 2024-08-09 11:58:02
+#     Changing time points.
 
 import datetime
 import os
 import sys
 import textwrap
+import argparse
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 # The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
 # The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
-spline_type = ("piecewise","cubic","pchip")[1]  # piecewise, cubic, pchip
+default_spline = ("piecewise","cubic","pchip")[1]  # piecewise, cubic, pchip
+parser = argparse.ArgumentParser(description='Generate sub-scripts for the "smc++ estimate" command.')
+parser.add_argument('-s','--spline',
+                    type=str,
+                    default=default_spline,
+                    choices=['piecewise', 'cubic', 'pchip'],
+                    help='The type of spline to use for the analysis, "piecewise","cubic", or "pchip", default: %(default)s')
+args = parser.parse_args()
+spline_type = args.spline
+print(f'The spline type is: {spline_type}')
 
-version = "2.0.0"
+version = "2.1.0"
 cpu_cores = '20'
-script_basename = "s02.estimate_by_population_"+spline_type
+script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
 input_dir = work_dir+'/input/'
 output_s01_dir = work_dir+'/output/s01.vcf2smc_by_chr'
-output_dir = work_dir+'/output/'+script_basename
-sub_script_dir = work_dir+'/bin/'+script_basename
-
+output_dir = work_dir+'/output/'+script_basename+'_'+spline_type
+sub_script_dir = work_dir+'/bin/'+script_basename+'_'+spline_type
 
 
 
@@ -107,7 +117,7 @@ for pop, inds in population_dict.items():
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif estimate \\
         --cores {cpu_cores} \\
-        --timepoints 100 1e5 \\
+        --timepoints 100 1e7 \\
         --outdir {output_dir}/{pop}/ \\
         --spline {spline_type} \\
         --polarization-error 0.5 \\
