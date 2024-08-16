@@ -1,4 +1,5 @@
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 
 # set the working directory
@@ -53,7 +54,7 @@ ggplot(df_long, aes(x = Group, y = Value, fill = Group)) +
   facet_wrap(~ Row + Col, scales = "free", ncol = 2) +
   #facet_wrap(~ Row + Variable, scales = "free", ncol = 2, labeller = labeller(Row = c(co = "co1", py = "py"))) +
   theme_classic() +
-  labs(title = "Depth and Coverages of Western and Eastern samples mapped onto two reference genomes",
+  labs(title = "Depth and Coverages of Western and Eastern pears mapped onto two reference genomes",
        x = "Group",
        y = "Value") +
   theme(legend.position = "none")
