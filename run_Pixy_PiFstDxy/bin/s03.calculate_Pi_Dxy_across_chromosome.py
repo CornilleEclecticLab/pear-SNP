@@ -7,7 +7,8 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/03/23 12:54:37
 # @Description:
-#     Calculate Pi and Fst across chromosome from the output of Pixy and read Dxy from Stacks results (If provided).
+#     Calculate Pi and Fst across chromosome from the output of Pixy and read Dxy from Stacks 
+#     results (If provided).
 # @Update: 1.1.0 2024-04-16 11:36:27
 #   1. NEW: Accept the group order in the input file.
 #   2. NEW: Count N values in the output.
@@ -20,7 +21,10 @@
 #   1. Finish editting in the last version.
 #   2. Changed the output header.
 
-
+# @Update: 2.0.0 2024-8-05
+#   1. Update the function to calculate Fst from Pixy, now calculating the average Fst by SNP, not 
+#      by window. Although the results are the same, the method is different.
+#   2. Ignore 
 
 
 import datetime
@@ -125,8 +129,9 @@ def read_Dxy(dic, dic_chr, io):
         chr = ls[2]
         diff = int(ls[7] if ls[7] != 'NA' else 0)
         comparisons = int(ls[8] if ls[8] != 'NA' else 0)
-
-        dic[pops] = dic.get((pop1, pop2), [0, 0])
+        if diff == 0 and comparisons == 0:
+            continue
+        dic[pops] = dic.get(pops, [0, 0])
         dic[pops][0] += diff
         dic[pops][1] += comparisons
         dic_chr[pops] = dic_chr.get(pops, {})
@@ -185,14 +190,15 @@ def read_Fst_pixy(dic, dic_chr, io):
         pops = (pop1, pop2)
         chr = ls[2]
         fst = float(ls[5]) if ls[5] != 'NA' else None
+        no_snps = int(ls[6])
 
         dic[pops] = dic.get(pops, [])
         dic_chr[pops] = dic_chr.get(pops, {})
         dic_chr[pops][chr] = dic_chr[pops].get(chr, [])
 
         if fst is not None:
-            dic[pops].append(fst)
-            dic_chr[pops][chr].append(fst)
+            dic[pops].append([fst, no_snps])
+            dic_chr[pops][chr].append([fst, no_snps])
 
     return dic, dic_chr
 
@@ -202,7 +208,7 @@ def cul_Fst_pixy(list):
     if len(list) == 0:
         return 'NA'
     else:
-        return round_num(sum(list) / len(list))
+        return round_num(sum([m[0]*m[1] for m in list]) / sum([n[1] for n in list]))
 
 
 # Read the input files (results from Pixy and Stacks)
@@ -214,16 +220,16 @@ Fst_dic_Pixy = {}
 Fst_dic_chr_Pixy = {}
 Fst_dic_stacks = {}
 for i in args.input:
-    if i.name.endswith('_pi.txt'):
+    if i.name.endswith('_pi.txt'):  # Read Pi from Pixy
         Pi_dic, Pi_dic_chr = read_Pi(Pi_dic, Pi_dic_chr, i)
 
-    elif i.name.endswith('_dxy.txt'):
+    elif i.name.endswith('_dxy.txt'):  # Read Dxy from Pixy
         Dxy_dic, Dxy_dic_chr = read_Dxy(Dxy_dic, Dxy_dic_chr, i)
 
-    elif i.name.endswith('_fst.txt'):
+    elif i.name.endswith('_fst.txt'):  # Read Fst from Pixy
         Fst_dic_Pixy, Fst_dic_chr_Pixy = read_Fst_pixy(Fst_dic_Pixy, Fst_dic_chr_Pixy, i)
 
-    elif i.name.endswith('.out'):
+    elif i.name.endswith('.out'):  # Read Fst from Stacks
         Fst_dic_stacks = read_Fst_stacks(Fst_dic_stacks, i)
 
     else:

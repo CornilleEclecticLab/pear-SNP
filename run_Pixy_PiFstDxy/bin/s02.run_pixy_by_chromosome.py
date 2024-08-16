@@ -11,9 +11,11 @@
 # @Update: v1.0.1 2024-04-25 17:35:10
 #   Don't hard code batch name in the script. 
 
+# @Update: v1.1.0 2024-06-26 13:48:33
+#   Using new version of pixy via conda.
+
 import datetime
 import sys
-import textwrap
 import os
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
@@ -68,15 +70,19 @@ for chr, vcf in zip(chr_list, chr_vcf_list):
 
 # Set up environment
 source "{bin_dir}/s00.config.sh"
-${{LOAD_PIXY}}
-${{LOAD_BCFTOOLS}}
+# ${{LOAD_PIXY}}
+# ${{LOAD_BCFTOOLS}}
+${{LOAD_CONDA}}
+${{ACTIVATE_PIXY}}
+
 
 
 pixy --stats pi fst dxy \\
     --vcf {vcf} \\
     --populations {pop_path} \\
-    --window_size 50000 \\
+    --window_size 10000 \\
     --n_cores 10 \\
+    --fst_type wc \\
     --output_folder {output_dir} \\
     --output_prefix {sub_script_prefix} \\
     --bypass_invariant_check no
