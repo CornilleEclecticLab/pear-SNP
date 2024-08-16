@@ -1,5 +1,8 @@
 # This config file is for the pixy on the IFB cluster.
-LOAD_PIXY="module load pixy/1.2.7.beta1"
+# LOAD_PIXY="module load pixy/1.2.7.beta1"
+LOAD_CONDA="module load conda"
+ACTIVATE_PIXY="source activate pixy"  # pixy v1.2.11.beta1
+
 LOAD_BCFTOOLS="module load bcftools/1.14"
 
 # The following sets only effect in the s01.run_pixy.sh script for testing,

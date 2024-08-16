@@ -1,5 +1,7 @@
 module load gcc/11.2.0
-export PATH=/shared/projects/pear_snp3/pear/run_ABBA_BABA/bin/Dsuite/Build/:$PATH
-
-source activate Fbranch
-export PATH=/shared/projects/pear_snp3/pear/run_ABBA_BABA/bin/Dsuite/utils/:$PATH
+WORK_DIR="/shared/projects/pear_snp3/pear/run_ABBA_BABA/"
+Dsuite_DIR="$WORK_DIR/bin/Dsuite.NOGIT."
+export PATH="$Dsuite_DIR/Build/":$PATH
+export PATH="$Dsuite_DIR/utils/":$PATH
+# module load conda
+# conda activate Fbranch
