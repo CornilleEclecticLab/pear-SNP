@@ -2,21 +2,23 @@
 # _*_ coding: utf-8 _*_
 
 # @File     : s04.run_MSMC2_within_population.py
-# @Version  : 1.0.0
+# @Version  : 1.1.0
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/04/19 15:30:26
 # @Description:
 #
 # @Update: v1.0.1 2024-04-23 13:25:00
-#     1. Update the input files name.
-#     2. Fix some path errors.
-#     3. Have checked the haplotype numbers match the same individual.
-#     4. Fix some typos.
+#   1. Update the input files name.
+#   2. Fix some path errors.
+#   3. Have checked the haplotype numbers match the same individual.
+#   4. Fix some typos.
 # @Update: v1.0.2 2024-04-29 14:40:05
-#     1. Remove the full path for the Slurm err and out files, only remain the file name.
+#   1. Remove the full path for the Slurm err and out files, only remain the file name.
 
-# @Update: v1.1.0 2024-05-22 14:12:20
+# @Update: v1.1.0 2024-05-27 10:52:11
+#   1. Changed msmc2 parameters, -i and -p.
+#   2. Don't use eval(), use int() instead.
 
 
 import datetime
@@ -35,6 +37,8 @@ work_dir = os.path.dirname(script_path)
 input_dir = os.path.join(work_dir, 'input')
 output_dir = os.path.join(work_dir, 'output', script_basename)
 sub_script_dir = os.path.join(bin_dir, script_basename)
+
+unphased = True # If input data is unphased, set True, otherwise False. 
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -76,8 +80,6 @@ with open(os.path.join(input_dir, "s02.chromosome_list.txt"), 'r') as fi:
 
 
 # Function, haplotype number to string
-unphased = True
-
 if not unphased:
     def hap_num_to_str(hap_nums):
         hap_str = ''
@@ -94,9 +96,13 @@ if not unphased:
 elif unphased:
     def hap_num_to_str(hap_nums):
         hap_str = ''
+        if len(hap_nums) % 2 != 0:
+            raise ValueError(
+                "The hap_nums list should contain an even number of elements.")
+
         for i in range(0, len(hap_nums), 2):
             # check if the haplotype pairs are from the same individual
-            if eval(f"{hap_nums[i]}-{hap_nums[i+1]}") != -1:
+            if int(hap_nums[i])-int(hap_nums[i+1]) != -1:
                 raise ValueError(
                     f'Unphased haplotype pairs from different individuals: {hap_nums[i]}-{hap_nums[i+1]}')
             hap_str += f'{hap_nums[i]}-{hap_nums[i+1]},'
