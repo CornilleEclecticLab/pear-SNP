@@ -1,4 +1,5 @@
 library(ggplot2)
+library(svglite)
 library(ggpubr)
 library(dplyr)
 library(tune)
@@ -9,12 +10,13 @@ library("plotly")
 rm(list=ls())
 # Set working directory to the location of the script
 script_path <- dirname(rstudioapi::getActiveDocumentContext()$path)
+show(script_path)
 setwd(script_path)
 
 
 # Read PCA data
 # Western 
-prefix_Eu <- "../output/branch15.batch40.pear_Dec2023.Europe.remove_others/pear_Dec2023.Europe.Combine_chr.geno20_maf005.anno.syno.thin8k.pca"
+prefix_Eu <- "../output/branch15.batch44.pear_Dec2023.Europe.remove_others/pear_Dec2023.Europe.Combine_chr.geno20_maf005.anno.syno.thin8k.pca"
 # Eastern
 prefix_As <- "../output/branch15.batch41.Asia.remove_others/pear_Dec2023.Asia.Combine_chr.geno20_maf005.anno.syno.thin8k.pca"
 
@@ -26,14 +28,15 @@ data <- read.table(pca_path,sep ='\t', header = TRUE )
 
 
 # Read groups and colors information data, and merge data
-pop <- read.table("../input/population_group.tsv", sep = '\t', header = TRUE)
+pop <- read.table("../input/population_group.for_Eastern_and_Western.2024-07-29.tsv", sep = '\t', header = TRUE)
 data <- left_join(data, select(pop, ID_vcf, Population, Color), by = "ID_vcf")
 
 # Group mapping
 group_mapping <- c("CE" = "Cultivated",
                    "WE" = "Wild",
                    "CW" = "Cultivated",
-                   "WW" = "Wild")
+                   "WW" = "Wild",
+                   "RE" = "Rootstock")
 
 # Population mapping
 data <- data %>%
@@ -45,7 +48,7 @@ data <- data %>%
 data <- data %>%
   mutate(Group = recode(Group, !!!group_mapping),
          # Group = ifelse(Population == "Admixed", Population, Group),
-         Group = ifelse(Population == "betu_D3C1", "Rootstock", Group)
+         # Group = ifelse(Population == "betu_D3C1", "Rootstock", Group)
          )
 
 
@@ -101,6 +104,7 @@ main_plot <- scatterplot3d(data$PC1, data$PC2, data$PC3,
               tick.marks = T,
               label.tick.marks = F
 )
+
 
 
 main_plot <- scatterplot3d(data$PC1, data$PC3, data$PC2, 
