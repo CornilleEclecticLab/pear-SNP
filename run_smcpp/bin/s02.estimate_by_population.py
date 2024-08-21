@@ -26,6 +26,10 @@
 #    version 2.1.0: 2024-08-09 11:58:02
 #     Changing time points.
 
+#    version 2.1.1: 2024-08-16 14:51:15
+#     Changing the default spline type to piecewise.
+#     Adding the parameter --em-iterations 50 to the estimate command.
+
 import datetime
 import os
 import sys
@@ -36,7 +40,7 @@ print(f'{" Start ":=^79}')
 
 # The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
 # The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
-default_spline = ("piecewise","cubic","pchip")[1]  # piecewise, cubic, pchip
+default_spline = ("piecewise","cubic","pchip")[0]  # piecewise, cubic, pchip
 parser = argparse.ArgumentParser(description='Generate sub-scripts for the "smc++ estimate" command.')
 parser.add_argument('-s','--spline',
                     type=str,
@@ -47,8 +51,10 @@ args = parser.parse_args()
 spline_type = args.spline
 print(f'The spline type is: {spline_type}')
 
-version = "2.1.0"
+version = "2.1.1"
 cpu_cores = '20'
+em_iterations = '50'
+
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -120,7 +126,7 @@ singularity run -B  {work_dir}:{work_dir} \\
         --timepoints 100 1e7 \\
         --outdir {output_dir}/{pop}/ \\
         --spline {spline_type} \\
-        --polarization-error 0.5 \\
+        --em-iterations {em_iterations} \\
         {mutation_rate} \\
         {smc_list}
 '''
