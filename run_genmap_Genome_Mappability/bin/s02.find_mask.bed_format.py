@@ -25,6 +25,9 @@
 # @Update: v3.0.2 2024-06-07 16:42:10
 #    1. Fix the bug that happened in the first window not masked.
 
+# @Update: v3.0.3 2024-09-11 16:52:14
+#    1. Fix the output file name when use un-default parameters.
+
 import datetime
 import textwrap
 import sys
@@ -63,7 +66,7 @@ mask_pass_with_score = genmap_out_base+".pass_with_score.bed"
 
 
 if len(sys.argv) != 4:
-    message = f'''Usage: python3 {sys.argv[0]} [ <.genmap_chrom.sizes> <.genmap.txt> <output_mask.bed> ]'''
+    message = f'''Usage: python3 {sys.argv[0]} [ <.genmap_chrom.sizes> <.genmap.txt> <output_bed_file_prefix> ]'''
     print(warp(message))
 
     if len(sys.argv) == 1:
@@ -75,7 +78,10 @@ if len(sys.argv) != 4:
 elif len(sys.argv) == 4:
     genmap_size = sys.argv[1]
     genmap_txt = sys.argv[2]
-    mask = sys.argv[3]
+    mask = sys.argv[3]+'.genmap.mask.bed'
+    mask_with_score = sys.argv[3]+'.genmap.mask_with_score.bed'
+    mask_pass = sys.argv[3]+'.genmap.pass.bed'
+    mask_pass_with_score = sys.argv[3]+'.genmap.pass_with_score.bed'
 
 # Load genome size use pandas, or not. The file is small, so it's not necessary to use pandas.
 # chr_size = pd.read_csv(genmap_size, sep='\t', header=None, names=['chr','size'])
