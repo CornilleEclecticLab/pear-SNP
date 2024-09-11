@@ -20,4 +20,5 @@ module load conda
 
 source activate ~/work/conda/env/genmap
 
-genmap index -v -F ../input/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.fasta -I ../input/index_genmap
+# genmap index -v -F ../input/Pyrus_pyrifolia_Cuiguan_Gao2021/GWHBAOS00000000.genome.fasta -I ../input/index_genmap
+genmap index -v -F ../input/assembly_Pyrus_communis_Bartlett_DH_Genome_v2.0/PyrusCommunis_BartlettDHv2.0.fasta -I ../input/index_genmap_Pyrus_communis
