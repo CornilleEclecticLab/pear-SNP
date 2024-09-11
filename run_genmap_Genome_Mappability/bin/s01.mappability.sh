@@ -21,4 +21,4 @@ module load conda
 source activate ~/work/conda/env/genmap
 
 # genmap map -K 140 -E 0 -T 40 -I ../input/index_genmap -O ../output -t -w -bg 
-genmap map -K 140 -E 0 -T 40 -I ../input/index_genmap_Pyrus_communis -O ../outuput/Pyrus_communis -t -w -bg
+genmap map -K 140 -E 0 -T 40 -I ../input/index_genmap_Pyrus_communis -O ../output/Pyrus_communis -t -w -bg
