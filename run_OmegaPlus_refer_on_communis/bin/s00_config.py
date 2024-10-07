@@ -11,3 +11,7 @@ cutoff_files_dir = 's03.find_FPR_cutoff_OmegaPlus'
 cutoff_files_suffix = 'OmegaPlus.FPR005.cutoff.txt'
 
 load_bedtools = "module load bedtools"
+
+gff_filename = "PyrusCommunis_BartlettDHv2.0.Chr.gene.gff"
+
+cds_fasta_filename = "PyrusCommunis_BartlettDHv2.0.cds.fasta"

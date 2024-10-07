@@ -18,3 +18,7 @@ cutoff_files_suffix = 'RAiSD.FPR005.cutoff.txt'
 load_bedtools = "module load bedtools"
 
 grid_window_size = 1000
+
+gff_filename = "PyrusCommunis_BartlettDHv2.0.Chr.gene.gff"
+
+cds_fasta_filename = "PyrusCommunis_BartlettDHv2.0.cds.fasta"

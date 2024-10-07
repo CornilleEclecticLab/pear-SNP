@@ -4,14 +4,10 @@
 # @File     : s04.catch_outliers.py
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
-# @Time(CET): 2024/09/12 18:40:50
+# @Time(CET): 2024-09-18 16:39:51
 # @Description:
-#    Catch the outliers from OmegaPlus output.
-
-# Update: v1.0.1 2024-09-18 17:20:50
-#    1. Resolve the issue when convert a float in string type to int.
-
-# Update: v2.0.0 2024-09-29 21:54:15
+#    
+# Update: v2.0.0 2024-10-01 23:21:07
 #    1. Get candidate genes from the outliers.
 
 import datetime
@@ -33,7 +29,6 @@ input_dir = os.path.join(work_dir,'input')
 output_dir = os.path.join(work_dir,'output')
 sub_output_dir = os.path.join(work_dir,'output',script_basename)
 sub_script_dir = os.path.join(bin_dir,script_basename)
-
 
 # Ensure output directory exists
 os.makedirs(sub_output_dir, exist_ok=True)
@@ -77,34 +72,30 @@ for pop in populations:
 for pop in populations:
     # open output file
     output_file = open(os.path.join(
-        sub_output_dir, f'OmegaPlus.outliers.{pop}.bed'), 'w')
+        sub_output_dir, f'SweeD.outliers.{pop}.bed'), 'w')
     for chr in chromosomes:
         outliers = []
-        # Read the OmegaPlus output
-        omega_plus_output_file = os.path.join(output_dir,omega_plus_output_dir,f'OmegaPlus_Report.{pop}.{chr}')
-        with open(omega_plus_output_file) as f:
+        # Read the SweeD output
+        sweed_output_file = os.path.join(output_dir,sweed_output_dir,f'SweeD_Report.{pop}.{chr}')
+        with open(sweed_output_file) as f:
             lines = f.readlines()
             for line in lines:
                 line = line.strip()
                 if line == '':
                     continue
-                elif line.startswith('//'):
+                elif line.startswith('//') or line.startswith('Position'):
                     continue
                 else:
                     try:
-                        position, omega, start, end, valid = line.split()
+                        position, likelihood, alpha, start, end = line.split()
                     except ValueError:
-                        raise ValueError(f'Unexpected format in {omega_plus_output_file}\n{line}')
-                    omega = float(omega)
-                    start = int(float(start))-1
+                        raise ValueError(f'Unexpected format in {sweed_output_file}\n{line}')
+                    clr = float(likelihood)
+                    start = int(float(start)) - 1
                     end = int(float(end))
-                    valid = bool(valid)
-                    if valid:
-                        if omega >= cutoff_pop[pop]:
+                    if clr > 0:
+                        if clr >= cutoff_pop[pop]:
                             outliers.append((chr, start, end))
-                    else:
-                        if omega >= cutoff_pop[pop]:
-                            print(f'Warning: invalid outlier at {chr}:{position}\t{start}-{end}')
             # sort the outliers by start position
             outliers.sort(key=lambda x: x[1])    # Note: should sort chromosome first, sort -k1,1 -k2,2n
             for chr, start, end in outliers:
@@ -120,13 +111,13 @@ with open(merge_script,'w') as f:
     f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.out\n")
     f.write(f"{load_bedtools}\n\n\n")
     for pop in populations:
-        input_file = os.path.join(sub_output_dir, f'OmegaPlus.outliers.{pop}.bed')
-        output_file = os.path.join(sub_output_dir, f'OmegaPlus.outliers.{pop}.merged.bed')
-        gff_file = os.path.join(input_dir,gff_filename)
-        f.write(f"bedtools merge -i {input_file} > {output_file}\n")
+        input_file = os.path.join(sub_output_dir, f'SweeD.outliers.{pop}.bed')
+        output_file = os.path.join(sub_output_dir, f'SweeD.outliers.{pop}.merged.bed')
+        f.write(f"bedtools merge -i {input_file} > {output_file}\n\n")
 
         # Get candidate genes
-        method = "OmegaPlus"
+        gff_file = os.path.join(input_dir, gff_filename)
+        method = "SweeD"
         f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
 | awk '{{$2="{method}"; print}}' \\
 > {output_file}.genes.gff
@@ -135,7 +126,7 @@ cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name")
 > {output_file}.genes.txt
 """)
 
-os.system(f"cd {sub_script_dir} && sbatch {merge_script}")
+os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
 print(wrap79(f"The following script has been submitted to slurm:"))
 print(wrap79(merge_script))
 

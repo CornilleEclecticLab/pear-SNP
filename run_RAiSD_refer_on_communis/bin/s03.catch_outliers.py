@@ -8,6 +8,9 @@
 # @Description:
 #    Catch outliers in RAiSD output.
 
+# Update: v2.0.0 2024-10-01 17:10:26
+#    1. Get candidate genes from the outliers.
+
 import datetime
 import sys
 import textwrap
@@ -18,7 +21,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "2.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -129,10 +132,20 @@ with open(merge_script,'w') as f:
         input_file = os.path.join(sub_output_dir, f'RAiSD.outliers.{pop}.bed')
         output_file = os.path.join(sub_output_dir, f'RAiSD.outliers.{pop}.merged.bed')
         f.write(f"bedtools merge -d {grid_window_size} -i {input_file} > {output_file}\n\n")
+        # Get candidate genes
+        gff_file = os.path.join(input_dir, gff_filename)
+        method = "RAiSD"
+        f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+| awk '{{$2="{method}"; print}}' \\
+> {output_file}.genes.gff
+
+cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+> {output_file}.genes.txt
+""")
 
 os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
 print(wrap79(f"The following script has been submitted to slurm:"))
-print(f'{merge_script}')
+print(wrap79(merge_script))
 
 
 # Catch outliers from RAiSD by window output
@@ -199,10 +212,20 @@ with open(merge_script, 'w') as f:
             sub_output_dir, f'RAiSD.outliers.by_win.{pop}.merged.bed')
         f.write(
             f"bedtools merge -d {grid_window_size} -i {input_file} > {output_file}\n\n")
+        # Get candidate genes
+        gff_file = os.path.join(input_dir, gff_filename)
+        method = "RAiSD"
+        f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+| awk '{{$2="{method}"; print}}' \\
+> {output_file}.genes.gff
+
+cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+> {output_file}.genes.txt
+""")
 
 os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
 print(wrap79(f"The following script has been submitted to slurm:"))
-print(f'{merge_script}')
+print(wrap79(merge_script))
 
 
 end_time = datetime.datetime.now()
