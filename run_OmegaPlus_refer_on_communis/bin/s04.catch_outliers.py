@@ -6,7 +6,13 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/09/12 18:40:50
 # @Description:
-#    
+#    Catch the outliers from OmegaPlus output.
+
+# Update: v1.0.1 2024-09-18 17:20:50
+#    1. Resolve the issue when convert a float in string type to int.
+
+# Update: v2.0.0 2024-09-29 21:54:15
+#    1. Get candidate genes from the outliers.
 
 import datetime
 import sys
@@ -18,7 +24,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "2.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -27,6 +33,7 @@ input_dir = os.path.join(work_dir,'input')
 output_dir = os.path.join(work_dir,'output')
 sub_output_dir = os.path.join(work_dir,'output',script_basename)
 sub_script_dir = os.path.join(bin_dir,script_basename)
+
 
 # Ensure output directory exists
 os.makedirs(sub_output_dir, exist_ok=True)
@@ -89,8 +96,8 @@ for pop in populations:
                     except ValueError:
                         raise ValueError(f'Unexpected format in {omega_plus_output_file}\n{line}')
                     omega = float(omega)
-                    start = int(start)-1
-                    end = int(end)
+                    start = int(float(start))-1
+                    end = int(float(end))
                     valid = bool(valid)
                     if valid:
                         if omega >= cutoff_pop[pop]:
@@ -115,11 +122,22 @@ with open(merge_script,'w') as f:
     for pop in populations:
         input_file = os.path.join(sub_output_dir, f'OmegaPlus.outliers.{pop}.bed')
         output_file = os.path.join(sub_output_dir, f'OmegaPlus.outliers.{pop}.merged.bed')
-        f.write(f"bedtools merge -i {input_file} > {output_file}\n\n")
+        gff_file = os.path.join(input_dir,gff_filename)
+        f.write(f"bedtools merge -i {input_file} > {output_file}\n")
 
-os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
+        # Get candidate genes
+        method = "OmegaPlus"
+        f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+| awk '{{$2="{method}"; print}}' \\
+> {output_file}.genes.gff
+
+cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+> {output_file}.genes.txt
+""")
+
+os.system(f"cd {sub_script_dir} && sbatch {merge_script}")
 print(wrap79(f"The following script has been submitted to slurm:"))
-print(f'{merge_script}')
+print(wrap79(merge_script))
 
 
 
