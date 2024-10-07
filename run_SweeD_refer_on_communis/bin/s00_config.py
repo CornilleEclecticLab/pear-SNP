@@ -4,3 +4,15 @@ input_merged_vcf_path = '/shared/ifbstor1/projects/pear_snp3/pear/run_Population
 variant_vcf_list_filename = 's01.variant_vcf_list.txt'
 chromosomes_list_filename = 's01.chr_list.txt'
 individual_pop_map_filename = 's01.sample_tab_population.txt'
+
+
+sweed_output_dir = 's03.generate_run_SweeD'
+
+cutoff_files_dir = 's03.find_FPR_cutoff_SweeD'
+cutoff_files_suffix = 'SweeD.FPR005.cutoff.txt'
+
+load_bedtools = "module load bedtools"
+
+gff_filename = "PyrusCommunis_BartlettDHv2.0.Chr.gene.gff"
+
+cds_fasta_filename = "PyrusCommunis_BartlettDHv2.0.cds.fasta"
