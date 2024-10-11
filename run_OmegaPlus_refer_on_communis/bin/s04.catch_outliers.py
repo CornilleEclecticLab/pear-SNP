@@ -17,6 +17,10 @@
 # Update: v2.1.0 2024-10-08 15:02:42
 #    1. Use more cutoffs for outliers.
 
+# Update: v2.2.0 2024-10-10 10:21:27
+#    1. Write all valid results to a file.
+#    2. Fix the bug that using string to get boolean value.
+
 import datetime
 import sys
 import textwrap
@@ -27,7 +31,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "2.1.0"
+version = "2.2.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -99,15 +103,16 @@ for pop in populations:
                     except ValueError:
                         raise ValueError(f'Unexpected format in {omega_plus_output_file}\n{line}')
                     
+                    position = int(float(position)) # convert to int
                     omega = float(omega)
                     start = int(float(start))-1 # convert to 0-based
                     end = int(float(end))
-                    valid = bool(valid)
-                    
+                    valid = bool(int(valid))
+
                     if valid:
                         # if (chr, start, end, omega) not in results:
                             # results.append((chr, start, end, omega))
-                        results_pop.append((chr, start, end, omega)) # Collect all valid results
+                        results_pop.append((chr, start, end, omega, position)) # Collect all valid results
                         if omega >= cutoff_pop[pop]:  # Check against the cutoff
                             outliers.append((chr, start, end))
                     else:
@@ -125,8 +130,30 @@ for pop in populations:
     # Remove duplicates from results
     results_pop = list(set(results_pop))
     
-    # Sort the results by omega
+    # Write all valid results
+    with open(os.path.join(sub_output_dir, f'OmegaPlus.all.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        results_pop.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in results_pop]))
+    
+    # Sort the results by statistic
     results_pop.sort(key=lambda x: x[3], reverse=True)
+    
+    # Write the top 30% results
+    top_30_results = results_pop[:int(0.3 * len(results_pop))]
+    with open(os.path.join(sub_output_dir, f'OmegaPlus.top30per.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        top_30_results.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_30_results]))
+    
+    # Write the top 20% results
+    top_20_results = results_pop[:int(0.2 * len(results_pop))]
+    with open(os.path.join(sub_output_dir, f'OmegaPlus.top20per.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        top_20_results.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_20_results]))
+
+
     top_cut_off = [0.001, 0.01, 200, 500]
     for top in top_cut_off:
         if top < 1:
@@ -139,7 +166,7 @@ for pop in populations:
         # Sort the outliers by chromosome and by start position
         tops_outliers.sort(key=lambda x: (x[0], x[1]))
         with open(os.path.join(sub_output_dir, f'OmegaPlus.{top}outliers.{pop}.bed'), 'w') as f:
-            for (chr, start, end, omega) in tops_outliers:
+            for (chr, start, end, omega, position) in tops_outliers:
                 f.write(f'{chr}\t{start}\t{end}\n')
 
 
@@ -174,7 +201,6 @@ def merge_outliers(method, cutoff):
 
 ls = top_cut_off.copy()
 ls.append('')
-print(ls)
 for cutoff in ls:
     merge_outliers('OmegaPlus', cutoff)    
 
