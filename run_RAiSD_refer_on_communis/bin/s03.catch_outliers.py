@@ -11,6 +11,10 @@
 # Update: v2.0.0 2024-10-01 17:10:26
 #    1. Get candidate genes from the outliers.
 
+# Update: v2.1.0 2024-10-08 16:37:52
+#    1. Use more cutoffs for outliers.
+#    2. Write all valid results to a file.
+
 import datetime
 import sys
 import textwrap
@@ -21,7 +25,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -78,11 +82,13 @@ for pop in populations:
     output_file = open(os.path.join(
         sub_output_dir, f'RAiSD.outliers.{pop}.bed'), 'w')
     outliers_count_pop = 0
+    results_pop = []
     for chr in chromosomes:
         outliers = []
         # Read the RAiSD output
         raisd_output_file = os.path.join(output_dir,raisd_output_dir,raisd_files_name.format(pop=pop,chr=chr))
         with open(raisd_output_file) as f:
+            # print(f'Reading {pop} {chr} {raisd_output_file}')
             lines = f.readlines()
             for line in lines:
                 line = line.strip()
@@ -103,15 +109,33 @@ for pop in populations:
                     position = int(float(position))
                     start = int(float(start))
                     end = int(float(end))
+                    
+                    # Get the window
+                    if start == 0 and end == 0:
+                        start = max(position - half_grid_window_size - 1, 0)
+                        end = position + half_grid_window_size
+                    
+                    # Record the results
+                    # Note: the following method to remove duplicates is very slow
+                    # if (chr, start, end, mu) not in results:
+                    #    results.append((chr, start, end, mu))
+                    results_pop.append((chr, start, end, mu, position))
+                    
+                    # Check if it is an outlier
                     if mu >= cutoff_pop[pop]:
-                        if start == 0 and end == 0:
-                            start = max(position - half_grid_window_size - 1, 0)
-                            end = position + half_grid_window_size
-                        if (chr, start, end) not in outliers:
-                            outliers.append((chr, start, end))
-                        else:
-                            print(f'Outlier {chr}:{position} {start} {end} already found in {pop}')
-        # sort the outliers by start position
+                        # Take care, this method to remove duplicates is very slow
+                        # if (chr, start, end) not in outliers:
+                            # outliers.append((chr, start, end))
+                        outliers.append((chr, start, end))
+                        # else:
+                            # print(f'Outlier {chr}:{position} {start} {end} already found in {pop}')
+
+        # Remove duplicates
+        outliers = list(set(outliers))
+        
+        print(f'Outliers in {pop} {chr}: {len(outliers)}')
+
+        # sort the outliers by start position within this chromosome
         if len(outliers) > 0:
             outliers.sort(key=lambda x: x[1])    # Note: should sort chromosome first, sort -k1,1 -k2,2n
             outliers_count_pop += len(outliers)
@@ -120,32 +144,107 @@ for pop in populations:
     if outliers_count_pop == 0:
         print(f'No outlier was found in {pop}')
     output_file.close()
+    
+    # Remove duplicates from results
+    results_pop = list(set(results_pop))
+    
+    # Write all valid results
+    with open(os.path.join(sub_output_dir, f'RAiSD.all.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        results_pop.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{mu}' for chr, start, end, mu, position in results_pop]))
+    
+    # Sort the results by mu
+    results_pop.sort(key=lambda x: x[3], reverse=True)
+    
+    # Write the top 30% results
+    top_30_results = results_pop[:int(0.3 * len(results_pop))]
+    with open(os.path.join(sub_output_dir, f'RAiSD.top30per.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        top_30_results.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_30_results]))
+    
+    # Write the top 20% results
+    top_20_results = results_pop[:int(0.2 * len(results_pop))]
+    with open(os.path.join(sub_output_dir, f'RAiSD.top20per.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        top_20_results.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_20_results]))
+    
+    
+    top_cut_off = [0.001, 0.01, 200, 500]
+    for top in top_cut_off:
+        if top < 1:
+            tops = max(1,int(float(top * len(results_pop))))
+        else:
+            tops = int(top)
+        tops_outliers = results_pop[:tops]
+        tops_outliers.sort(key=lambda x: (x[0], x[1]))
+        with open(os.path.join(sub_output_dir, f'RAiSD.{top}outliers.{pop}.bed'), 'w') as f:
+            for chr, start, end, mu, position in tops_outliers:
+                f.write(f'{chr}\t{start}\t{end}\n')
+
 
 # Merge the outliers
-merge_script = os.path.join(sub_script_dir, f'{script_basename}.merge.sh')
-with open(merge_script,'w') as f:
-    f.write(f"#!/bin/bash\n")
-    f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.err\n")
-    f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.out\n\n")
-    f.write(f"{load_bedtools}\n\n\n")
-    for pop in populations:
-        input_file = os.path.join(sub_output_dir, f'RAiSD.outliers.{pop}.bed')
-        output_file = os.path.join(sub_output_dir, f'RAiSD.outliers.{pop}.merged.bed')
-        f.write(f"bedtools merge -d {grid_window_size} -i {input_file} > {output_file}\n\n")
-        # Get candidate genes
-        gff_file = os.path.join(input_dir, gff_filename)
-        method = "RAiSD"
-        f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
-| awk '{{$2="{method}"; print}}' \\
-> {output_file}.genes.gff
+def merge_outliers(method, cutoff):
+    # cutoff likes '', '0.001', '0.01' or '500'
+    global sub_script_dir, script_basename, populations, load_bedtools,input_dir,sub_output_dir,gff_filename
+    merge_script = os.path.join(sub_script_dir, f'{script_basename}.{cutoff}merge.sh')
+    with open(merge_script,'w') as f:
+        f.write(f"#!/bin/bash\n")
+        f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.err\n")
+        f.write(f"#SBATCH -o {os.path.basename(merge_script)}.%J.out\n")
+        f.write(f"{load_bedtools}\n\n\n")
+        for pop in populations:
+            input_file = os.path.join(sub_output_dir, f'{method}.{cutoff}outliers.{pop}.bed')
+            output_file = os.path.join(sub_output_dir, f'{method}.{cutoff}outliers.{pop}.merged.bed')
+            gff_file = os.path.join(input_dir,gff_filename)
+            f.write(f"bedtools merge -i {input_file} > {output_file}\n")
 
-cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
-> {output_file}.genes.txt
-""")
+            # Get candidate genes
+            f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+    | awk '{{$2="{method}"; print}}' \\
+    > {output_file}.genes.gff
 
-os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
-print(wrap79(f"The following script has been submitted to slurm:"))
-print(wrap79(merge_script))
+    cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+    > {output_file}.genes.txt
+    """)
+
+    os.system(f"cd {sub_script_dir} && sbatch {merge_script}")
+    print(wrap79(f"The following script has been submitted to slurm:"))
+    print(wrap79(merge_script))
+
+ls = top_cut_off.copy()
+ls.append('')
+for cutoff in ls:
+    merge_outliers('RAiSD', cutoff)
+
+
+# # Merge the outliers
+# merge_script = os.path.join(sub_script_dir, f'{script_basename}.merge.sh')
+# with open(merge_script,'w') as f:
+#     f.write(f"#!/bin/bash\n")
+#     f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.err\n")
+#     f.write(f"#SBATCH -o {os.path.basename(merge_script)}.%J.out\n\n")
+#     f.write(f"{load_bedtools}\n\n\n")
+#     for pop in populations:
+#         input_file = os.path.join(sub_output_dir, f'RAiSD.outliers.{pop}.bed')
+#         output_file = os.path.join(sub_output_dir, f'RAiSD.outliers.{pop}.merged.bed')
+#         f.write(f"bedtools merge -d {grid_window_size} -i {input_file} > {output_file}\n\n")
+#         # Get candidate genes
+#         gff_file = os.path.join(input_dir, gff_filename)
+#         method = "RAiSD"
+#         f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+# | awk '{{$2="{method}"; print}}' \\
+# > {output_file}.genes.gff
+
+# cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+# > {output_file}.genes.txt
+# """)
+
+# os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
+# print(wrap79(f"The following script has been submitted to slurm:"))
+# print(wrap79(merge_script))
 
 
 # Catch outliers from RAiSD by window output
@@ -158,7 +257,7 @@ for pop in populations:
     outliers_pop = []
     mu_count = 0
     for chr in chromosomes:
-        results = []
+        results_chr = []
         # Read the RAiSD output
         raisd_output_file = os.path.join(
             output_dir, raisd_output_dir, raisd_files_by_win_name.format(pop=pop, chr=chr))
@@ -178,20 +277,24 @@ for pop in populations:
                     except ValueError:
                         raise ValueError(
                             f'Unexpected format in {raisd_output_file}\n{line}')
+                
                 mu = float(mu)
                 mu_count += 1
                 start = int(float(start))
                 end = int(float(end))
+                
                 if mu > 0:
-                    results.append((chr,start, end, mu))
+                    results_chr.append((chr,start, end, mu))
                 else:
                     raise ValueError(f'Unexpected mu value in {raisd_output_file}\n{line}')
-        # sort the outliers by start position
-        if len(results) > 0:
+
+        if len(results_chr) > 0:
             # Note: should sort chromosome first, sort -k1,1 -k2,2n
-            outliers_pop.extend(results)
+            outliers_pop.extend(results_chr)
+
     outliers_pop.sort(key=lambda x: x[3], reverse=True)
     outliers_pop = outliers_pop[:int(len(outliers_pop)*threshold)]
+    # sort the outliers by start position
     outliers_pop.sort(key=lambda x: (x[0], x[1]))
 
     for chr, start, end, mu in outliers_pop:
