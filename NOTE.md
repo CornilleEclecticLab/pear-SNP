@@ -88,18 +88,19 @@ ynie@IFB:
 
 As you see, the *.err files in `DISCARD.run_with_problem_tmp` and `DISCARD.run1.gatk_variant_calling_stoped_as_Java_env_memory_is_not_enough` could not pass the check steps, showing the steps are effective. 
 
-# On 2024-10-07
+# On 2024-10-07.
+# updated on 2024-10-12, if transferd back to IFB,check in the todo list:
 Due to the IFB shoutdown maintain until 2024-10-11 18:00. some data transfermed to genobioinfo for analysing, You should transfer back if changed.
-[ ] pear/run_Stacks/input
-[ ] pear/run_Stacks/output
-[ ] pear/run_RAiSD_refer_on_communis/input
-[ ] pear/run_RAiSD_refer_on_communis/output
-[ ] pear/run_Population_genetic_filter/output/branch18.batch47.full_noAdmix_base_branch15_batch42_unlink
-[ ] pear/run_Population_genetic_filter/output/branch15.batch46.noAdmix
-[ ] pear/run_OmegaPlus_refer_on_communis/input
-[ ] pear/run_OmegaPlus_refer_on_communis/output
-[ ] pear/run_SweeD_refer_on_communis/output
-[ ] pear/run_SweeD_refer_on_communis/output 
+[x] pear/run_Stacks/input
+[x] pear/run_Stacks/output
+[x] pear/run_RAiSD_refer_on_communis/input
+[x] pear/run_RAiSD_refer_on_communis/output
+[x] pear/run_Population_genetic_filter/output/branch18.batch47.full_noAdmix_base_branch15_batch42_unlink
+[x] pear/run_Population_genetic_filter/output/branch15.batch46.noAdmix
+[x] pear/run_OmegaPlus_refer_on_communis/input
+[x] pear/run_OmegaPlus_refer_on_communis/output
+[x] pear/run_SweeD_refer_on_communis/output
+[x] pear/run_SweeD_refer_on_communis/output 
 
 Regenerated results on:
-[ ] pear/run_IQtree_sampling/output
+[x] pear/run_IQtree_sampling/output
