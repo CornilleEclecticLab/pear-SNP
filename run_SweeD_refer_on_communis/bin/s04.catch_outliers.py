@@ -10,6 +10,10 @@
 # Update: v2.0.0 2024-10-01 23:21:07
 #    1. Get candidate genes from the outliers.
 
+# Update: v2.1.0 2024-10-08 21:11:00
+#    1. Use more cutoffs for outliers.
+#    2. Write all valid results to a file.
+
 import datetime
 import sys
 import textwrap
@@ -20,7 +24,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -73,6 +77,7 @@ for pop in populations:
     # open output file
     output_file = open(os.path.join(
         sub_output_dir, f'SweeD.outliers.{pop}.bed'), 'w')
+    results_pop = []
     for chr in chromosomes:
         outliers = []
         # Read the SweeD output
@@ -90,10 +95,13 @@ for pop in populations:
                         position, likelihood, alpha, start, end = line.split()
                     except ValueError:
                         raise ValueError(f'Unexpected format in {sweed_output_file}\n{line}')
+                    
                     clr = float(likelihood)
                     start = int(float(start)) - 1
                     end = int(float(end))
+                    
                     if clr > 0:
+                        results_pop.append((chr, start, end, clr, position))
                         if clr >= cutoff_pop[pop]:
                             outliers.append((chr, start, end))
             # sort the outliers by start position
@@ -101,34 +109,110 @@ for pop in populations:
             for chr, start, end in outliers:
                 output_file.write(f'{chr}\t{start}\t{end}\n')
     output_file.close()
+    
+    
+    # Remove duplicates from results
+    results_pop = list(set(results_pop))
+    
+    # write all valid results to a file
+    with open(os.path.join(sub_output_dir, f'SweeD.all.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        results_pop.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{clr}' for (chr, start, end, clr, position) in results_pop]))
+    
+    
+    # Sort the results by clr
+    results_pop.sort(key=lambda x: x[3], reverse=True)
+    
+    # Write the top 30% results
+    top_30_results = results_pop[:int(0.3 * len(results_pop))]
+    with open(os.path.join(sub_output_dir, f'SweeD.top30per.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        top_30_results.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_30_results]))
+    
+    # Write the top 20% results
+    top_20_results = results_pop[:int(0.2 * len(results_pop))]
+    with open(os.path.join(sub_output_dir, f'SweeD.top20per.{pop}.txt'), 'w') as f:
+        # Sort by chromosome and position
+        top_20_results.sort(key=lambda x: (x[0], x[1]))
+        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_20_results]))
 
+    
+    top_cut_off = [0.001, 0.01, 200, 500]
+    for top in top_cut_off:
+        if top < 1:
+            tops = max(1,int(float(top * len(results_pop))))
+        else:
+            tops = int(top)
+        tops_outliers = results_pop[:tops]
+        tops_outliers.sort(key=lambda x: (x[0], x[1]))
+        with open(os.path.join(sub_output_dir, f'SweeD.{top}outliers.{pop}.bed'), 'w') as f:
+            for chr, start, end, clr, position in tops_outliers:
+                f.write(f'{chr}\t{start}\t{end}\n')
+    
 
 # Merge the outliers
-merge_script = os.path.join(sub_script_dir, f'{script_basename}.merge.sh')
-with open(merge_script,'w') as f:
-    f.write(f"#!/bin/bash\n")
-    f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.err\n")
-    f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.out\n")
-    f.write(f"{load_bedtools}\n\n\n")
-    for pop in populations:
-        input_file = os.path.join(sub_output_dir, f'SweeD.outliers.{pop}.bed')
-        output_file = os.path.join(sub_output_dir, f'SweeD.outliers.{pop}.merged.bed')
-        f.write(f"bedtools merge -i {input_file} > {output_file}\n\n")
+def merge_outliers(method, cutoff):
+    # cutoff likes '', '0.001', '0.01' or '500'
+    global sub_script_dir, script_basename, populations, load_bedtools,input_dir,sub_output_dir,gff_filename
+    merge_script = os.path.join(sub_script_dir, f'{script_basename}.{cutoff}merge.sh')
+    with open(merge_script,'w') as f:
+        f.write(f"#!/bin/bash\n")
+        f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.err\n")
+        f.write(f"#SBATCH -o {os.path.basename(merge_script)}.%J.out\n")
+        f.write(f"{load_bedtools}\n\n\n")
+        for pop in populations:
+            input_file = os.path.join(sub_output_dir, f'{method}.{cutoff}outliers.{pop}.bed')
+            output_file = os.path.join(sub_output_dir, f'{method}.{cutoff}outliers.{pop}.merged.bed')
+            gff_file = os.path.join(input_dir,gff_filename)
+            f.write(f"bedtools merge -i {input_file} > {output_file}\n")
 
-        # Get candidate genes
-        gff_file = os.path.join(input_dir, gff_filename)
-        method = "SweeD"
-        f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
-| awk '{{$2="{method}"; print}}' \\
-> {output_file}.genes.gff
+            # Get candidate genes
+            f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+    | awk '{{$2="{method}"; print}}' \\
+    > {output_file}.genes.gff
 
-cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
-> {output_file}.genes.txt
-""")
+    cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+    > {output_file}.genes.txt
+    """)
 
-os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
-print(wrap79(f"The following script has been submitted to slurm:"))
-print(wrap79(merge_script))
+    os.system(f"cd {sub_script_dir} && sbatch {merge_script}")
+    print(wrap79(f"The following script has been submitted to slurm:"))
+    print(wrap79(merge_script))
+
+ls = top_cut_off.copy()
+ls.append('')
+for cutoff in ls:
+    merge_outliers('SweeD', cutoff)
+
+
+# # Merge the outliers
+# merge_script = os.path.join(sub_script_dir, f'{script_basename}.merge.sh')
+# with open(merge_script,'w') as f:
+#     f.write(f"#!/bin/bash\n")
+#     f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.err\n")
+#     f.write(f"#SBATCH -e {os.path.basename(merge_script)}.%J.out\n")
+#     f.write(f"{load_bedtools}\n\n\n")
+#     for pop in populations:
+#         input_file = os.path.join(sub_output_dir, f'SweeD.outliers.{pop}.bed')
+#         output_file = os.path.join(sub_output_dir, f'SweeD.outliers.{pop}.merged.bed')
+#         f.write(f"bedtools merge -i {input_file} > {output_file}\n\n")
+
+#         # Get candidate genes
+#         gff_file = os.path.join(input_dir, gff_filename)
+#         method = "SweeD"
+#         f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
+# | awk '{{$2="{method}"; print}}' \\
+# > {output_file}.genes.gff
+
+# cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+# > {output_file}.genes.txt
+# """)
+# 
+# os.system(f'cd {sub_script_dir} && sbatch {merge_script}')
+# print(wrap79(f"The following script has been submitted to slurm:"))
+# print(wrap79(merge_script))
 
 
 
