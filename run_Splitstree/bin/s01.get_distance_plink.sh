@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J s01.get_nei_plink
-#SBATCH -o s01.get_nei_plink.out
-#SBATCH -e s01.get_nei_plink.err
+#SBATCH -J s01.get_distance_plink
+#SBATCH -o s01.get_distance_plink.out
+#SBATCH -e s01.get_distance_plink.err
 module purge
 module load bioinfo/plink-v1.90b5.3
 

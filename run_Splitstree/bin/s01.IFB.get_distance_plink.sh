@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J s01.get_nei_plink
-#SBATCH -o s01.get_nei_plink.%J.out
-#SBATCH -e s01.get_nei_plink.%J.err
+#SBATCH -J s01.get_distance_plink
+#SBATCH -o s01.get_distance_plink.%J.out
+#SBATCH -e s01.get_distance_plink.%J.err
 module purge
 module load plink/1.90b6.18
 
