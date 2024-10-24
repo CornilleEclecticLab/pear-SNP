@@ -7,19 +7,22 @@
 # @Time(CET): 2024/06/25 13:54:47
 # @Description:
 #    
-# @Update: 
+# @Update: v1.1.0 2024-10-23 17:38:45
+#    1. No maf001 filter as there is no effect when a few samples are selected.
+#    2. Apply genmap bed to filter the variants.
 
 import datetime
 import sys
 import textwrap
 import os
-from s00_config import batch, input_merged_vcf_path, individual_pop_map_filename, chromosomes_list_filename, variant_vcf_list_filename
+import warnings
+from s00_config import batch, individual_pop_map_filename, chromosomes_list_filename, variant_vcf_list_filename
 
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -38,12 +41,6 @@ os.makedirs(sub_script_dir, exist_ok=True)
 # Function to wrap text to 79 characters
 def wrap79(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
-
-
-
-# gatk_filtered_vcf_dir = os.path.join(os.path.dirname(
-#     work_dir), 'run_GATK_variant_calling', 'output', 's05.hard_filter_chr_vcf.'+batch)
-
 
 # Read chromosomes ID list of the reference genome
 chromosomes_list_path = os.path.join(input_dir, chromosomes_list_filename)
@@ -101,15 +98,17 @@ bcftools view \\
 bcftools view -H {nonadmix_vcf} \\
 | wc -l > {nonadmix_vcf}.num.txt
 
+bgzip --threads 4 -c {nonadmix_vcf} > {nonadmix_vcf}.gz
+tabix -p vcf {nonadmix_vcf}.gz
 
-bcftools filter \\
-    {nonadmix_vcf} \\
-    -e 'MAF<0.01' \\
+bcftools view \\
+    {nonadmix_vcf}.gz \\
+    -R {input_dir}/{chr_base}.pass.bed \\
     -O v \\
-    -o {maf_vcf}
+    -o {masked_vcf}
 
-bcftools view -H {maf_vcf} \\
-| wc -l > {maf_vcf}.num.txt
+bcftools view -H {masked_vcf} \\
+| wc -l > {masked_vcf}.num.txt
 '''
 
 
@@ -125,8 +124,8 @@ for pop_name, ids in pop_individual.items():
 
         nonadmix_vcf = os.path.join(
             output_dir, f'{batch}.{chr_base}.{pop_name}.vcf')
-        maf_vcf = os.path.join(
-            output_dir, f'{batch}.{chr_base}.{pop_name}.maf001.vcf')
+        masked_vcf = os.path.join(
+            output_dir, f'{batch}.{chr_base}.{pop_name}.masked.vcf')
         sub_script_basename = f'{script_basename}.{chr_base}.{pop_name}'
 
         with open(os.path.join(sub_script_dir, sub_script_basename+'.sh'), 'w') as fo:
@@ -139,7 +138,7 @@ for pop_name, ids in pop_individual.items():
                                          vcf=variant_chr_vcf_dic[chr_base],
                                          input_dir=input_dir,
                                          nonadmix_vcf=nonadmix_vcf,
-                                         maf_vcf=maf_vcf,
+                                         masked_vcf=masked_vcf,
                                          chosen_samples=chosen_samples,
                                          chr_base=chr_base,
                                          load_bcftools=load_bcftools)
