@@ -102,10 +102,10 @@ for i in range(len(group_id_dict)+1):
 # module load r
 source {bin_dir}/s00.load_r.sh
 
-# {PopLDdecay} \\
-#     -InVCF {in_vcf} \\
-#     -OutStat {out_stat} {sub_pop}\\
-#     -OutType 2 &&\\
+{PopLDdecay} \\
+    -InVCF {in_vcf} \\
+    -OutStat {out_stat} {sub_pop}\\
+    -OutType 2 &&\\
 
 perl {Plot_OnePop} \\
     -keepR \\
