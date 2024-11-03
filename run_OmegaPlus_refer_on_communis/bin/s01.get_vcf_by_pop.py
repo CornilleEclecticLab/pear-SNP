@@ -7,6 +7,9 @@
 # @Time(CET): 2024/06/25 13:54:47
 # @Description:
 #    
+# Update: v1.1.0 2024-10-23 17:14:26
+#  1. Don't need maf001 filter.
+#  2. Apply the genmap bed filter.
 
 import datetime
 import sys
@@ -18,7 +21,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -87,14 +90,14 @@ bcftools view -H {nonadmix_vcf} \\
 | wc -l > {nonadmix_vcf}.num.txt
 
 
-bcftools filter \\
+bcftools view \\
     {nonadmix_vcf} \\
-    -e 'MAF<0.01' \\
+    -R {input_dir}/{chr_base}.pass.bed \\
     -O v \\
-    -o {maf_vcf}
+    -o {masked_vcf}
 
-bcftools view -H {maf_vcf} \\
-| wc -l > {maf_vcf}.num.txt
+bcftools view -H {masked_vcf} \\
+| wc -l > {masked_vcf}.num.txt
 '''
 
 
@@ -110,8 +113,8 @@ for pop_name, ids in pop_individual.items():
 
         nonadmix_vcf = os.path.join(
             output_dir, f'{batch}.{chr_base}.{pop_name}.vcf')
-        maf_vcf = os.path.join(
-            output_dir, f'{batch}.{chr_base}.{pop_name}.maf001.vcf')
+        masked_vcf = os.path.join(
+            output_dir, f'{batch}.{chr_base}.{pop_name}.masked.vcf')
         sub_script_basename = f'{script_basename}.{chr_base}.{pop_name}'
 
         with open(os.path.join(sub_script_dir, sub_script_basename+'.sh'), 'w') as fo:
@@ -124,7 +127,7 @@ for pop_name, ids in pop_individual.items():
                                          vcf=input_merged_vcf_path,
                                          input_dir=input_dir,
                                          nonadmix_vcf=nonadmix_vcf,
-                                         maf_vcf=maf_vcf,
+                                         masked_vcf=masked_vcf,
                                          chosen_samples=chosen_samples,
                                          chr_base=chr_base,
                                          load_bcftools=load_bcftools)
