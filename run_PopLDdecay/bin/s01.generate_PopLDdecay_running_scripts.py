@@ -22,7 +22,7 @@ print(f'{" Start ":=^79}')
 
 
 # Define version and script information
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 work_dir = os.path.dirname(script_path)
@@ -105,7 +105,8 @@ source {bin_dir}/s00.load_r.sh
 {PopLDdecay} \\
     -InVCF {in_vcf} \\
     -OutStat {out_stat} {sub_pop}\\
-    -OutType 2 &&\\
+    -OutType 2 \\
+    -MaxDist 2000 &&\\
 
 perl {Plot_OnePop} \\
     -keepR \\
