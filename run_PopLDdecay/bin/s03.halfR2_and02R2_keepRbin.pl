@@ -23,7 +23,7 @@ print $ou "pop\tlength_when_r2=1/2maxr2\n";
 for my $f (@file_list) {
     # next if $f =~ /All/;
     open my $fh_bgz_in, "<", "$f";
-    <$fh_bgz_in>;
+    <$fh_bgz_in>; # skip the first line
     my $line1 = <$fh_bgz_in>;
     chomp $line1;
     my ( $l1, $r_sq1 ) = split /\t/, $line1, 3;
@@ -42,7 +42,7 @@ print $ou "pop\tlength_when_r2<0.2\n";
 for my $f (@file_list) {
     # next if $f =~ /All/;
     open my $fh_bgz_in, "<", "$f";
-    <$fh_bgz_in>;
+    <$fh_bgz_in>; # skip the first line
     my $line1 = <$fh_bgz_in>;
     chomp $line1;
     my ( $l1, $r_sq1 ) = split /\t/, $line1, 3;
