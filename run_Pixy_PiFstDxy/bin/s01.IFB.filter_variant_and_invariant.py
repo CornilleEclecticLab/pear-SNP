@@ -38,6 +38,8 @@ invariant_file = os.path.join(input_dir,'s01.invariant_vcf.txt')
 keep_list = os.path.join(input_dir,'s01.keep_pure_samples.txt')
 concat_file_list = open(os.path.join(input_dir,'s02.concat_chr_vcf_list.txt'),'w')
 concat_maf005_file_list =open(os.path.join(input_dir,'s02.concat_maf005_chr_vcf_list.txt'),'w')
+concat_dp10_file_list =open(os.path.join(input_dir,'s02.concat_dp10_chr_vcf_list.txt'),'w')
+concat_masked_file_list =open(os.path.join(input_dir,'s02.concat_masked_chr_vcf_list.txt'),'w')
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -80,18 +82,20 @@ for chr, var, invar in zip(chromosome_list, variant_list, invariant_list):
 # Load modules
 module load bcftools/1.14
 
-# Filter variant
-bcftools view \\
-    {var} \\
-    -S {keep_list} \\
-    --threads 4 \\
-| bcftools filter \\
-    -e 'F_MISSING > 0.2' \\
-    -Oz4 \\
-    --threads 4 \\
-    -o {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
+## Annotated on 2024-10-16 >>>>>>>>>>>>
+    # # Filter variant
+    # bcftools view \\
+    #     {var} \\
+    #     -S {keep_list} \\
+    #     --threads 4 \\
+    # | bcftools filter \\
+    #     -e 'F_MISSING > 0.2' \\
+    #     -Oz4 \\
+    #     --threads 4 \\
+    #     -o {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
 
-tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
+    # tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')}
+## Annotated on 2024-10-16 <<<<<<<<<<
 
 # # Filter variant to remove MAF <= 0.05
 # bcftools filter \\
@@ -108,35 +112,65 @@ tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.v
 # ## To CHECK if FILTERING is NECESSARY for invariant sites
 # ########################################################################
 
-# # Filter invariant
+## Annotated 2024-10-16 >>>>>>>>>>>>
+# # # Filter invariant
+# bcftools view \\
+#     {invar} \\
+#     -S {keep_list} \\
+#     --threads 4 \\
+#     -Oz4 \\
+#     -o {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
+
+# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
+
+# bcftools filter \\
+#     {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')} \\
+#     -e 'F_MISSING > 0.2' \\
+#     -Oz4 \\
+#     --threads 4 \\
+#     -o {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
+
+# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
+
+# # Concatenate
+# bcftools concat \\
+#     --allow-overlaps \\
+#     {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')} \\
+#     {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')} \\
+#     -Oz4 \\
+#     --threads 4 \\
+#     -o {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')}
+
+# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')}
+
+## Annotated 2024-10-16 <<<<<<<<<<<
+
+## ANNOTATED 2024-10-22 >>>>>>>>>>>>
+
+# # Conclusion: Filter DP10 is no significant difference from no this filtering 
+# # Filter DP 10
+# bcftools filter \\
+#     -S . \\
+#     -i "FMT/DP >= 10" \\
+#     {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')} \\
+#     -Oz4 \\
+#     --threads 4 \\
+#     -o {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.dp10.vcf.gz')}
+
+# tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.dp10.vcf.gz')}
+
+## ANNTOATED 2024-10-22 <<<<<<<<<<<
+
+
+# Extract the high mappability regions
 bcftools view \\
-    {invar} \\
-    -S {keep_list} \\
-    --threads 4 \\
+    {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')} \\
+    -R {os.path.join(input_dir,chr+'.pass.bed')} \\
     -Oz4 \\
-    -o {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
+    -o {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.masked.vcf.gz')}
+    
+tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.masked.vcf.gz')}
 
-tabix -f -p vcf {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')}
-
-bcftools filter \\
-    {os.path.join(output_dir,sub_script+'.invariant.vcf.gz')} \\
-    -e 'F_MISSING > 0.2' \\
-    -Oz4 \\
-    --threads 4 \\
-    -o {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
-
-tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')}
-
-# Concatenate
-bcftools concat \\
-    --allow-overlaps \\
-    {os.path.join(output_dir,sub_script+'.geno20.pixy_temp.variant.vcf.gz')} \\
-    {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')} \\
-    -Oz4 \\
-    --threads 4 \\
-    -o {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')}
-
-tabix -f -p vcf {os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')}
 
 # bcftools concat \\
 #     --allow-overlaps \\
@@ -190,6 +224,8 @@ bcftools view -H {os.path.join(output_dir,sub_script+'.geno20.invariant.vcf.gz')
 
     concat_file_list.write(os.path.join(output_dir,sub_script+'.geno20.pixy_concat.vcf.gz')+'\n')
     # concat_maf005_file_list.write(os.path.join(output_dir,sub_script+'.geno20.maf005.pixy_concat.vcf.gz')+'\n')
+    # concat_dp10_file_list.write(os.path.join(output_dir,sub_script+'.geno20.pixy_concat.dp10.vcf.gz')+'\n')
+    concat_masked_file_list.write(os.path.join(output_dir,sub_script+'.geno20.pixy_concat.masked.vcf.gz')+'\n')
 
 
 end_time = datetime.datetime.now()
