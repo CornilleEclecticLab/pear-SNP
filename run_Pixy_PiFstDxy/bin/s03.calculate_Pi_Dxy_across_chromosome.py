@@ -18,13 +18,18 @@
 #   1. NEW: Accept the pixy Fst results.
 
 # @Update: 1.2.1 2024-05-10 
-#   1. Finish editting in the last version.
+#   1. Finish editing in the last version.
 #   2. Changed the output header.
 
 # @Update: 2.0.0 2024-8-05
 #   1. Update the function to calculate Fst from Pixy, now calculating the average Fst by SNP, not 
 #      by window. Although the results are the same, the method is different.
-#   2. Ignore 
+#   2. Ignore ??
+
+# @Update: 3.0.0 2024-10-24 15:25:05
+#   1. IMPORTANT: fix a bug to count the number of differences and comparisons in the output file.
+#   2. Output the total number of differences and comparisons in the output file.
+#   3. Minor changes in the header of the output Pi by chr file.
 
 
 import datetime
@@ -36,7 +41,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.2.1"
+version = "3.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -96,8 +101,9 @@ if args.sample_pop:
 
 # Define the function to read diff and comparisons for Pi from Pixy
 def read_Pi(dic, dic_chr, io):
-    lines = io.readlines()[1:] if io.readline(
-    ).startswith('pop') else io.readlines()
+    lines = io.readlines() 
+    if lines[0].startswith('pop'):
+        lines=lines[1:]
     for line in lines:
         ls = line.split()
         pop = ls[0]
@@ -119,8 +125,9 @@ def read_Pi(dic, dic_chr, io):
 
 # Define the function to read diff and comparisons for Dxy from Pixy
 def read_Dxy(dic, dic_chr, io):
-    lines = io.readlines()[1:] if io.readline(
-    ).startswith('pop') else io.readlines()
+    lines = io.readlines()
+    if lines[0].startswith('pop'):
+        lines = lines[1:]
     for line in lines:
         ls = line.split()
         pop1 = ls[0]
@@ -180,9 +187,9 @@ def cul_pi_dxy(diff, comparisons):
 
 # Define the function to Read Fst from Pixy
 def read_Fst_pixy(dic, dic_chr, io):
-    lines = io.readlines()[1:] if io.readline(
-    ).startswith('pop') else io.readlines()
-
+    lines = io.readlines()
+    if lines[0].startswith('pop'):
+        lines = lines[1:]
     for line in lines:
         ls = line.split()
         pop1 = ls[0]
@@ -243,7 +250,7 @@ for i in args.input:
 # Calculate Pi from Pixy
 opi = open(os.path.join(output_dir, 'Pi.txt'), 'w')
 opic = open(os.path.join(output_dir, 'Pi_chr.txt'), 'w')
-opi.write('pop\tPi\tN\n') if pop_count else opi.write('pop\tPi\n')
+opi.write('pop\tPi\tN\tsum_diffs\tsum_comparisons\n') if pop_count else opi.write('pop\tPi\n')
 header = ''
 group_order = group_order if group_order else list(Pi_dic.keys())
 if len(group_order) != len(Pi_dic):
@@ -252,15 +259,19 @@ if len(group_order) != len(Pi_dic):
 
 for pop in group_order:
     N = pop_count.get(pop, 0)
-    Pi = cul_pi_dxy(Pi_dic[pop][0], Pi_dic[pop][1])
+    sum_diffs = Pi_dic[pop][0]
+    sum_comparisons = Pi_dic[pop][1]
+    Pi = cul_pi_dxy(sum_diffs, sum_comparisons)
     print(f'Pi for {pop} is {Pi}, N={N}')
-    opi.write(f'{pop}\t{Pi}\t{N}\n') if pop_count else opi.write(
+    opi.write(f'{pop}\t{Pi}\t{N}\t{sum_diffs}\t{sum_comparisons}\n') if pop_count else opi.write(
         f'{pop}\t{Pi}\n')
 
+    expected_header = header = 'pop\t' + \
+        '\t'.join(Pi_dic_chr[pop].keys()) + '\n'
     if header == '':
-        header = 'pop' + '\t'.join(Pi_dic_chr[pop].keys()) + '\n'
+        header = expected_header
         opic.write(header)
-    elif header != 'pop' + '\t'.join(Pi_dic_chr[pop].keys()) + '\n':
+    elif header != expected_header:
         print('The chromosome is not the same in different populations.')
         sys.exit(1)
 
