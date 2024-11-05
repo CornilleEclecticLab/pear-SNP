@@ -22,7 +22,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.1"
+version = "1.0.2"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -80,12 +80,16 @@ ${{ACTIVATE_PIXY}}
 pixy --stats pi fst dxy \\
     --vcf {vcf} \\
     --populations {pop_path} \\
-    --window_size 10000 \\
     --n_cores 10 \\
     --fst_type wc \\
+    --bed_file {os.path.join(input_dir,chr+".pass.bed.1based.txt")} \\
     --output_folder {output_dir} \\
     --output_prefix {sub_script_prefix} \\
     --bypass_invariant_check no
+
+# Window size not valid if bed file is provided 
+#   
+#   --window_size 10000 \\
 '''
     # Write slurm script to file
     file = open(os.path.join(sub_script_dir,sub_script_prefix+'.sh'),'w')
