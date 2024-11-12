@@ -8,6 +8,8 @@
 # @Description:
 #     This script is used to generate sub-scripts for the "smc++ estimate" command.
 
+# @Update: 2024-11-12 v1.1.0
+#     1. Correct the number and length parameters in the simulate command.
 
 import datetime
 import os
@@ -17,7 +19,7 @@ import argparse
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "1.0.0"
+version = "1.1.0"
 
 # The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
 # The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
@@ -90,6 +92,8 @@ for pop in population_dict.keys():
 #SBATCH -J {sub_script_basename}
 #SBATCH -o {sub_script_basename}.%J.out
 #SBATCH -e {sub_script_basename}.%J.err
+#SBATCH -c 1      # cost 5 hours for 1 pop and 1 Mbp with 1 core
+#SBATCh --mem=2G
 
 {load_singularity}
 
@@ -98,9 +102,10 @@ singularity run -B  {work_dir}:{work_dir} \\
     simulate \\
     --contig_id sim_{pop} \\
     {s02_output_dir}/{pop}/model.final.json \\
-    {len(population_dict[pop])} \\
-    540000000 \\
+    {2 * len(population_dict[pop])} \\
+    1 \\
     {output_dir}/msprime.{pop}.vcf
+
 # override per-generation recombination rate
 # -r \\
 # override per-generation mutation rate
