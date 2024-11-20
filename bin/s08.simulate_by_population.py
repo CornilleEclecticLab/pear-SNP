@@ -17,6 +17,9 @@
 # @Update: 2024-11-14 v2.0.0
 #     1. Normalize the VCF file after simulation, to remove the duplicated position records.
 
+# @Update: 2024-11-20 v2.0.1
+#     1. tabix the normalized VCF file.
+
 import datetime
 import os
 import sys
@@ -26,7 +29,7 @@ import argparse
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "2.0.0"
+version = "2.0.1"
 
 # The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
 # The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
@@ -130,6 +133,9 @@ bcftools norm \\
     -Oz \\
     -o {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf.gz \\
     {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
+
+tabix -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf.gz
+
 '''
         fo.write(content)
 
