@@ -11,15 +11,22 @@
 # @Update: 2024-11-12 v1.1.0
 #     1. Correct the number and length parameters in the simulate command.
 
+# @Update: 2024-11-12 v1.2.0
+#     1. Run simulate using Slurm array for each set.
+
+# @Update: 2024-11-14 v2.0.0
+#     1. Normalize the VCF file after simulation, to remove the duplicated position records.
+
 import datetime
 import os
 import sys
 import textwrap
 import argparse
+
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "1.1.0"
+version = "2.0.0"
 
 # The type of spline to use for the analysis, "piecewise","cubic", or "pchip"
 # The default value in recent versions is piecewise to better match the output from {P,M}SMC. To enable cubic splines (what is used in the paper), use --spline cubic or --spline pchip. (For details on the differences between cubic and pchip splines see https://blogs.mathworks.com/cleve/2012/07/16/splines-and-pchips/#98ccb1df-b614-41d4-b1b5-e090a87e0d46.)
@@ -46,8 +53,8 @@ output_dir = work_dir+'/output/'+script_basename+'_'+spline_type
 sub_script_dir = work_dir+'/bin/'+script_basename+'_'+spline_type
 
 # Create the output directories
-os.system("mkdir -p "+sub_script_dir)
-os.system("mkdir -p "+output_dir)
+os.makedirs(sub_script_dir, exist_ok=True)
+os.makedirs(output_dir, exist_ok=True)
 
 # Set the input files
 vcf = input_dir+"/s01.input.vcf.gz"
@@ -60,8 +67,8 @@ load_singularity = '# module load system/singularity-3.7.3 # singularity is inst
 # Read the input files, chromosome_list
 with open(chromosome_list, 'r') as fr:
     chr_list = fr.read().strip().split('\n')
-    info = f'Reading the "chromosomes list": {",".join(chr_list)}'
-    print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
+    # info = f'Reading the "chromosomes list": {",".join(chr_list)}'
+    # print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
 # Read the input files, individual_population_list
 population_dict = {}
@@ -72,8 +79,8 @@ with open(individual_population_list, 'r') as fr:
         line = line.strip().split()
         individual = line[0]
         population = line[1]
-        info = f'Reading the "individuals_and_populations_list": {individual} {population}'
-        print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
+        # info = f'Reading the "individuals_and_populations_list": {individual} {population}'
+        # print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
 
         population_dict[population] = population_dict.get(population, list())
         population_dict[population].append(individual)
@@ -92,24 +99,37 @@ for pop in population_dict.keys():
 #SBATCH -J {sub_script_basename}
 #SBATCH -o {sub_script_basename}.%J.out
 #SBATCH -e {sub_script_basename}.%J.err
-#SBATCH -c 1      # cost 5 hours for 1 pop and 1 Mbp with 1 core
+#SBATCH -p fast         # partition long=30days, fast=1day
+#SBATCH --array=1-1000    # There are limitions for users on the cluster, 9K jobs per user
+#SBATCH -c 1            # cost 5 hours for 1 pop and 1 Mbp with 1 core
 #SBATCh --mem=2G
 
 {load_singularity}
+module load bcftools/1.14
 
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif  \\
     simulate \\
-    --contig_id sim_{pop} \\
+    --contig_id sim_${{SLURM_ARRAY_TASK_ID}}_{pop} \\
     {s02_output_dir}/{pop}/model.final.json \\
     {2 * len(population_dict[pop])} \\
     1 \\
-    {output_dir}/msprime.{pop}.vcf
+    {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf
 
 # override per-generation recombination rate
 # -r \\
 # override per-generation mutation rate
 # -u \\
+
+bgzip -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf
+
+tabix -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
+
+bcftools norm \\
+    -d all \\
+    -Oz \\
+    -o {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf.gz \\
+    {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
 '''
         fo.write(content)
 
