@@ -8,4 +8,4 @@ sample_file='../input/s01.3pops.3sample.outgroup_ussu.txt'
 outgroup_pop='ussu'
 
 vcf_prefix="../output/s01.get_vcf_from_variant_for_pops/pear_Jul2024."
-vcf_suffix=".subpops.vcf.vcf"
+vcf_suffix=".subpops.vcf"
