@@ -1,7 +1,13 @@
 library(ggplot2)
 library(dplyr)
-
 library(cowplot)
+
+
+# # Set working directory to the location of the script
+# script_path <- dirname(rstudioapi::getActiveDocumentContext()$path)
+# script_path
+# setwd(script_path)
+
 
 # Clean up
 rm(list=ls())
@@ -130,7 +136,7 @@ p3 <- ggplot(combined_data %>% filter(Method == "SweeD"),
 combined_plot <- plot_grid(p1, p2, p3, ncol = 1, align = "v")
 combined_plot
 ggsave("combined_plot.pdf", plot = combined_plot, 
-       width = 297, height = 210, units = "mm",   # 横向A4纸张
+       width = 297, height = 210, units = "mm",   # horizon A4 
        device = "pdf")
 
 q()
