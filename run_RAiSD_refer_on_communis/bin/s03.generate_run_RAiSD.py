@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-# @File     : s02.generate_run_RAiSD.py
+# @File     : s03.generate_run_RAiSD.py
 
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
@@ -13,6 +13,9 @@
 
 # @Update v2.1.0 2024-11-03
 #     1. using masked vcf input
+
+# @Update v2.2.0 2025-01-13
+#     1. change to s03 from s02
 
 import datetime
 import sys
@@ -97,7 +100,7 @@ with open(karyotype_file, 'r') as file:
 # Function to generate RAiSD command
 def generate_RAiSD_command(run_name, chr_length, snp_num, grid_parameter):
     global work_dir, output_dir, bin_dir, sub_script_dir, script_basename, version, start_time, vcf_prefix
-    sub_script_prefix = f's02.run_RAiSD.{run_name}'
+    sub_script_prefix = f's03.run_RAiSD.{run_name}'
     with open(os.path.join(sub_script_dir, f'{sub_script_prefix}.sh'), 'w') as file:
         file.write(
             f'''#!/usr/bin/env bash

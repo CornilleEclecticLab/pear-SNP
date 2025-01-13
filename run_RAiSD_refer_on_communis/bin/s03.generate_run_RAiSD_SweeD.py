@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
  
-# @File     : s02.generate_run_RAiSD.py
+# @File     : s03.generate_run_RAiSD.py
 
 # @Author   : NIE Yuqi
 # @Email    : nieyuqi.cn@gmail.com
@@ -10,6 +10,9 @@
 #     v2.0.0 2024-08-27 17:41:01
 #     1. load config from s00_config.py
 #     2. using grid size according to the chromosome size (150).
+
+#     v2.1.0 2025-01-13
+#     1. change to s03 from s02
 
 
 import datetime
@@ -28,7 +31,7 @@ from s00_config import (
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -95,7 +98,7 @@ with open(karyotype_file, 'r') as file:
 # Function to generate RAiSD command
 def generate_RAiSD_command(run_name, chr_length, snp_num, grid_parameter):
     global work_dir, output_dir, bin_dir, sub_script_dir, script_basename, version, start_time, vcf_prefix
-    sub_script_prefix = f's02.run_RAiSD.{run_name}'
+    sub_script_prefix = f's03.run_RAiSD.{run_name}'
     with open(os.path.join(sub_script_dir, f'{sub_script_prefix}.sh'), 'w') as file:
         file.write(
             f'''#!/usr/bin/env bash
