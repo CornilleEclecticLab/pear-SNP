@@ -7,15 +7,16 @@
 # @Time(CET): 2024/06/25 13:54:47
 # @Description:
 #    
-# Update: v1.1.0 2024-10-23 17:14:26
-#  1. Don't need maf001 filter.
-#  2. Apply the genmap bed filter.
+# @Update: v1.1.0 2024-10-23 17:38:45
+#    1. No maf001 filter as there is no effect when a few samples are selected.
+#    2. Apply genmap bed to filter the variants.
 
 import datetime
 import sys
 import textwrap
 import os
-from s00_config import batch, input_merged_vcf_path, individual_pop_map_filename, chromosomes_list_filename
+import warnings
+from s00_config import batch, individual_pop_map_filename, chromosomes_list_filename, variant_vcf_list_filename
 
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
@@ -41,16 +42,10 @@ os.makedirs(sub_script_dir, exist_ok=True)
 def wrap79(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
 
-
-
-# gatk_filtered_vcf_dir = os.path.join(os.path.dirname(
-#     work_dir), 'run_GATK_variant_calling', 'output', 's05.hard_filter_chr_vcf.'+batch)
-
-
 # Read chromosomes ID list of the reference genome
 chromosomes_list_path = os.path.join(input_dir, chromosomes_list_filename)
 with open(chromosomes_list_path, 'r') as file:
-    chromosomes = file.read().strip().format(input_dir=input_dir).split()
+    chromosomes = file.read().strip().split()
 
 # Read individuals pop map
 individual_pop_map = os.path.join(
@@ -62,6 +57,20 @@ with open(individual_pop_map, 'r') as file:
         id, pop = line.strip().split()[0:2]
         pop_individual[pop] = pop_individual.get(pop, [])
         pop_individual[pop].append(id)
+
+# Read the variant VCF list
+with open(os.path.join(input_dir, variant_vcf_list_filename), 'r') as file:
+    variant_vcf_list = [os.path.realpath(i) for i in file.read().strip().split()] 
+variant_chr_vcf_dic = {os.path.basename(path).split(".")[1]: path for path in variant_vcf_list}
+# Variation vcf chr list
+for chr in chromosomes:
+    if chr not in variant_chr_vcf_dic:
+        print(variant_chr_vcf_dic)
+        raise ValueError(f'Chromosome {chr} is not in the variant vcf list')
+for chr in variant_chr_vcf_dic:
+    if chr not in chromosomes:
+        raise ValueError(f'Chromosome {chr} is not in the chromosomes list')
+
 
 # Set the shebang and slurm options
 shebang = f'''#!/usr/bin/env bash
@@ -89,9 +98,11 @@ bcftools view \\
 bcftools view -H {nonadmix_vcf} \\
 | wc -l > {nonadmix_vcf}.num.txt
 
+bgzip --threads 4 -c {nonadmix_vcf} > {nonadmix_vcf}.gz
+tabix -p vcf {nonadmix_vcf}.gz
 
 bcftools view \\
-    {nonadmix_vcf} \\
+    {nonadmix_vcf}.gz \\
     -R {input_dir}/{chr_base}.pass.bed \\
     -O v \\
     -o {masked_vcf}
@@ -124,7 +135,7 @@ for pop_name, ids in pop_individual.items():
                      )
             fo.write(run_bcftools.format(bin_dir=bin_dir,
                                          script_path=script_path,
-                                         vcf=input_merged_vcf_path,
+                                         vcf=variant_chr_vcf_dic[chr_base],
                                          input_dir=input_dir,
                                          nonadmix_vcf=nonadmix_vcf,
                                          masked_vcf=masked_vcf,
