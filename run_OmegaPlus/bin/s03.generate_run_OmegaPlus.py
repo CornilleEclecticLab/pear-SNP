@@ -14,11 +14,18 @@
 #     2. The batch variable is now import from s00, rather defined in the script.
 #     3. Using grid size according to the chromosome size.
 
+#          v1.2.0 2024-09-05 19:26:16
+#     1. Read grid windows list from grid_chr.{window}.txt
+
+#          v1.3.0 2024-11-03
+#     1. Use the masked vcf as input. 
+
 import datetime
 import sys
 import textwrap
 import os
 import random
+import glob
 from s00_config import batch, individual_pop_map_filename, chromosomes_list_filename
 
 
@@ -28,7 +35,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.1.0"
+version = "1.3.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -51,8 +58,12 @@ def wrap(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
 
 
-grids_windows = ['1000', '2000', '3000', '4000', '5000',
-         '6000', '7000', '8000', '9000', '10000']
+# Get the list of files matching the pattern 'grid_chr.*.txt'
+file_paths = glob.glob(os.path.join(input_dir, 'grid_chr.*.txt'))
+
+# Extract the window size from each file name 'grid_chr.[window].txt'
+grids_windows = [os.path.splitext(os.path.basename(fp))[0].split('.')[
+    1] for fp in file_paths]
 
 def read_grid_file(chr, grid_file):
     dic = {}
@@ -88,8 +99,9 @@ for pop, ids in pop_id.items():
         for grid_window in grids_windows:
             grid_num = read_grid_file(chr, os.path.join(
                 input_dir, f'grid_chr.{grid_window}.txt'))
-            sub_script_prefix = f's02.run_OmegaPlus.{pop}.{chr}.grid{str(grid_window)}'
-            vcf_prefix = os.path.join(work_dir,'output','s01.get_vcf_by_pop',f'{batch}.{chr}.{pop}')
+            pop_chr = f'{pop}.{chr}'
+            sub_script_prefix = f's03.run_OmegaPlus.{pop}.{chr}.grid{str(grid_window)}'
+            vcf_prefix = os.path.join(work_dir,'output','s01.get_vcf_by_pop_from_variant',f'{batch}.{chr}.{pop}')
             random_seed = random.randint(100000, 999999)
             with open(os.path.join(sub_script_dir,sub_script_prefix+'.sh'),'w') as file:
                 file.write(
@@ -106,74 +118,18 @@ source {bin_dir}/s00.load_OmegaPlus.sh
 
 # Run OmegaPlus
 OmegaPlus-M \\
-    -name {sub_script_prefix}.min5K.max100K \\
-    -input {vcf_prefix}.vcf \\
+    -name {pop_chr} \\
+    -input {vcf_prefix}.masked.vcf \\
     -grid {grid_num} \\
-    -minwin 5000 \\
-    -maxwin 100000 \\
-    -all \\
-    -minsnps 5 \\
-    -threads 4 \\
-    -seed {random_seed} 
-
-
-OmegaPlus-M \\
-    -name {sub_script_prefix}.min2500 \\
-    -input {vcf_prefix}.vcf \\
-    -grid {grid_num} \\
-    -minwin 2500 \\
-    -maxwin 10000 \\
-    -all \\
-    -minsnps 5 \\
-    -threads 4 \\
-    -seed {random_seed} 
-
-
-OmegaPlus-M \\
-    -name {sub_script_prefix}.min1000 \\
-    -input {vcf_prefix}.vcf \\
-    -grid {grid_num} \\
-    -minwin 1000 \\
-    -maxwin 10000 \\
-    -all \\
-    -minsnps 5 \\
-    -threads 4 \\
-    -seed {random_seed} 
-
-OmegaPlus-M \\
-    -name {sub_script_prefix}.min2000 \\
-    -input {vcf_prefix}.vcf \\
-    -grid {grid_num} \\
-    -minwin 2000 \\
-    -maxwin 10000 \\
-    -all \\
-    -minsnps 5 \\
-    -threads 4 \\
-    -seed {random_seed} 
-
-OmegaPlus-M \\
-    -name {sub_script_prefix}.min4000 \\
-    -input {vcf_prefix}.vcf \\
-    -grid {grid_num} \\
-    -minwin 4000 \\
-    -maxwin 10000 \\
+    -minwin 10000 \\
+    -maxwin 200000 \\
     -all \\
     -minsnps 5 \\
     -threads 4 \\
     -seed {random_seed}
 
-OmegaPlus-M \\
-    -name {sub_script_prefix}.min5000 \\
-    -input {vcf_prefix}.vcf \\
-    -grid {grid_num}\\
-    -minwin 5000 \\
-    -maxwin 10000 \\
-    -all \\
-    -minsnps 5 \\
-    -threads 4 \\
-    -seed {random_seed}
-
-mv OmegaPlus_*.{sub_script_prefix}.min* {output_dir} 
+mv OmegaPlus_Info.{pop_chr} {output_dir}
+mv OmegaPlus_Report.{pop_chr} {output_dir} 
 ''')
 
 
