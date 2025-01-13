@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
- 
+
 # @File     : s02.generate_run_RAiSD.py
 
 # @Author   : NIE Yuqi
@@ -11,6 +11,8 @@
 #     1. load config from s00_config.py
 #     2. using grid size according to the chromosome size (150).
 
+# @Update v2.1.0 2024-11-03
+#     1. using masked vcf input
 
 import datetime
 import sys
@@ -28,7 +30,7 @@ from s00_config import (
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -111,7 +113,7 @@ source {bin_dir}/s00.load_RAiSD.sh
 
 # Run RAiSD
 RAiSD -n {run_name} \\
-      -I {vcf_prefix}.vcf \\
+      -I {vcf_prefix}.masked.vcf \\
       -B {chr_length} {snp_num} \\
       {grid_parameter} \\
       -R \\
