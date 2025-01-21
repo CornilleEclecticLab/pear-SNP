@@ -20,6 +20,9 @@
 #          v1.3.0 2024-11-03
 #     1. Use the masked vcf as input. 
 
+#          v1.4.0 2025-01-17
+#     1. Use back the unmased vcf file
+
 import datetime
 import sys
 import textwrap
@@ -35,7 +38,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.3.0"
+version = "1.4.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -119,7 +122,7 @@ source {bin_dir}/s00.load_OmegaPlus.sh
 # Run OmegaPlus
 OmegaPlus-M \\
     -name {pop_chr} \\
-    -input {vcf_prefix}.masked.vcf \\
+    -input {vcf_prefix}.vcf \\
     -grid {grid_num} \\
     -minwin 10000 \\
     -maxwin 200000 \\
