@@ -64,7 +64,7 @@ chromosomes = []
 with open(os.path.join(input_dir,chromosomes_list_filename)) as f:
     for line in f:
         chromosomes.append(line.strip())
-    chromosomes = sorted(chromosomes)
+    chromosomes = sorted(chromosomes)   # Sort chromosomes
 
 
 # Load cutoffs
