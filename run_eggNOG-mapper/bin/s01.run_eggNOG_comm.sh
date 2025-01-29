@@ -8,7 +8,7 @@
 #SBATCH -p long
 
 # @File     :   s01.run_eggNOG.sh
-# @Version  :   1.0.0
+# @Version  :   1.1.0
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
 # @Time(CET):   2024/12/05 15:50:35
@@ -27,14 +27,10 @@ emapper.py \
     -i ../input/PyrusCommunis_BartlettDHv2.0.pep.fasta \
     --itype proteins \
     -o ../output/PyrusCommunis_BartlettDHv2.0.pep.eggnog \
-    --decorate_gff ../input/PyrusCommunis_BartlettDHv2.0.gff \
-    --decorate_gff_ID_field ID \
+    --dbmem \
     --dmnd_db ../database/Viridiplantae.dmnd \
     --temp_dir $TMP \
     --data_dir ../database \
-    --evalue 0.001 \
-    --pident 60 \
-    --query_cover 50 \
-    --subject_cover 50 \
+    --tax_scope Viridiplantae \
     --override \
     --cpu 0

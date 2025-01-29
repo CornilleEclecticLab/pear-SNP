@@ -8,7 +8,7 @@
 #SBATCH -p long
 
 # @File     :   s01.run_eggNOG.sh
-# @Version  :   1.0.0
+# @Version  :   1.1.0
 # @Author   :   NIE Yuqi
 # @Email    :   nieyuqi.cn@gmail.com
 # @Time(CET):   2024/12/05 15:50:35
@@ -26,14 +26,9 @@ emapper.py \
     -i ../input/GWHBAOS00000000.Protein.faa \
     --itype proteins \
     -o ../output/GWHBAOS00000000.gff.eggnog \
-    --decorate_gff ../input/GWHBAOS00000000.no_blank.gff \
-    --decorate_gff_ID_field ID \
+    --dbmem \
     --dmnd_db ../database/Viridiplantae.dmnd \
     --temp_dir $TMP \
     --data_dir ../database \
-    --evalue 0.001 \
-    --pident 60 \
-    --query_cover 50 \
-    --subject_cover 50 \
     --override \
     --cpu 0
