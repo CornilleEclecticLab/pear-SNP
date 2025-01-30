@@ -6,7 +6,12 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024/09/04 16:19:30
 # @Description:
-#    
+#   
+# Update: v1.0.1 2024-10-16 10:57:26
+#   Don't overwrite existing slurm scripts.
+
+# Update: v2.0.0 2025-01-30 17:32:15
+#   Using a new script to format the ms like output file.
 
 import datetime
 import sys
@@ -17,7 +22,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.0"
+version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -79,8 +84,13 @@ for repeat in range(1, 11): # 1-10
     for pop in populations:
         par = pars[pop]
         sub_script_base = script_basename + f'.{pop}.REP{repeat}'
+        sub_script = os.path.join(sub_script_dir, sub_script_base+'.sh')
+        if os.path.exists(sub_script):
+            print(wrap79(f"Existing script: {sub_script}."))
+            print("Quit.")
+            exit()
         output_file_base = os.path.join(output_dir, f"ms.{pop}.REP{repeat}")
-        with open(os.path.join(sub_script_dir, sub_script_base+'.sh'), 'w') as fo:
+        with open(sub_script, 'w') as fo:
             fo.write(header)
             fo.write(f"""
 #SBATCH -J {sub_script_base}.sh
@@ -92,15 +102,14 @@ for repeat in range(1, 11): # 1-10
 source {bin_dir}/s00.load_ms.sh
 
 ms  {len(populations[pop])*2} \\
-    100 \\
-    -seeds {seed0} {seed1} {seed2} \\
-    {par} \\
+   100 \\
+   -seeds {seed0} {seed1} {seed2} \\
+   {par} \\
 > {output_file_base}.txt
 
-perl {os.path.join(bin_dir, 'ms_modify.pl')} \\
+python3 {os.path.join(bin_dir, 's01.x1.ms_format.py')} \\
      {output_file_base}.txt \\
 > {output_file_base}.modified.txt
-
 """)
 
 
