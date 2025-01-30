@@ -30,7 +30,7 @@ s01_output_dir = os.path.join(work_dir,'output','s01.generate_run_ms')
 
 
 # Set grid numbers
-grid = '1000' # str(int( 1000000/1000 ))
+grid = '1000'  # around 1000 bp/grid, str(int( 1000000/1000 ))
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
