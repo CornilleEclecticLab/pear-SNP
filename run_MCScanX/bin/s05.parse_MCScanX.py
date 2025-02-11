@@ -8,6 +8,9 @@
 # @Description:
 #    
 
+# Update: v1.1.0 2025-02-11 10:51:42
+# - Fix the bug that handle the intersection and union of collinearity pairs.
+
 import datetime
 import sys
 import textwrap
@@ -20,7 +23,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -53,6 +56,7 @@ for file in collinearity_files:
         basename = os.path.basename(file)
         prefix = os.path.splitext(basename)[0]
         with open(os.path.join(sub_output_dir, f"{prefix}.parsed.collinearity.txt"), 'w', encoding='utf-8') as fo:
+            fo_records = {}
             for line in f:
                 if line.startswith("###") or line.startswith("# "): # Skip the split lines, paramaters and statistics.
                     continue
@@ -71,12 +75,16 @@ for file in collinearity_files:
 
                 elif inter_switch is True:
                     lines=line.strip().split()
-                    fo.write(f"{lines[-3]}\t{lines[-2]}\n")
-                    if lines[-3]+"_"+lines[-2] not in common_collinearity:
-                        common_collinearity[lines[-3]+"_"+lines[-2]] = True
-                        fo_union.write(f"{lines[-3]}\t{lines[-2]}\n")
-                    elif lines[-2]+"_"+lines[-3] not in common_collinearity:
-                        fo_intersection.write(f"{lines[-3]}\t{lines[-2]}\n")
+                    gene_pairs = f"{lines[-3]}\t{lines[-2]}"
+                    if gene_pairs not in fo_records:
+                        fo_records[gene_pairs] = True
+                        fo.write(f"{gene_pairs}\n")
+
+                        if gene_pairs not in common_collinearity:
+                            common_collinearity[gene_pairs] = True
+                            fo_union.write(f"{gene_pairs}\n")
+                        elif gene_pairs in common_collinearity:
+                            fo_intersection.write(f"{gene_pairs}\n")
 
 
 
