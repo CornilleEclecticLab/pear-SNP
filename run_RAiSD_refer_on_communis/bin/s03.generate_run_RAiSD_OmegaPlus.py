@@ -14,6 +14,9 @@
 #     v2.1.0 2025-01-13
 #     1. change to s03 from s02
 
+#     v2.2.0 2025-01-28
+#     1. fit the new OmegaPlus output filename.
+
 import datetime
 import sys
 import textwrap
@@ -30,7 +33,7 @@ from s00_config import (
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "2.1.0"
+version = "2.2.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -162,7 +165,7 @@ for pop, ids in pop_id.items():
                     grid_num = read_grid_file(chr, os.path.join(
                         input_dir, f'grid_chr.{grid_window}.txt'))
                     run_name = f'{run_name_prefix}.{grid_method}{grid_window}'
-                    omegaplus_file_name = f'OmegaPlus_Report.s02.run_OmegaPlus.{pop}.{chr}.grid{grid_window}'
+                    omegaplus_file_name = f'OmegaPlus_Report.{pop}.{chr}'
                     omegaplus_file = os.path.join(omegaplus_output_dir, omegaplus_file_name)
                     if not os.path.exists(omegaplus_file):
                         print(f'{omegaplus_file} not exists, skip.')
@@ -172,14 +175,14 @@ for pop, ids in pop_id.items():
                         if omegaplus_result[0].strip() == '//1' \
                             and omegaplus_result[1].strip().startswith('Position'):
                             omegaplus_result = omegaplus_result[2:]
-                        omegaplus_file_no_header = os.path.join(output_dir, f'OmegaPlus.{pop}.{chr}.grid{grid_window}')
+                        omegaplus_file_no_header = os.path.join(output_dir, f'OmegaPlus.{pop}.{chr}')
                         with open(omegaplus_file_no_header, 'w') as file:
                             file.write('\n'.join(omegaplus_result)+'\n')
 
                         grid_parameter = f'''-G {grid_num} \\
       -CO {omegaplus_file_no_header} 1 2 \\
       -COT 0.05 \\
-      -COD 2'''
+      -COD 100'''
 
                     generate_RAiSD_command(
                         run_name, chr_length, snp_num, grid_parameter)

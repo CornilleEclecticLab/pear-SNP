@@ -8,8 +8,10 @@ individual_pop_map_filename = 's01.sample_tab_population.txt'
 
 sweed_output_dir = 'run_SweeD_refer_on_communis/output/s03.generate_run_SweeD'
 omegaplus_output_dir = 'run_OmegaPlus_refer_on_communis/output/s03.generate_run_OmegaPlus'
-raisd_output_dir = 's02.generate_run_RAiSD'
-raisd_files_name = 'RAiSD_Report.{pop}.{chr}.by_grid1000.{chr}'
+raisd_output_dir = 's03.generate_run_RAiSD'
+
+# raisd_files_name = 'RAiSD_Report.{pop}.{chr}.by_grid1000.{chr}'
+raisd_files_name = 'RAiSD_Report.{pop}.{chr}.by_win50.{chr}'
 raisd_files_by_win_name = 'RAiSD_Report.{pop}.{chr}.by_win50.{chr}'
 
 cutoff_files_dir = 's03.find_FPR_cutoff_RAiSD'
@@ -19,6 +21,8 @@ load_bedtools = "module load bedtools"
 
 grid_window_size = 1000
 
-gff_filename = "PyrusCommunis_BartlettDHv2.0.Chr.gene.gff"
+gff_filename = "PyrusCommunis_BartlettDHv2.0.Chr.gene.slop1kb.gff"
 
 cds_fasta_filename = "PyrusCommunis_BartlettDHv2.0.cds.fasta"
+
+mask_pass_filename = "PyrusCommunis_BartlettDHv2.0.chr_list.fasta_centromere_range.txt.genmap_pass_subtract_centier.bed"

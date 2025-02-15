@@ -17,6 +17,9 @@
 # @Update v2.2.0 2025-01-13
 #     1. change to s03 from s02
 
+# @Upate v2.3.0 2025-01-17
+#     1. using unmasked vcf input
+
 import datetime
 import sys
 import textwrap
@@ -33,7 +36,7 @@ from s00_config import (
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
-version = "2.1.0"
+version = "2.3.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -116,7 +119,7 @@ source {bin_dir}/s00.load_RAiSD.sh
 
 # Run RAiSD
 RAiSD -n {run_name} \\
-      -I {vcf_prefix}.masked.vcf \\
+      -I {vcf_prefix}.vcf \\
       -B {chr_length} {snp_num} \\
       {grid_parameter} \\
       -R \\
