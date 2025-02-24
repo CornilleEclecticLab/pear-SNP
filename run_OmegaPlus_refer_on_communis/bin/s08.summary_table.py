@@ -7,6 +7,9 @@
 # @Time(CET): 2024/12/29 14:59:31
 # @Description:
 #    
+# v2.0.0 2025-02-16 and 2025-02-17
+# - Add blast annotation to the summary table.
+# - Generate interest common populations genes in the summary table, and gene list file.
 
 import datetime
 import sys
@@ -18,7 +21,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.0"
+version = "2.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -43,7 +46,6 @@ pos_genes = {}
 with open(positive_selection_output_list) as f:
     files = f.read().strip().split('\n')
 
-common_and_specific_pop_files = {}
 for file in files:
     with open(file) as f:
         for l in f:
@@ -67,14 +69,40 @@ for file in files:
                                                                  #                {pop1:[method1, method2, ...]}
                                                                  #                 pop2:[method1, ...]}
                                                                  # }
+
+
+any_by_pop_files = {}
 for pop in set(pop for pop_methods in pos_genes.values() for pop in pop_methods):
-    common_and_specific_pop_files[pop] = open(os.path.join(
-        sub_output_dir, f'common_and_specific.positive_selection_genes.{pop}.txt'), 'w')
+    any_by_pop_files[pop] = open(os.path.join(
+        sub_output_dir, f'any_by_pop.positive_selection_genes_method.{pop}.txt'), 'w')
     # Gene, method, pop
     for gene, pop_methods in pos_genes.items():
         for pop_key in pop_methods.keys():
             if pop_key == pop:
-                common_and_specific_pop_files[pop].write(gene+'\t'+pop_key+'\t'+','.join(pop_methods[pop_key])+'\n')
+                any_by_pop_files[pop].write(gene+'\t'+pop_key+'\t'+','.join(pop_methods[pop_key])+'\n')
+
+
+
+# Load interest common populations
+interest_common_pop_genes_list_files = {}
+interest_common_pop_summary_files = {}
+print(
+    f'interest_common_populations_combines: {interest_common_populations_combines}')
+for pops in interest_common_populations_combines:
+    pops.sort()
+    pop_pop = '.'.join(pops)
+    
+    # Check if the population in the config file is in the input files.
+    for pop in pops:
+        if pop not in any_by_pop_files.keys():
+            raise ValueError(f'The interset population {pop} from config file not in input files')
+    print(f'interest pop: {pop_pop}')
+
+    interest_common_pop_genes_list_files[pop_pop] = open(os.path.join(
+        sub_output_dir, f'interest_common_pop.positive_selection_genes_list.{pop_pop}.txt'), 'w')
+    interest_common_pop_summary_files[pop_pop] = open(os.path.join(
+        sub_output_dir, f'interest_common_pop.positive_selection_genes_summary.{pop_pop}.txt'), 'w')
+
     
 # Load chr ID and accession map
 chr_ID_accession_map = {}
@@ -175,6 +203,9 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
                         'Detected_populations', 'Gene_name', 'PFAM', 'Gene_description', blast_header,
                         'GO', 'KEGG_Pathway', 'Reference_articles'])+'\n'
     f.write(header)
+
+    for fio in interest_common_pop_summary_files.values():
+        fio.write(header)
     
     specific_pop_files = {}
     for pop in set(pop for pop_methods in pos_genes.values() for pop in pop_methods):
@@ -182,6 +213,7 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
 
     specific_summary = open(os.path.join(sub_output_dir, 'specific.positive_selection_genes.summary.txt'), 'w')
     specific_summary.write(header)
+
     
     gene_list = sorted(pos_genes.keys())
     for gene in gene_list:
@@ -214,8 +246,10 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
             common_vs_specific = 'specific'
         else:
             raise ValueError(f'No population detected for gene {gene}')
-        
-        detected_populations = ','.join(list(pos_genes[gene].keys()))
+
+        detected_populations_list = list(pos_genes[gene].keys())
+        detected_populations_list.sort()
+        detected_populations = ','.join(detected_populations_list)
         
         gene_name = eggNOG_dic.get(gene,{}).get('name','NA')
         
@@ -241,10 +275,21 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
             specific_pop_files[specific_pop].write(gene+'\n')
             specific_summary.write(write_line)
 
+        elif common_vs_specific == 'common':
+            for pop_pop in interest_common_pop_genes_list_files.keys():
+                pop_pop_ls = pop_pop.split('.')
+                if all(detected_pop in pop_pop_ls for detected_pop in detected_populations_list):
+                    interest_common_pop_genes_list_files[pop_pop].write(gene+'\n')
+                    interest_common_pop_summary_files[pop_pop].write(write_line)
+
 # Close files
-for pop_file in common_and_specific_pop_files.values():
+for pop_file in any_by_pop_files.values():
     pop_file.close()
 for pop_file in specific_pop_files.values():
+    pop_file.close()
+for pop_file in interest_common_pop_genes_list_files.values():
+    pop_file.close()
+for pop_file in interest_common_pop_summary_files.values():
     pop_file.close()
 specific_summary.close()
 
