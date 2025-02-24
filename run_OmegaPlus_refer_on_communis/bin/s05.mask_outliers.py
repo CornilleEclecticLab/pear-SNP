@@ -18,6 +18,11 @@ from s00_config import *
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
+# The cutoff for overlap with the mask pass region
+percent_cutoff = 0.8
+
+# The method
+method = 'OmegaPlus'
 
 version = "1.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
@@ -69,11 +74,6 @@ for pop in populations:
         else:
             raise ValueError(f'Unexpected format in {cutoff_file}')
 
-# The cutoff for overlap with the mask pass region
-percent_cutoff = 0.8
-
-# The method
-method = 'OmegaPlus'
 
 # Set the gff file path
 gff_file = os.path.join(input_dir, gff_filename)
@@ -130,7 +130,12 @@ bedtools intersect \\
 
 cat {output_prefix}.genes.gff \\
 | awk -F '[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\\t{method}"}}' \\
-    > {output_prefix}.genes.txt
+> {output_prefix}.genes.txt
+
+if [[ -s "{output_prefix}.genes.txt" ]]; then
+    sort -u {output_prefix}.genes.txt > {output_prefix}.genes.txt.tmp && \\
+    mv {output_prefix}.genes.txt.tmp {output_prefix}.genes.txt
+fi
 """)
         
     os.system(f"cd {sub_script_dir} && sbatch {sub_script}")
