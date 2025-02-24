@@ -21,6 +21,13 @@
 #    1. Write all valid results to a file.
 #    2. Fix the bug that using string to get boolean value.
 
+# Update: v3.0.0 2025-01-21 16:35:08
+#    1. Update output file name
+#    2. Add 0.005 cutoff
+#    3. Add 0.02 cutoff
+
+# Update: v3.1.0 2025-02-04
+#    1. Remove duplicate genes in the output
 import datetime
 import sys
 import textwrap
@@ -31,7 +38,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "2.2.0"
+version = "3.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -154,7 +161,7 @@ for pop in populations:
         f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_20_results]))
 
 
-    top_cut_off = [0.001, 0.01, 200, 500]
+    top_cut_off = [0.02, 0.001, 0.005, 0.01, 200, 500]
     for top in top_cut_off:
         if top < 1:
             tops = max(1,int(float(top * len(results_pop))))
@@ -165,7 +172,7 @@ for pop in populations:
         tops_outliers = results_pop[:tops]
         # Sort the outliers by chromosome and by start position
         tops_outliers.sort(key=lambda x: (x[0], x[1]))
-        with open(os.path.join(sub_output_dir, f'OmegaPlus.{top}outliers.{pop}.bed'), 'w') as f:
+        with open(os.path.join(sub_output_dir, f'OmegaPlus.{str(top).replace(".","_")}outliers.{pop}.bed'), 'w') as f:
             for (chr, start, end, omega, position) in tops_outliers:
                 f.write(f'{chr}\t{start}\t{end}\n')
 
@@ -181,19 +188,28 @@ def merge_outliers(method, cutoff):
         f.write(f"#SBATCH -o {os.path.basename(merge_script)}.%J.out\n")
         f.write(f"{load_bedtools}\n\n\n")
         for pop in populations:
-            input_file = os.path.join(sub_output_dir, f'{method}.{cutoff}outliers.{pop}.bed')
-            output_file = os.path.join(sub_output_dir, f'{method}.{cutoff}outliers.{pop}.merged.bed')
-            gff_file = os.path.join(input_dir,gff_filename)
-            f.write(f"bedtools merge -i {input_file} > {output_file}\n")
+            input_file = os.path.join(sub_output_dir, f'{method}.{str(cutoff).replace(".","_")}outliers.{pop}.bed')
+            output_file = os.path.join(
+                sub_output_dir, f'{method}.{str(cutoff).replace(".","_")}outliers.{pop}.merged.bed')
+            gff_file = os.path.join(input_dir, gff_filename)
+            f.write(f"bedtools merge -i {input_file} > {output_file}\n\n")
 
             # Get candidate genes
             f.write(f"""bedtools intersect -a {gff_file} -b {output_file} -wa \\
-    | awk '{{$2="{method}"; print}}' \\
-    > {output_file}.genes.gff
+| awk '{{$2="{method}"; print}}' \\
+> {output_file}.genes.gff
 
-    cat {output_file}.genes.gff | awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
-    > {output_file}.genes.txt
-    """)
+cat {output_file}.genes.gff \\
+| awk -F'[;= ]' '{{for(i=1;i<=NF;i++) if($i=="Name") print $(i+1) "\t{method}"}}' \\
+> {output_file}.genes.txt
+
+if [[ -s "{output_file}.genes.txt" ]]; then
+    sort -u {output_file}.genes.txt > {output_file}.genes.tmp && \\
+    mv {output_file}.genes.tmp {output_file}.genes.txt
+fi
+
+
+""")
 
     os.system(f"cd {sub_script_dir} && sbatch {merge_script}")
     print(wrap79(f"The following script has been submitted to slurm:"))
