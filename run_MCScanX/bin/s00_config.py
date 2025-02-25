@@ -1,3 +1,5 @@
+# This file is loaded by python and bash scripts, so not use space between variable, '=' and value.
+
 pyri_pep_fa="../input/GWHBAOS00000000.pep.fasta"
 comm_pep_fa="../input/PyrusCommunis_BartlettDHv2.0.pep.fasta"
 
