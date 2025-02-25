@@ -17,8 +17,8 @@ source s00_config.py
 
 mkdir -p $s04_dir
 
-cat ${s03_dir}/comm_comm.blast.txt ${s03_dir}/pyri_comm.blast.txt > ${s04_dir}/pyri_comm.blast
-cat ${s03_dir}/comm_pyri.blast.txt ${s03_dir}/pyri_pyri.blast.txt > ${s04_dir}/comm_pyri.blast
+cat ${s03_dir}/pyri_comm.blast.txt > ${s04_dir}/pyri_comm.blast
+cat ${s03_dir}/comm_pyri.blast.txt > ${s04_dir}/comm_pyri.blast
 
 MCScanX ${s04_dir}/pyri_comm
 MCScanX ${s04_dir}/comm_pyri
