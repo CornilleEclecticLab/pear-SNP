@@ -8,6 +8,9 @@
 # @Description:
 #    
 
+# Update v1.0.1: 2025-03-19 19:20:09
+#  add annotated code.
+
 import datetime
 import sys
 import textwrap
@@ -21,7 +24,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.0.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -60,6 +63,24 @@ def parse_db(line):
         symbol = lines[1].replace("Symbols: ", "").strip()
         if symbol == '':
             symbol = '-'
+
+        ## Remove redundant Ath symbols
+        ##  Don't do this for now, it will introduce more errors, eg AT2G15230 ATLIP1, LIP1 will repeat with AT2G20860 LIP1.
+        # elif len(symbol) > 1:
+        #     symbols = symbol.split(', ')
+        #     if len(symbols) == 1:
+        #         pass
+        #     elif len(symbols) > 1:
+        #         symbol_keep = []
+        #         for s in symbols:
+        #             if s.startswith('AT') or s.startswith('At'):
+        #                 if s[2:] not in symbols:
+        #                     symbol_keep.append(s)
+        #             else:
+        #                 symbol_keep.append(s)
+                            
+        #         symbol = ', '.join(symbol_keep)
+        
         description = lines[2].strip()
     
     # Pyr from UniProtKB
