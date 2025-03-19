@@ -461,12 +461,12 @@ combined_plot <- plot_grid(p1, p2, ncol = 1)
 
 combined_plot
 # Save
-ggsave("s07.plot_Manhattan.style2/combined_plot.pdf", plot = combined_plot, width = 180, height = 60, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.png", plot = combined_plot, width = 180, height = 60, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.A4.pdf", plot = combined_plot, width = 297, height = 210, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.A4.png", plot = combined_plot, width = 297, height = 210, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.long.pdf", plot = combined_plot, width = 900, height = 60, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.long.png", plot = combined_plot, width = 900, height = 60, units = "mm", dpi = 300)
+ggsave("s07.plot_Manhattan.style2/combined_plot.pdf", device = cairo_pdf, plot = combined_plot, width = 180, height = 60, units = "mm")
+ggsave("s07.plot_Manhattan.style2/combined_plot.png", plot = combined_plot, width = 180, height = 60, units = "mm", dpi = 600)
+ggsave("s07.plot_Manhattan.style2/combined_plot.A4.pdf", device = cairo_pdf, plot = combined_plot, width = 297, height = 210, units = "mm")
+ggsave("s07.plot_Manhattan.style2/combined_plot.A4.png", plot = combined_plot, width = 297, height = 210, units = "mm", dpi = 600)
+ggsave("s07.plot_Manhattan.style2/combined_plot.long.pdf", device = cairo_pdf, plot = combined_plot, width = 900, height = 60, units = "mm")
+ggsave("s07.plot_Manhattan.style2/combined_plot.long.png", plot = combined_plot, width = 900, height = 60, units = "mm", dpi = 600)
 
  
 
