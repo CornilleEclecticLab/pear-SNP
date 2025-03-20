@@ -100,7 +100,7 @@ raisd_data <- raisd_file_list %>%
 
 raisd_data <- raisd_data %>%
   drop_na(Score) %>%
-  select(Chr, Pos, Method, Population, Score)
+  select(Chr, Start, End, Pos, Method, Population, Score)
 
 
 
@@ -155,7 +155,7 @@ if ("Valid" %in% colnames(omega_data)) {
 
 omega_data <- omega_data %>%
   drop_na(Score) %>%
-  select(Chr, Pos, Method, Population, Score)
+  select(Chr, Start, End, Pos, Method, Population, Score)
 
 combined_data <-bind_rows(raisd_data, omega_data)
 
@@ -164,13 +164,13 @@ dim(combined_data)
 
 
 ##########  TEST  #########################################################
-## /!\ Randoly select 3000 observations
-set.seed(123)
-omega_data_sample <- omega_data %>%
-  sample_n(5000)
+## /!\ Randoly select 5000 observations
+# set.seed(123)
+# omega_data_sample <- omega_data %>%
+#   sample_n(5000)
 
-raisd_data_sample <- raisd_data %>%
-  sample_n(5000)
+# raisd_data_sample <- raisd_data %>%
+#   sample_n(5000)
 ###########################################################################
 
 
@@ -319,129 +319,3 @@ save(combined_data, cutoff_df, file = binary_cache_file)
 
 print("Data saved to binary file")
 q()
-# Load Color Configuration ------------------------------------------------------
-
-# Loading color palette for each population
-color_config <- read.table("../input/population_color.tsv", header = TRUE)
-color_uniq <- color_config %>%
-  distinct(Population, Color)
-ori_order_color <- setNames(color_uniq$Color, color_uniq$Population)
-
-# Purge color
-populations_in_data <- unique(combined_data$Population)
-my_colors <- c(ori_order_color[names(ori_order_color) %in% populations_in_data])
-print("Loading color config")
-my_colors
-
-my_colors_with_grey <- c(my_colors, "Below_Cutoff" = "#AAAAAA")
-
-
-
-
-
-# Manhattan with dual y-axes ----------------------------------------------
-
-#### My theme ####
-my_theme <- theme_minimal() +
-  theme(
-    plot.title = element_blank(), # element_text(size = 8, face = "bold"),
-    plot.subtitle = element_blank(), # element_text(size = 8),
-    axis.title = element_text(size = 6),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
-    axis.text.y = element_text(size = 5),
-    legend.title = element_text(size = 6),
-    legend.text = element_text(size = 6),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    axis.ticks.x = element_line(),
-    axis.ticks.length = unit(.5, "mm"),
-    legend.position = "top",
-    panel.border = element_blank()
-  )
-
-
-#### Plot function ####
-plot_manhattan <- function(data, cutoff_data, title = "") {
-  ggplot(data) +
-    geom_point(
-      aes(x = Cum_pos, y = Score, color = Color_group, shape = Method),
-      alpha = .8, size = .5
-    ) +
-    geom_hline(
-      data = cutoff_data,
-      aes(yintercept = raisd, color = Population),
-      linetype = "dashed", alpha = 1, linewidth = 0.2
-    ) +
-    geom_hline(
-      data = cutoff_data,
-      aes(yintercept = omegaplus, color = Population),
-      linetype = "solid", alpha = 1, linewidth = 0.2
-    ) +
-    scale_x_continuous(
-      # name = "Chromosome", 
-      breaks = chr_label$midpoints,
-      labels = chr_label$Chr,
-      expand = c(0.01, 0.01)
-    ) +
-    scale_y_continuous(
-      name = "Mu",
-      expand = c(0.01, 0.01),
-      sec.axis = dup_axis(
-        # transform = ~ . / max(data$Score) * 12,  # Example transformation function
-        name = "Omega")
-    ) +
-    scale_color_manual(
-      values = my_colors_with_grey,
-      breaks = names(my_colors),
-      guide = guide_legend(override.aes = list(shape = 15, size = 1))
-    ) +
-    geom_vline(
-      xintercept = c(chr_label$start[1], chr_label$end), 
-      color = "grey50", linetype = "solid", alpha = 0.5
-    ) +
-    my_theme +
-    ggtitle(title)
-}
-
-#### Plot p1, p2 ####
-## subset data
-cultivar_list <- c("comm_Dessert", "comm_Perry")
-non_cultivar_list <- c("cauc", "pyra")
-
-if (!all(cultivar_list %in% unique(combined_data$Population))) {
-  cultivar_list <- c("White", "Sand_CN-SE", "Sand_CN-SW", "pyri_JP")
-  non_cultivar_list <- c("ussu", "betu")
-}
-
-sub_combined_data <- combined_data %>% 
-  filter(Population %in% cultivar_list)
-
-sub_cutoff <- cutoff_df %>% 
-  filter(Population %in% cultivar_list)
-
-non_cultivar_data <- combined_data %>% 
-  filter(Population %in% non_cultivar_list) %>%
-  mutate(Color_group = ifelse(Score > Cutoff, Population, "Below_Cutoff"))
-
-non_cultivar_cutoff <- cutoff_df  %>% 
-  filter(Population %in% non_cultivar_list)
-
-## Plot
-print("Start plotting...")
-p1 <- plot_manhattan(sub_combined_data, sub_cutoff, "Cultivar Populations")
-p2 <- plot_manhattan(non_cultivar_data, non_cultivar_cutoff, "Non-Cultivar Populations")
-
-
-combined_plot <- plot_grid(p1, p2, ncol = 1)
-
-combined_plot
-
-
-# Save
-ggsave("s07.plot_Manhattan.style2/combined_plot.pdf", plot = combined_plot, width = 180, height = 80, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.png", plot = combined_plot, width = 180, height = 80, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.A4.pdf", plot = combined_plot, width = 297, height = 210, units = "mm", dpi = 300)
-ggsave("s07.plot_Manhattan.style2/combined_plot.A4.png", plot = combined_plot, width = 297, height = 210, units = "mm", dpi = 300)
-

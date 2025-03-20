@@ -11,6 +11,11 @@
 # - Add blast annotation to the summary table.
 # - Generate interest common populations genes in the summary table, and gene list file.
 
+# v2.1.0 2025-03-19 18:21:02
+# - Using slop1kb gff file to get gene information, for ploting the gene label in the Manhattan plot.
+# - Remove collinearity information from the summary table.
+# - Using filterd KEGG and GO ID.
+
 import datetime
 import sys
 import textwrap
@@ -21,7 +26,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -114,7 +119,7 @@ if os.path.exists(chrID_map):
 
 # Load gene list from gff file
 gff_dic = {}
-with open(gff_ori) as f:
+with open(gff_filename) as f:
     for l in f:
         if l.startswith('#'):
             continue
@@ -132,18 +137,18 @@ with open(gff_ori) as f:
         elif 'Accession' in dic:
             name = dic['Accession']
         else:
-            raise ValueError(f'No Name or Accession in {gff_ori} line {l}')
+            raise ValueError(f'No Name or Accession in {gff_filename} line {l}')
         gff_dic[name] = {'chr_accession': chr_accession, 'start':start, 'end':end}
 
 # Load gene collinearity information
-collinearity_dic = {}
-with open(collinearity) as f:
-    for line in f:
-        gene1, gene2 = line.strip().split()
-        collinearity_dic[gene1] = collinearity_dic.get(gene1, [])
-        collinearity_dic[gene1].append(gene2)
-        collinearity_dic[gene2] = collinearity_dic.get(gene2, [])
-        collinearity_dic[gene2].append(gene1)
+# collinearity_dic = {}
+# with open(collinearity) as f:
+#     for line in f:
+#         gene1, gene2 = line.strip().split()
+#         collinearity_dic[gene1] = collinearity_dic.get(gene1, [])
+#         collinearity_dic[gene1].append(gene2)
+#         collinearity_dic[gene2] = collinearity_dic.get(gene2, [])
+#         collinearity_dic[gene2].append(gene1)
         
 
 # Load gene function from eggNOG
@@ -167,24 +172,42 @@ with open(eggNOG) as f:
             raise ValueError(f'Unknown query format in emapper.annotations: {query}')
 
         name = splits[header.index('Preferred_name')]
-        
         pfam = splits[header.index('PFAMs')]
-        
         description = splits[header.index('Description')]
-        
-        kegg_ko = splits[header.index('KEGG_ko')]
-        
-        kegg_pathways = splits[header.index('KEGG_Pathway')]
+        # kegg_ko = splits[header.index('KEGG_ko')]
+        # kegg_pathways = splits[header.index('KEGG_Pathway')]
+        # go = splits[header.index('GOs')]
 
-        
-        go = splits[header.index('GOs')]
-        
         eggNOG_dic[gene] = {'name':name,
                             'pfam':pfam,
-                            'description':description,
-                            'kegg_ko':kegg_ko,
-                            'kegg_pathways':kegg_pathways,
-                            'go':go}
+                            'description':description
+                            #'kegg_ko':kegg_ko,
+                            #'kegg_pathways':kegg_pathways,
+                            # 'go':go
+                            }
+
+
+# Load GO terms
+go_terms_dic = {}
+with open(go_terms_list) as f:
+    lines = f.readlines()
+    for n, line in enumerate(lines):
+        if n == 0 and 'GID' in line:
+            continue
+        gene, go, evidence = line.strip().split('\t') 
+        go_terms_dic[gene] = go_terms_dic.get(gene, [])
+        go_terms_dic[gene].append(go)
+
+# Load KEGG terms
+kegg_terms_dic = {}
+with open(kegg_terms_list) as f:
+    lines = f.readlines()
+    for n, line in enumerate(lines):
+        if n == 0 and 'GID' in line:
+            continue
+        ko, gene = line.strip().split('\t') 
+        kegg_terms_dic[gene] = kegg_terms_dic.get(gene, [])
+        kegg_terms_dic[gene].append(ko)
 
 
 # Laod blast annotation
@@ -192,14 +215,14 @@ blast_annotation_dic = {}
 with open(blast_annotation) as f:
     lines = f.readlines() 
     blast_header = '\t'.join(lines[0].strip().split('\t')[1:])
+    Ath_symbol_index = blast_header.split('\t').index('Ath_symbol')
     blast_annotation_dic = {line.strip().split('\t')[0]:'\t'.join(line.strip().split('\t')[1:]) for line in lines[1:]}
 
 
 # Write summary table
 ## Expected columns: Gene_ID, Chr, Start, End, Detected_methods, common_vs_specific, Detedted_populations, Gene_name Gene_description
 with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w') as f:
-    header = '\t'.join(['Gene_ID', 'Chr_accession', 'Chr_ID', 'Start', 'End', 'Detected_methods',
-                        'Collinarity_with_the_other_reference_genome', 'Common_vs_specific_in_population',
+    header = '\t'.join(['Gene_ID', 'Chr_accession', 'Chr_ID', 'Start', 'End', 'Detected_methods', 'Common_vs_specific_in_population',
                         'Detected_populations', 'Gene_name', 'PFAM', 'Gene_description', blast_header,
                         'GO', 'KEGG_Pathway', 'Reference_articles'])+'\n'
     f.write(header)
@@ -229,12 +252,13 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
             start = gff_dic[gene]['start']
             end = gff_dic[gene]['end']
         else:
-            raise ValueError(f'Gene {gene} not found in gff file {gff_ori}')
+            raise ValueError(f'Gene {gene} not found in gff file {gff_filename}')
         
-        if gene in collinearity_dic:
-            collinearity = ','.join(collinearity_dic[gene])
-        else:
-            collinearity = 'Not_in_collinearity'
+        #if gene in collinearity_dic:
+        #    collinearity = ','.join(collinearity_dic[gene])
+        #else:
+        #    collinearity = 'Not_in_collinearity'
+        
         detected_methods = ','.join([','.join(methods)
                                     for methods in pos_genes[gene].values()])
         # remove duplicated methods
@@ -255,18 +279,20 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
         
         pfam = eggNOG_dic.get(gene,{}).get('pfam','NA')
         
-        go = eggNOG_dic.get(gene,{}).get('go','NA')
+        # go = eggNOG_dic.get(gene,{}).get('go','NA')
+        go = ','.join(go_terms_dic.get(gene, ['NA']))
         
-        kegg_pathways = eggNOG_dic.get(gene,{}).get('kegg_pathways','NA')
-        kegg_pathways = kegg_pathways.split(',')# eg. - | ko03008, map03008
-        kegg_pathways = ','.join(
-            [kp for kp in kegg_pathways if not kp.startswith('map')])
+        #kegg_pathways = eggNOG_dic.get(gene,{}).get('kegg_pathways','NA')
+        #kegg_pathways = kegg_pathways.split(',')# eg. - | ko03008, map03008
+        #kegg_pathways = ','.join(
+        #    [kp for kp in kegg_pathways if not kp.startswith('map')])
+        kegg_pathways = ','.join(kegg_terms_dic.get(gene, ['NA']))
         
         gene_description = eggNOG_dic.get(gene,{}).get('description','NA')
         
         blast_annotation = blast_annotation_dic.get(gene, str('NA\t'*len(blast_header.split('\t'))).strip())
-        
-        write_line = f'{gene}\t{chr_accession}\t{chr}\t{start}\t{end}\t{detected_methods}\t{collinearity}\t{common_vs_specific}\t{detected_populations}\t{gene_name}\t{pfam}\t{gene_description}\t{blast_annotation}\t{go}\t{kegg_pathways}\t\n'
+
+        write_line = f'{gene}\t{chr_accession}\t{chr}\t{start}\t{end}\t{detected_methods}\t{common_vs_specific}\t{detected_populations}\t{gene_name}\t{pfam}\t{gene_description}\t{blast_annotation}\t{go}\t{kegg_pathways}\t\n'
 
         f.write(write_line)
 
