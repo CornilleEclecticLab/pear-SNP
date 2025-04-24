@@ -7,6 +7,8 @@ db_dir="../database"
 Osa_fa='osa1_r7.gene_models.repr.pep.fa'
 Ath_fa='TAIR10_pep_20110103_representative_gene_model'
 Pyr_fa='UniProtKB_pear_Pyrus_taxid_3766_format.fa'
+ncbi_symbol_db_file='NCBI_gene_symbol_for_Arabidopsis.tsv'
+
 
 s01_dir="../output/s01.format_ID"
 s02_dir="../output/s02.run_blast"

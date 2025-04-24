@@ -11,6 +11,9 @@
 # Update v1.0.1: 2025-03-19 19:20:09
 #  add annotated code.
 
+# Update v1.1.0: 2025-04-24 13:04:45
+#  use the Symbol from NCBI gene database.
+
 import datetime
 import sys
 import textwrap
@@ -24,7 +27,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.1"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -41,6 +44,37 @@ os.makedirs(sub_output_dir, exist_ok=True)
 # Function to wrap text to 79 characters
 def wrap79(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
+
+# Loading NCBI database
+db_file = os.path.join(db_dir, ncbi_symbol_db_file)
+ncbi_symbol_db = {}
+with open(db_file, 'r') as fi:
+    header = False
+    for line in fi:
+        line = line.strip()
+        lines = line.split('\t')
+        if not header:
+            headers = lines
+            header = True
+        else:
+            gene_id = lines[headers.index('Nomenclature ID')]
+            symbol = lines[headers.index('Symbol')]
+            
+            if gene_id == symbol:
+                continue
+            
+            if gene_id  == '':
+                continue
+
+            if ";" in symbol:
+                symbol = symbol.split(';')[0]
+            
+            print(gene_id, symbol)
+
+            if gene_id not in ncbi_symbol_db:
+                ncbi_symbol_db[gene_id] = symbol
+            else:
+                raise ValueError(f'Gene ID {gene_id} Symbol {symbol} already exists in NCBI symbol database.')
 
 def parse_db(line):
     line = line.strip().replace('>', '')
@@ -62,6 +96,21 @@ def parse_db(line):
         gene_id = row_id
         symbol = lines[1].replace("Symbols: ", "").strip()
         if symbol == '':
+            symbol = '-'
+        
+        if '.' in gene_id:
+            nomenclature_id = gene_id.split('.')[0]
+        else:
+            nomenclature_id = gene_id
+        
+        if nomenclature_id in ncbi_symbol_db:
+            ncbi_symbol = ncbi_symbol_db[nomenclature_id]
+            symbol = ncbi_symbol
+            if ncbi_symbol not in symbol and symbol != '-':
+                print(f'NCBI symbol {ncbi_symbol} not in TAIR symbol {symbol} for {gene_id}')
+
+        elif nomenclature_id not in ncbi_symbol_db and symbol != '-':
+            print(f'Gene ID {gene_id} Symbol {symbol} from TAIR not in NCBI symbol database, replace with -')
             symbol = '-'
 
         ## Remove redundant Ath symbols
