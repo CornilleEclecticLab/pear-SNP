@@ -16,6 +16,19 @@
 # - Remove collinearity information from the summary table.
 # - Using filterd KEGG and GO ID.
 
+# v2.2.0 2025-04-02 17:01:39
+# - Add NLGenomeSweeper annotation to the summary table.
+
+# v2.3.0 2025-04-23 18:29:57
+# - Add 2kb upstream and downstream region of the positive selection genes in the summary table.
+
+# v2.4.0 2025-04-27 20:49:51
+# - Add 10kb upstream and downstream region of the positive selection genes in the summary table.
+
+# v2.5.0 2025-04-28 10:54:36
+# - Add strand information from gff in the summary table.
+# - Include the upstream 2Kb region in the summary table, and remove 2Kb/10Kb up-down stream. 
+
 import datetime
 import sys
 import textwrap
@@ -26,7 +39,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.1.0"
+version = "2.5.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -130,6 +143,7 @@ with open(gff_filename) as f:
             continue
         start = splits[3]
         end = splits[4]
+        strand = splits[6]
         attributions = splits[8].replace(" ",'').split(';')
         dic = {i.split('=')[0]:i.split('=')[1] for i in attributions if i != ''}
         if 'Name' in dic:
@@ -138,7 +152,37 @@ with open(gff_filename) as f:
             name = dic['Accession']
         else:
             raise ValueError(f'No Name or Accession in {gff_filename} line {l}')
-        gff_dic[name] = {'chr_accession': chr_accession, 'start':start, 'end':end}
+        gff_dic[name] = {'chr_accession': chr_accession, 'start':start, 'end':end, 'strand':strand}
+        
+# Load gene list from gff 2k up down stream file
+def laod_gff(gff_filepath):
+    gff_dic = {}
+    with open(gff_filepath) as f:
+        for l in f:
+            if l.startswith('#'):
+                continue
+            splits = l.strip().split('\t')
+            chr_accession = splits[0]
+            type = splits[2]
+            if type != 'gene':
+                continue
+            start = splits[3]
+            end = splits[4]
+            attributions = splits[8].replace(" ", '').split(';')
+            dic = {i.split('=')[0]: i.split('=')[1]
+                for i in attributions if i != ''}
+            if 'Name' in dic:
+                name = dic['Name']
+            elif 'Accession' in dic:
+                name = dic['Accession']
+            else:
+                raise ValueError(
+                    f'No Name or Accession in {gff_filepath} line {l}')
+            gff_dic[name] = {'chr_accession': chr_accession,
+                            'start': start, 'end': end}
+    return gff_dic
+
+gff_up2k_dic = laod_gff(gff_upstream2k_filename)
 
 # Load gene collinearity information
 # collinearity_dic = {}
@@ -215,16 +259,28 @@ blast_annotation_dic = {}
 with open(blast_annotation) as f:
     lines = f.readlines() 
     blast_header = '\t'.join(lines[0].strip().split('\t')[1:])
-    Ath_symbol_index = blast_header.split('\t').index('Ath_symbol')
+    # Ath_symbol_index = blast_header.split('\t').index('Ath_symbol')
     blast_annotation_dic = {line.strip().split('\t')[0]:'\t'.join(line.strip().split('\t')[1:]) for line in lines[1:]}
+
+# Load NLGenomeSweeper annotation
+nl_genome_sweeper_dic = {}
+with open(nl_genome_sweeper_annotation, 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+        gene, domain = line.strip().split()
+        if gene not in nl_genome_sweeper_dic:
+            nl_genome_sweeper_dic[gene] = domain
+        else:
+            nl_genome_sweeper_dic[gene] += ', '+domain
+            # raise ValueError(f'Gene {gene} in {nl_genome_sweeper_annotation} appears more than once')
 
 
 # Write summary table
 ## Expected columns: Gene_ID, Chr, Start, End, Detected_methods, common_vs_specific, Detedted_populations, Gene_name Gene_description
 with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w') as f:
-    header = '\t'.join(['Gene_ID', 'Chr_accession', 'Chr_ID', 'Start', 'End', 'Detected_methods', 'Common_vs_specific_in_population',
-                        'Detected_populations', 'Gene_name', 'PFAM', 'Gene_description', blast_header,
-                        'GO', 'KEGG_Pathway', 'Reference_articles'])+'\n'
+    header = '\t'.join(['Gene_ID', 'Chr_accession', 'Chr_ID', 'Start', 'End','Strand', 'Start_upstream2Kb', 'End_upstream2Kb', 'Detected_methods', 'Common_vs_specific_in_population',
+                        'Detected_populations', 'Gene_name', 'PFAM', 'Gene_description', blast_header, 'NBS-LRR_gene',
+                        'GO', 'KEGG_Pathway'])+'\n'
     f.write(header)
 
     for fio in interest_common_pop_summary_files.values():
@@ -251,13 +307,29 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
             
             start = gff_dic[gene]['start']
             end = gff_dic[gene]['end']
+            strand = gff_dic[gene]['strand']
         else:
             raise ValueError(f'Gene {gene} not found in gff file {gff_filename}')
         
-        #if gene in collinearity_dic:
-        #    collinearity = ','.join(collinearity_dic[gene])
-        #else:
-        #    collinearity = 'Not_in_collinearity'
+        if gene in gff_up2k_dic:
+            chr_accession = gff_up2k_dic[gene]['chr_accession']
+            if chr_accession.startswith("Chr") or chr_accession.startswith("chr"):
+                chr = chr_accession
+            elif chr_accession in chr_ID_accession_map:
+                chr = chr_ID_accession_map[chr_accession]
+            else:
+                raise ValueError(f'Unknown chr accession: {chr_accession}')
+
+            strat_upstream2k = gff_up2k_dic[gene]['start']
+            end_upstream2k = gff_up2k_dic[gene]['end']
+        else:
+            raise ValueError(
+                f'Gene {gene} not found in gff file {gff_filename}')
+        
+        # if gene in collinearity_dic:
+        #     collinearity = ','.join(collinearity_dic[gene])
+        # else:
+        #     collinearity = 'Not_in_collinearity'
         
         detected_methods = ','.join([','.join(methods)
                                     for methods in pos_genes[gene].values()])
@@ -291,8 +363,10 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
         gene_description = eggNOG_dic.get(gene,{}).get('description','NA')
         
         blast_annotation = blast_annotation_dic.get(gene, str('NA\t'*len(blast_header.split('\t'))).strip())
+        
+        nl_genome_sweeper = "NBS-LRR ("+nl_genome_sweeper_dic[gene]+")" if gene in nl_genome_sweeper_dic else 'NA'
 
-        write_line = f'{gene}\t{chr_accession}\t{chr}\t{start}\t{end}\t{detected_methods}\t{common_vs_specific}\t{detected_populations}\t{gene_name}\t{pfam}\t{gene_description}\t{blast_annotation}\t{go}\t{kegg_pathways}\t\n'
+        write_line = f'{gene}\t{chr_accession}\t{chr}\t{start}\t{end}\t{strand}\t{strat_upstream2k}\t{end_upstream2k}\t{detected_methods}\t{common_vs_specific}\t{detected_populations}\t{gene_name}\t{pfam}\t{gene_description}\t{blast_annotation}\t{nl_genome_sweeper}\t{go}\t{kegg_pathways}\n'
 
         f.write(write_line)
 
