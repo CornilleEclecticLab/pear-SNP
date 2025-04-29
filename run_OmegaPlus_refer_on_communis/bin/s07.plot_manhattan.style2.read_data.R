@@ -263,9 +263,9 @@ cutoff_df <- data.frame(Population = character(),  raisd = numeric(),  omegaplus
 for (pop in populations) {
   print(paste0("Reading cutoff for ", pop))
   # Generate file paths for each method
-  raisd_file <- paste0(raisd_cutoff_dir, pop, ".RAiSD.FPR0005.cutoff.txt")
+  raisd_file <- paste0(raisd_cutoff_dir, pop, ".RAiSD.FPR005.cutoff.txt")
   omegaplus_file <- paste0(omegaplus_cutoff_dir, pop, ".OmegaPlus.FPR0005.cutoff.txt")
-  raisd_file2 <- paste0(raisd_cutoff_dir2, pop, ".RAiSD.FPR0005.cutoff.txt")
+  raisd_file2 <- paste0(raisd_cutoff_dir2, pop, ".RAiSD.FPR005.cutoff.txt")
   omegaplus_file2 <- paste0(omegaplus_cutoff_dir2, pop, ".OmegaPlus.FPR0005.cutoff.txt")
   
   # Initialize cutoff values to NA
