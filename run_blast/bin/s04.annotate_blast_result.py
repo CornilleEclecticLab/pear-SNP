@@ -8,6 +8,9 @@
 # @Description:
 #    
 
+# Update v1.1.0: 2025-04-29 10:58:43
+#  add the flowering data from the Flowering Interactive Database [FLOR-ID] - Flowering time.
+
 import datetime
 import sys
 import textwrap
@@ -20,7 +23,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -60,6 +63,30 @@ def parse_blast(line):
 blast_files = glob.glob(f'{s02_dir}/*.blastp.tsv')
 blast_dic = {} # {query_sp: {qeury_gene: {target_sp: target_gene}}}
 
+# Load the flowering data
+flowering_data = {}
+with open(os.path.join(db_dir,flowering_interactive_db_file), 'r') as fi:
+    read_header = False
+    for line in fi:
+        line = line.strip()
+        lines = line.split('\t')
+        if not read_header:
+            header = lines
+            read_header = True
+            continue
+
+        Ath_gene_id = lines[header.index('Gene details')]
+        effect = lines[header.index('Effect on flowering time')]
+        if not Ath_gene_id.startswith('AT'):
+            raise ValueError(f'Gene ID {Ath_gene_id} is not a valid Arabidopsis gene ID.')
+        
+        if Ath_gene_id not in flowering_data:
+            flowering_data[Ath_gene_id] = effect
+        else:
+            raise ValueError(f'Gene ID {Ath_gene_id} already exists in flowering data.')
+
+print(f'Loaded {len(flowering_data)} flowering data from {flowering_interactive_db_file} ...')
+
                   
 for blast_file in blast_files:
     basename = os.path.basename(blast_file)
@@ -78,13 +105,15 @@ for blast_file in blast_files:
     
 
 for query_sp, query_sp_values in blast_dic.items():
+    print(f'Processing {query_sp} ...')
+    count_flowering = 0
     target_sps = set(target_sp
                      for query_sp_values_value in query_sp_values.values()
                      for target_sp in query_sp_values_value.keys())
     target_sps = sorted(target_sps)
     
     with open(os.path.join(sub_output_dir, f'{query_sp}.blastp.annotated.tsv'), 'w') as fo:
-        header = 'Query\t' + '\t'.join([f'{sp}_best_target\t{sp}_symbol\t{sp}_description' for sp in target_sps]) + '\n'
+        header = 'Query\t' + '\t'.join([f'{sp}_best_target\t{sp}_symbol\t{sp}_description' for sp in target_sps]) + '\tEffect_on_flowering_time\t'+'\n'
         fo.write(header)
 
         for query_gene, target_sp_dic in query_sp_values.items():
@@ -96,7 +125,23 @@ for query_sp, query_sp_values in blast_dic.items():
                 else:
                     [symbol, description] = db_annotation[target_sp][target_gene]
                     fo.write(f'{target_gene}\t{symbol}\t{description}\t')
+            
+            # Add flowering data
+            Ath_target_gene = target_sp_dic.get('Ath', None)
+            if Ath_target_gene is None:
+                fo.write("-\t")
+            else:
+                Ath_target_gene = Ath_target_gene.split('.')[0]
+                # Get the effect on flowering time
+                effect = flowering_data.get(Ath_target_gene, None)
+                if effect is None:
+                    fo.write("-\t")
+                else:
+                    count_flowering += 1
+                    fo.write(f'{effect}\t')
+            
             fo.write('\n')
+    print(f'Found {count_flowering} flowering data in {query_sp} ...')
 
 end_time = datetime.datetime.now()
 print('')
