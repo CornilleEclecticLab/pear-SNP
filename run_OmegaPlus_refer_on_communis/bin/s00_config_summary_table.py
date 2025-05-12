@@ -19,3 +19,9 @@ interest_common_populations_combines = [['comm_Dessert', 'comm_Perry']]
 go_terms_list = '../../run_eggNOG-mapper/output/s02.prepare_GO_KEGG/PyrusCommunis_BartlettDHv2.0.GO_GO_term.table.txt'
 kegg_terms_list = '../../run_eggNOG-mapper/output/s02.prepare_GO_KEGG/PyrusCommunis_BartlettDHv2.0.KEGG_TERM2GENE.table.txt'
 nl_genome_sweeper_annotation = '../../run_NLGenomeSweeper/output/PyrusCommunis_BartlettDHv2.0/NLGenomeSweeper/Final_candidates.bed.NLs.genes.txt'
+
+planttfdb_annotation = '../../run_PlantTFDB_TF_prediction/output/PyrusCommunis_BartlettDHv2.0.TF.list'
+
+
+# wget http://geneontology.org/ontology/go-basic.obo
+go_obo_file = "../input/go-basic.obo"

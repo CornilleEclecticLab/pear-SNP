@@ -29,17 +29,35 @@
 # - Add strand information from gff in the summary table.
 # - Include the upstream 2Kb region in the summary table, and remove 2Kb/10Kb up-down stream. 
 
+# v2.6.0 2025-04-29 
+# - Add PlantTFDB annotation to the summary table.
+# - Add flowering annotation (from blast result) to the summary table.
+# - Use symbol instead of gene name.
+# - Add interprete GO terms using goatools.
+
 import datetime
 import sys
 import textwrap
 import os
-
 from s00_config_summary_table import *
+
+try: 
+    import goatools
+    import pandas as pd
+    from goatools.obo_parser import GODag
+    print("\ngoatools version : ", goatools.__version__)
+    go_dag = GODag(go_obo_file)
+except ImportError as e:
+    print(f"Error: {e}")
+    print("Not found the required packages: goatools, pandas")
+    print('"source s00.load_goatools.sh"' )
+    sys.exit(1)
+
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.5.0"
+version = "2.6.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -100,7 +118,6 @@ for pop in set(pop for pop_methods in pos_genes.values() for pop in pop_methods)
                 any_by_pop_files[pop].write(gene+'\t'+pop_key+'\t'+','.join(pop_methods[pop_key])+'\n')
 
 
-
 # Load interest common populations
 interest_common_pop_genes_list_files = {}
 interest_common_pop_summary_files = {}
@@ -121,7 +138,7 @@ for pops in interest_common_populations_combines:
     interest_common_pop_summary_files[pop_pop] = open(os.path.join(
         sub_output_dir, f'interest_common_pop.positive_selection_genes_summary.{pop_pop}.txt'), 'w')
 
-    
+
 # Load chr ID and accession map
 chr_ID_accession_map = {}
 if os.path.exists(chrID_map):
@@ -154,7 +171,8 @@ with open(gff_filename) as f:
             raise ValueError(f'No Name or Accession in {gff_filename} line {l}')
         gff_dic[name] = {'chr_accession': chr_accession, 'start':start, 'end':end, 'strand':strand}
         
-# Load gene list from gff 2k up down stream file
+
+# Load gene list from gff splop file
 def laod_gff(gff_filepath):
     gff_dic = {}
     with open(gff_filepath) as f:
@@ -193,7 +211,7 @@ gff_up2k_dic = laod_gff(gff_upstream2k_filename)
 #         collinearity_dic[gene1].append(gene2)
 #         collinearity_dic[gene2] = collinearity_dic.get(gene2, [])
 #         collinearity_dic[gene2].append(gene1)
-        
+
 
 # Load gene function from eggNOG
 eggNOG_dic = {}
@@ -242,6 +260,7 @@ with open(go_terms_list) as f:
         go_terms_dic[gene] = go_terms_dic.get(gene, [])
         go_terms_dic[gene].append(go)
 
+
 # Load KEGG terms
 kegg_terms_dic = {}
 with open(kegg_terms_list) as f:
@@ -259,8 +278,9 @@ blast_annotation_dic = {}
 with open(blast_annotation) as f:
     lines = f.readlines() 
     blast_header = '\t'.join(lines[0].strip().split('\t')[1:])
-    # Ath_symbol_index = blast_header.split('\t').index('Ath_symbol')
+    Ath_symbol_index = blast_header.split('\t').index('Ath_symbol')
     blast_annotation_dic = {line.strip().split('\t')[0]:'\t'.join(line.strip().split('\t')[1:]) for line in lines[1:]}
+
 
 # Load NLGenomeSweeper annotation
 nl_genome_sweeper_dic = {}
@@ -275,12 +295,48 @@ with open(nl_genome_sweeper_annotation, 'r') as f:
             # raise ValueError(f'Gene {gene} in {nl_genome_sweeper_annotation} appears more than once')
 
 
+# Load PlantTFDB annotation
+plant_tfdb_dic = {}
+with open(planttfdb_annotation) as f:
+    for l in f:
+        l = l.strip()
+        if l == '':
+            continue
+        gene_id, tf = l.split()
+        if gene_id not in plant_tfdb_dic:
+            plant_tfdb_dic[gene_id] = tf
+        else:
+            raise ValueError(f'Gene {gene_id} in {planttfdb_annotation} appears more than once')
+
+
+# Function to get leveln GO terms
+def get_leveln_terms(go_list_str, go_dag, nLevel):
+    if pd.isna(go_list_str) or go_list_str == "NA" or go_list_str == "-":
+        return "NA"
+
+    go_ids = [go.strip() for go in go_list_str.split(',')]
+    leveln_terms = set()
+
+    for go_id in go_ids:
+        try:
+            term = go_dag[go_id]
+            ancestors = term.get_all_parents()
+            for ancestor_id in ancestors:
+                ancestor_term = go_dag[ancestor_id]
+                if ancestor_term.depth == nLevel:
+                    leveln_terms.add(ancestor_term.name)
+        except KeyError:
+            continue
+
+    return ",".join(sorted(leveln_terms)) if leveln_terms else "NA"
+
+
 # Write summary table
 ## Expected columns: Gene_ID, Chr, Start, End, Detected_methods, common_vs_specific, Detedted_populations, Gene_name Gene_description
 with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w') as f:
-    header = '\t'.join(['Gene_ID', 'Chr_accession', 'Chr_ID', 'Start', 'End','Strand', 'Start_upstream2Kb', 'End_upstream2Kb', 'Detected_methods', 'Common_vs_specific_in_population',
-                        'Detected_populations', 'Gene_name', 'PFAM', 'Gene_description', blast_header, 'NBS-LRR_gene',
-                        'GO', 'KEGG_Pathway'])+'\n'
+    header = '\t'.join(['Gene_ID','Chr_accession', 'Chr_ID', 'Start', 'End','Strand', 'Start_upstream2Kb', 'End_upstream2Kb', 'Detected_methods', 'Common_vs_specific_in_population',
+                        'Detected_populations', 'Symbol', 'PFAM', 'Gene_description', blast_header, 'NBS-LRR_gene', 'Transcription_factor', 'GO_ID', 'GO_terms_level1','KEGG_ID'])+'\n'
+
     f.write(header)
 
     for fio in interest_common_pop_summary_files.values():
@@ -293,7 +349,6 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
     specific_summary = open(os.path.join(sub_output_dir, 'specific.positive_selection_genes.summary.txt'), 'w')
     specific_summary.write(header)
 
-    
     gene_list = sorted(pos_genes.keys())
     for gene in gene_list:
         if gene in gff_dic:
@@ -354,6 +409,8 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
         # go = eggNOG_dic.get(gene,{}).get('go','NA')
         go = ','.join(go_terms_dic.get(gene, ['NA']))
         
+        go_terms_level1 = get_leveln_terms(go, go_dag, 1)
+        
         #kegg_pathways = eggNOG_dic.get(gene,{}).get('kegg_pathways','NA')
         #kegg_pathways = kegg_pathways.split(',')# eg. - | ko03008, map03008
         #kegg_pathways = ','.join(
@@ -363,10 +420,29 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
         gene_description = eggNOG_dic.get(gene,{}).get('description','NA')
         
         blast_annotation = blast_annotation_dic.get(gene, str('NA\t'*len(blast_header.split('\t'))).strip())
+        symbol = blast_annotation.split('\t')[Ath_symbol_index]
         
-        nl_genome_sweeper = "NBS-LRR ("+nl_genome_sweeper_dic[gene]+")" if gene in nl_genome_sweeper_dic else 'NA'
+        nl_genome_sweeper = "NBS-LRR("+nl_genome_sweeper_dic[gene]+")" if gene in nl_genome_sweeper_dic else 'NA'
 
-        write_line = f'{gene}\t{chr_accession}\t{chr}\t{start}\t{end}\t{strand}\t{strat_upstream2k}\t{end_upstream2k}\t{detected_methods}\t{common_vs_specific}\t{detected_populations}\t{gene_name}\t{pfam}\t{gene_description}\t{blast_annotation}\t{nl_genome_sweeper}\t{go}\t{kegg_pathways}\n'
+        # Cover symbol if gene in nl_genome_sweeper_dic but not in blast_annotation_dic     
+        if symbol == 'NA' or symbol == '-':
+            symbol = '-'
+            if gene in nl_genome_sweeper_dic:
+                symbol = nl_genome_sweeper
+        
+        # Discard symbol if gene without pfam domain
+        if pfam == 'NA' or pfam == '-':
+            symbol = '-'
+        
+        # Discard symbol if not consistent with gene name
+        if gene_name != '-' and gene_name != 'NA' and symbol != 'NA' and symbol != '-':
+            if gene_name != symbol:
+                symbol = '-'
+
+        
+        transcript_factor = plant_tfdb_dic.get(gene, 'NA')
+
+        write_line = f'{gene}\t{chr_accession}\t{chr}\t{start}\t{end}\t{strand}\t{strat_upstream2k}\t{end_upstream2k}\t{detected_methods}\t{common_vs_specific}\t{detected_populations}\t{symbol}\t{pfam}\t{gene_description}\t{blast_annotation}\t{nl_genome_sweeper}\t{transcript_factor}\t{go}\t{go_terms_level1}\t{kegg_pathways}\n'
 
         f.write(write_line)
 
