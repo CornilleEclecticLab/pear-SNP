@@ -16,4 +16,4 @@
 source s00.load_orthofinder.sh
 
 orthofinder -f ../input \
-            -o ../output 
+            -o ../output/species3 
