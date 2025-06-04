@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH -J s01.build_sift4g_db.sh
-#SBATCH -o s01.build_sift4g_db.sh.%J.out
-#SBATCH -e s01.build_sift4g_db.sh.%J.err
+#SBATCH -J s01.build_sift4g_db_PPY.sh
+#SBATCH -o s01.build_sift4g_db_PPY.sh.%J.out
+#SBATCH -e s01.build_sift4g_db_PPY.sh.%J.err
 #SBATCH -p long # this job need more than 24 hours
 #SBATCH -c 8
-#SBATCH --mem=36G
+#SBATCH --mem=40G
 
 # @File     :   s01.build_sift4g_db.sh
 # @Version  :   1.0.0
@@ -17,9 +17,9 @@
 
 set -euo pipefail
 
-source s00.config.sh
+source s00.config_PPY.sh
 
-# Check container and inputs 
+# Check container and inputs
 if [ ! -f "$CONTAINER" ]; then
   echo "ERROR: File not found $CONTAINER"
   exit 1

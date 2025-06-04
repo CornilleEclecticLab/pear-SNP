@@ -14,7 +14,7 @@
 
 module load seqkit
 module load gffread
-source s00.config.sh
+source s00.config_PPY.sh
 
 
 seqkit grep -f ${CHR_LIST} ${GENOME_FASTA_FULL} -o ${GENOME_FASTA_FULL%.fasta}.chr.fa

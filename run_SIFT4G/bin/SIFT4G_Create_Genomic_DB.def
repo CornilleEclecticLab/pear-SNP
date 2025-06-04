@@ -1,0 +1,78 @@
+Bootstrap: docker
+From: ubuntu:latest
+
+%labels
+    Author Yuqi modified from Dockerfile
+    Version v1.0
+
+%help
+    This container builds and runs the SIFT4G Create Genomic DB tool without requiring Docker or root on the host,
+    and ensures Perl runs with a proper UTF-8 locale.
+
+%environment
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+    export PATH=$PATH:$JAVA_HOME/bin
+    export PATH=$PATH:/SIFT4G_Create_Genomic_DB
+    export PATH=$PATH:/sift4g/bin
+
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+
+%files
+    # Copy files
+    . /SIFT4G_Create_Genomic_DB
+
+%post
+    # Install and clean
+    apt-get update && apt-get install -y --no-install-recommends \
+        locales \
+        perl \
+        libdbi-perl \
+        bioperl \
+        libwww-perl \
+        python3 \
+        git \
+        ftp \
+        wget \
+        vim \
+        bash \
+        libswitch-perl \
+        gcc-10 \
+        g++-10 \
+        make \
+        openjdk-11-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+    # Set GCC-10 Python3 as default
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+    
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 \
+        --slave /usr/bin/g++ g++ /usr/bin/g++-10
+
+    # Clone the sift4g repository from GitHub
+    cd /
+    git clone --recursive https://github.com/rvaser/sift4g.git
+
+    # Compile sift4g
+    cd /sift4g
+    make
+
+    # Use en_US.UTF-8
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+    locale-gen en_US.UTF-8
+    update-locale LANG=en_US.UTF-8
+
+    # Excutable
+    chmod -R 755 /SIFT4G_Create_Genomic_DB/*.pl
+    chmod -R 755 /SIFT4G_Create_Genomic_DB/*.py
+
+    # Download SIFT4G_Annotator.jar
+    cd /SIFT4G_Create_Genomic_DB
+    wget -q https://github.com/pauline-ng/SIFT4G_Annotator/raw/master/SIFT4G_Annotator.jar
+    chmod 755 SIFT4G_Annotator.jar
+
+%runscript
+    # Default runs
+    cd /SIFT4G_Create_Genomic_DB
+    exec "$@"
+
