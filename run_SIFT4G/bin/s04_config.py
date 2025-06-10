@@ -16,21 +16,21 @@ ref_genoms = ['PPY', 'PCOM']
 
 
 chr_list_file_dic = {
-	'PPY': os.path.join(input_dir, 'GWHBAOS00000000.chr_list.txt'),
-	'PCOM': os.path.join(input_dir, 'PyrusCommunis_BartlettDHv2.0.chr_list.txt')
+    'PPY': os.path.join(input_dir, 'GWHBAOS00000000.chr_list.txt'),
+    'PCOM': os.path.join(input_dir, 'PyrusCommunis_BartlettDHv2.0.chr_list.txt')
 }
 
 vcf_file_dir_dic = {
-	'PPY': os.path.join(output_dir, 's03.get_vcf_by_pop_from_variant_PPY'),
-	'PCOM': os.path.join(output_dir, 's03.get_vcf_by_pop_from_variant_PCOM')
+    'PPY': os.path.join(output_dir, 's03.get_vcf_by_pop_from_variant_PPY'),
+    'PCOM': os.path.join(output_dir, 's03.get_vcf_by_pop_from_variant_PCOM')
 }
 
 sift4g_dir_dic = {
-	'PPY': os.path.join(output_dir, 's02_annot', 'PPY'),
-	'PCOM': os.path.join(output_dir, 's02_annot', 'PCOM')
+    'PPY': os.path.join(output_dir, 's02_annot', 'PPY'),
+    'PCOM': os.path.join(output_dir, 's02_annot', 'PCOM')
 }
 
 individuals_map_file_dic = {
-	'PPY': os.path.join(input_dir, 's01.sample_tab_population_PPY.txt'),
-	'PCOM': os.path.join(input_dir, 's01.sample_tab_population_PCOM.txt')
+    'PPY': os.path.join(input_dir, 's01.sample_tab_population_PPY.txt'),
+    'PCOM': os.path.join(input_dir, 's01.sample_tab_population_PCOM.txt')
 }
