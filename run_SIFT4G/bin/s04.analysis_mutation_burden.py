@@ -249,7 +249,7 @@ def main():
     header  = f'ind\tpop\ttype\tde_nu\ttol_nu\n'
     with open(os.path.join(sub_output_dir, 'pop_mutation_burden.txt'), 'w') as concat_file:
         concat_file.write(header)
-        for ref_genome in ref_genoms:
+        for ref_genome in ref_genomes:
             with open(os.path.join(sub_output_dir, ref_genome+'_mutation_burden.txt'), 'w') as out_file:
                 out_file.write(header)
                 

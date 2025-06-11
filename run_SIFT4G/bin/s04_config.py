@@ -12,7 +12,7 @@ output_dir = os.path.join(work_dir, 'output')
 sub_output_dir = os.path.join(output_dir, script_basename)
 sub_script_dir = os.path.join(bin_dir, script_basename)
 
-ref_genoms = ['PPY', 'PCOM']
+ref_genomes = ['PPY', 'PCOM']
 
 
 chr_list_file_dic = {
