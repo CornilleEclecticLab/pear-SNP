@@ -9,7 +9,7 @@
 
 # @Upade: v2.0.0 2025-06-10 11:10:59
 #    1. this version for SIFT4G
-#    1. Change "AC==0 || AC==AN" to AC==0 in bcftools filter command. 
+#    1. Change "AC==0 || AC==AN" to AC==0 in bcftools filter command.
 
 import datetime
 import sys
@@ -23,14 +23,14 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
 work_dir = os.path.dirname(script_path)
-input_dir = os.path.join(work_dir,'input')
+input_dir = os.path.join(work_dir, 'input')
 
-sub_script_dir = os.path.join(bin_dir,script_basename)
+sub_script_dir = os.path.join(bin_dir, script_basename)
 
 load_bcftools = os.path.join(bin_dir, 's00.load_bcftools.sh')
 
@@ -40,6 +40,8 @@ os.makedirs(output_dir, exist_ok=True)
 os.makedirs(sub_script_dir, exist_ok=True)
 
 # Function to wrap text to 79 characters
+
+
 def wrap79(text, width=79):
     return textwrap.fill(text, width=width, subsequent_indent=' '*4)
 
@@ -65,12 +67,14 @@ bcftools view \\
 | bcftools filter \\
     -e 'AC==0' \\
     -O v \\
-    -o {nonadmix_vcf}
+| bcftools annotate \\
+    -x INFO,FORMAT \\
+| awk 'NR==1 || /^##FORMAT/ || /^##contig=<ID={chr_base}/ ||!/^##/' \\
+| bgzip --threads 4 -c > {nonadmix_vcf}.gz
 
-bcftools view -H {nonadmix_vcf} \\
+bcftools view -H {nonadmix_vcf}.gz \\
 | wc -l > {nonadmix_vcf}.num.txt
 
-bgzip --threads 4 {nonadmix_vcf}
 tabix -p vcf {nonadmix_vcf}.gz
 '''
 
@@ -97,18 +101,21 @@ for ref_genome in ref_genomes:
     # Read the variant VCF list
     variant_vcf_list_filename = variant_vcf_list_file_dic[ref_genome]
     with open(variant_vcf_list_filename, 'r') as file:
-        variant_vcf_list = [os.path.realpath(i) for i in file.read().strip().split()] 
-        variant_chr_vcf_dic = {os.path.basename(path).split(".")[1]: path for path in variant_vcf_list}
-    
+        variant_vcf_list = [os.path.realpath(i)
+                            for i in file.read().strip().split()]
+        variant_chr_vcf_dic = {os.path.basename(path).split(
+            ".")[1]: path for path in variant_vcf_list}
+
     # Variation vcf chr list
     for chr in chromosomes:
         if chr not in variant_chr_vcf_dic:
             print(variant_chr_vcf_dic)
-            raise ValueError(f'Chromosome {chr} is not in the variant vcf list')
+            raise ValueError(
+                f'Chromosome {chr} is not in the variant vcf list')
     for chr in variant_chr_vcf_dic:
         if chr not in chromosomes:
-            raise ValueError(f'Chromosome {chr} is not in the chromosomes list')
-
+            raise ValueError(
+                f'Chromosome {chr} is not in the chromosomes list')
 
     # Create a slurm shell script for each chromosome
     for pop_name, ids in pop_individual.items():
@@ -129,17 +136,17 @@ for ref_genome in ref_genomes:
             with open(os.path.join(sub_script_dir, sub_script_basename+'.sh'), 'w') as fo:
                 fo.write(f'{shebang}\n\n')
                 fo.write(sbatch_options.format(chr_base=chr_base,
-                                           script_basename=script_basename, sub_script_basename=sub_script_basename))
+                                               script_basename=script_basename, sub_script_basename=sub_script_basename))
                 fo.write(run_bcftools.format(
-                                        bin_dir=bin_dir,
-                                        script_path=script_path,
-                                        vcf=variant_chr_vcf_dic[chr_base],
-                                        input_dir=input_dir,
-                                        nonadmix_vcf=nonadmix_vcf,
-                                        masked_vcf=masked_vcf,
-                                        chosen_samples=chosen_samples,
-                                        chr_base=chr_base,
-                                        load_bcftools=load_bcftools))
+                    bin_dir=bin_dir,
+                    script_path=script_path,
+                    vcf=variant_chr_vcf_dic[chr_base],
+                    input_dir=input_dir,
+                    nonadmix_vcf=nonadmix_vcf,
+                    masked_vcf=masked_vcf,
+                    chosen_samples=chosen_samples,
+                    chr_base=chr_base,
+                    load_bcftools=load_bcftools))
 
 
 end_time = datetime.datetime.now()
