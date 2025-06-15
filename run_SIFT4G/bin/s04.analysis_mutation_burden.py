@@ -6,7 +6,8 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2025/06/03 17:17:00
 # @Description:
-#    
+# Update: v1.1.0 
+#   Read vcf.gz files.
 
 from s04_config import *
 import datetime
@@ -14,14 +15,14 @@ import sys
 import textwrap
 import os
 import glob
-import warnings
+import gzip
 
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -110,7 +111,10 @@ def parse_vcf(file_path, sift_annotations):
     # return following dictionary
     variants = {}
 
-    file = open(file_path, 'r')
+    if file_path.endswith('.gz'):
+        file = gzip.open(file_path, 'rt')
+    elif file_path.endswith('.vcf'):
+        file = open(file_path, 'r')
     
     # process each variant
     for line in file:
@@ -189,14 +193,13 @@ def process_vcf_files(ref_genome, sift_annotations):
     total_vcf_num = len(chr_list) * len(pop_ind_dic.keys())
 
     vcf_file_dir = vcf_file_dir_dic[ref_genome]
-    vcf_file_list = glob.glob(os.path.join(vcf_file_dir, '*.vcf'))
+    vcf_file_list = glob.glob(os.path.join(vcf_file_dir, '*.vcf.gz'))
     
     n_vcf = 0
     for vcf_file in vcf_file_list:
-        if not vcf_file.endswith('.vcf'):
-            continue
-        pop_vcf = os.path.basename(vcf_file).split('.')[-2]   # VCF filename format: *.chr.pop.vcf
-        chr_vcf = os.path.basename(vcf_file).split('.')[-3]
+
+        pop_vcf = os.path.basename(vcf_file).split('.')[-3]   # VCF filename format: *.chr.pop.vcf.gz
+        chr_vcf = os.path.basename(vcf_file).split('.')[-4]
 
         if pop_vcf not in pop_ind_dic.keys() or chr_vcf not in chr_list:
             # print(
