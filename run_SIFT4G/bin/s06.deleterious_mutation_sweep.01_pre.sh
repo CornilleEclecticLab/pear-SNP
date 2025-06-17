@@ -2,8 +2,8 @@
 
 
 #SBATCH -J s06.deleterious_mutation_sweep.01_pre.sh
-#SBATCH -o s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.out
-#SBATCH -e s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.err
+#SBATCH -o s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.out
+#SBATCH -e s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.err
 #SBATCH -c 1
 #SBATCH --mem=48G
 #SBATCH --array=1-9
@@ -17,7 +17,6 @@ source activate intervaltree
 
 # Common arguments
 OUTDIR=../output/s06.dm_sweep
-mkdir -p "$OUTDIR"
 
 BEDS=(
   ../input/selection_bed/selection.outliers.betu.filtered.sorted.merged.bed
@@ -37,7 +36,7 @@ case "${SLURM_ARRAY_TASK_ID}" in
   1|2|3) DEN=CDS ;;
   4|5|6) DEN=SNP ;;
   7|8|9) DEN=synonymous ;;
-  *) 
+  *)
     echo "Invalid task ID" >&2
     exit 1
     ;;
