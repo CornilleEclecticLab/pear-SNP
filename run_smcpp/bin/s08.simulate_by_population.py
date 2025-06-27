@@ -110,31 +110,33 @@ for pop in population_dict.keys():
 {load_singularity}
 module load bcftools/1.14
 
-singularity run -B  {work_dir}:{work_dir} \\
-    {work_dir}/bin/smcpp.sif  \\
-    simulate \\
-    --contig_id sim_${{SLURM_ARRAY_TASK_ID}}_{pop} \\
-    {s02_output_dir}/{pop}/model.final.json \\
-    {2 * len(population_dict[pop])} \\
-    1 \\
-    {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf
+# singularity run -B  {work_dir}:{work_dir} \\
+#     {work_dir}/bin/smcpp.sif  \\
+#     simulate \\
+#     --contig_id sim_${{SLURM_ARRAY_TASK_ID}}_{pop} \\
+#     {s02_output_dir}/{pop}/model.final.json \\
+#     {2 * len(population_dict[pop])} \\
+#     1 \\
+#     {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf
 
-# override per-generation recombination rate
-# -r \\
-# override per-generation mutation rate
-# -u \\
+# # override per-generation recombination rate
+# # -r \\
+# # override per-generation mutation rate
+# # -u \\
 
-bgzip -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf
+# bgzip -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf
 
-tabix -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
+# tabix -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
 
-bcftools norm \\
-    -d all \\
-    -Oz \\
-    -o {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf.gz \\
-    {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
+# bcftools norm \\
+#     -d all \\
+#     -o {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf \\
+#     {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.vcf.gz
 
-tabix -f {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf.gz
+awk 'BEGIN {{OFS="\\t"}} {{if ($1 ~ /^#/ || $4 != "0") {{print $0}} else {{$4="A"; print $0}}}}' \\
+    {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.vcf \\
+| awk 'BEGIN {{OFS="\\t"}} {{if ($1 ~ /^#/ || $5 != "1") {{print $0}} else {{$5="G"; print $0}}}}' \\
+    >  {output_dir}/msprime.{pop}.REP${{SLURM_ARRAY_TASK_ID}}.norm.fixed.vcf 
 
 '''
         fo.write(content)
