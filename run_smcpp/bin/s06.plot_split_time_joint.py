@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+# _*_ coding: utf-8 _*_
+ 
+# @File     : s06.plot_split_time_joint.py
+# @Version  : 1.2.1
+# @Author   : NIE Yuqi
+# @Email    : nieyuqi.cn@gmail.com
+# @Time(CET): 2023-07-11 14:31:15
+# @Description:
+#    
+#   Version 1.1.0: 2023-08-06 17:40:22
+#   Also plot the split time between pop2 from pop1, and test using less smc files.
+
+#   Version 1.2.0: 2023-08-07 22:42:19
+#   Test using less both pop12 and 21 files (medium).
+
+#   Version 1.2.1: 2024-05-21 18:18:38
+#   Don't need load singularity module.
+
+#   Version 1.3.0: 2024-08-16 15:14:21
+#   Support different spline types: piecewise (default), cubic, pchip.
+
+
+import datetime
+from warnings import warn
+import os
+import sys
+import textwrap
+import argparse
+start_time = datetime.datetime.now()
+print(f'{" Start ":=^79}')
+
+version = "1.3.0"
+
+default_spline = ("piecewise", "cubic", "pchip")[0]  # piecewise, cubic, pchip
+parser = argparse.ArgumentParser(
+    description='Generate sub-scripts for the "smc++ estimate" command.')
+parser.add_argument('-s', '--spline',
+                    type=str,
+                    default=default_spline,
+                    choices=['piecewise', 'cubic', 'pchip'],
+                    help='The type of spline to use for the analysis, "piecewise","cubic", or "pchip", default: %(default)s')
+args = parser.parse_args()
+spline_type = args.spline
+print(f'The spline type is: {spline_type}')
+
+# Set the parameters
+generation_time = "7.5"  # The generation time of the species in years
+cpu = '1'
+script_basename = "s06.plot_split_time_joint_" +spline_type
+script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+work_dir = os.path.dirname(script_path)
+input_dir = work_dir+'/input/'
+s04_script_basename = "s04.vcf2smc_to_prepare_for_split"
+s05_output_dir = work_dir+'/output/s05.split_time_estimation_'+spline_type
+output_dir = work_dir+'/output/'+script_basename
+sub_script_dir = work_dir+'/bin/'+script_basename
+
+
+
+# Set the input files
+vcf = input_dir+"/s01.input.vcf.gz"
+chromosome_list = input_dir+"/s01.scaffolds_list.txt"
+individual_population_list = input_dir+"/s01.individuals_and_populations_list.txt" # Format: individual_name population_name
+population_pair_list = input_dir+"/s04.population_pair_list.txt" # Format: population1 population2
+load_singularity = '# module load system/singularity-3.7.3 # singularity is installed and callable on the cluster without loading a module'
+
+
+
+
+# Create the output directories
+os.system("mkdir -p "+sub_script_dir)
+os.system("mkdir -p "+output_dir)
+
+
+
+# Wrap the text
+def wrap(text, width=79):
+    return textwrap.fill(text, width=width, subsequent_indent=' '*4)
+
+
+
+# Read the input files, chromosome_list
+with open(chromosome_list,'r') as fr:
+    chr_list = fr.read().strip().split('\n')
+    info=f'Reading the "chromosomes list": {",".join(chr_list)}'
+    print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
+
+
+
+# Read the input files, individual_population_list
+population_dict = {}
+with open(individual_population_list,'r') as fr:
+    for line in fr:
+        if line.startswith("#") or line.strip()=='':
+            continue 
+        line = line.strip().split()
+        individual = line[0]
+        population = line[1]
+        info=f'Reading the "individuals_and_populations_list": {individual} {population}'
+        print(textwrap.fill(info, width=79, subsequent_indent=' '*4))
+
+        population_dict[population] = population_dict.get(population,list())
+        population_dict[population].append(individual)
+
+
+
+# Read the population pair list
+if os.path.exists(population_pair_list):
+    ls = list()
+    with open(population_pair_list,'r') as fr:
+        for line in fr:
+            if line.startswith("#") or line.strip()=='':
+                continue
+
+            line = line.strip().split()
+            pop1 = line[0]
+            pop2 = line[1]
+
+            if pop1 == pop2:
+                warn(wrap(f'Population "{pop1}" is paired with itself.'))
+                continue
+            if (pop1,pop2) in ls or (pop2,pop1) in ls:
+                warn(wrap(f'Population pair "{pop1} {pop2}" is duplicated.'))
+                continue
+
+            ls.append((pop1,pop2))
+            info=f'Reading the "population_pair_list": {pop1} {pop2}'
+            print(wrap(info))
+    population_pair_list = ls
+
+
+elif not os.path.exists(population_pair_list):
+    warn(f'Did not find the "{population_pair_list}" file, it will define the populations pairs for SMC++ with this format: \n    Population1  Population2.\n You could run {s04_script_basename}.py to generate this file.')
+    exit(1)
+
+
+
+print(wrap(f'Population pair list: {",".join([str(i) for i in population_pair_list])}'))
+
+if len(population_pair_list) == 0:
+    warn(wrap(f'No population pair was found in the "{population_pair_list}" file. If you do not want to use the "{population_pair_list}" file, you could remove it.'))
+    exit(1)
+
+
+# Generate the sub-script
+for (pop1,pop2) in population_pair_list:
+
+    # Plot Pop2 Pop1
+    sub_script_base = f"{script_basename}.{pop1}.{pop2}"
+    sub_script = os.path.join(sub_script_dir,sub_script_base+".sh")
+    with open(sub_script,"w") as fo:
+        content = f'''#!/usr/bin/env bash
+
+# This sub-script was generated by {script_basename}.py V{version} at {start_time}
+
+
+#SBATCH -J {sub_script_base}
+#SBATCH -o {sub_script_base}.%J.out
+#SBATCH -e {sub_script_base}.%J.err
+
+
+{load_singularity}
+
+
+singularity run -B  {work_dir}:{work_dir} \\
+    {work_dir}/bin/smcpp.sif plot \\
+        {output_dir}/{sub_script_base}.pdf \\
+        -g {generation_time} \\
+        --cores {cpu} \\
+        -c \\
+        {s05_output_dir}/{pop1}.{pop2}/model.final.json
+'''
+        fo.write(content)
+        
+# Plot Pop2 Pop1
+    sub_script_base = f"{script_basename}.{pop2}.{pop1}"
+    sub_script = os.path.join(sub_script_dir,sub_script_base+".sh")
+    with open(sub_script,"w") as fo:
+        content = f'''#!/usr/bin/env bash
+
+# This sub-script was generated by {script_basename}.py V{version} at {start_time}
+
+
+#SBATCH -J {sub_script_base}
+#SBATCH -o {sub_script_base}.%J.out
+#SBATCH -e {sub_script_base}.%J.err
+
+
+{load_singularity}
+
+
+singularity run -B  {work_dir}:{work_dir} \\
+    {work_dir}/bin/smcpp.sif plot \\
+        {output_dir}/{sub_script_base}.pdf \\
+        -g {generation_time} \\
+        --cores {cpu} \\
+        -c \\
+        {s05_output_dir}/{pop2}.{pop1}/model.final.json
+'''
+        fo.write(content)
+
+
+# # Use less smc files. Pop1, Pop2
+#     sub_script_base = f"{script_basename}.{pop1}.{pop2}.less"
+#     sub_script = os.path.join(sub_script_dir,sub_script_base+".sh")
+#     with open(sub_script,"w") as fo:
+#         content = f'''#!/usr/bin/env bash
+
+# # This sub-script was generated by {script_basename}.py V{version} at {start_time}
+
+
+# #SBATCH -J {sub_script_base}
+# #SBATCH -o {sub_script_base}.%J.out
+# #SBATCH -e {sub_script_base}.%J.err
+
+
+# {load_singularity}
+
+
+# singularity run -B  {work_dir}:{work_dir} \\
+#     {work_dir}/bin/smcpp.sif plot \\
+#         {output_dir}/{sub_script_base}.pdf \\
+#         -g {generation_time} \\
+#         --cores {cpu} \\
+#         -c \\
+#         {s05_output_dir}/{pop1}.{pop2}.less/model.final.json
+# '''
+#         fo.write(content)
+        
+# # Plot Pop2 Pop1 used less smc files
+#     sub_script_base = f"{script_basename}.{pop2}.{pop1}.less"
+#     sub_script = os.path.join(sub_script_dir,sub_script_base+".sh")
+#     with open(sub_script,"w") as fo:
+#         content = f'''#!/usr/bin/env bash
+
+# # This sub-script was generated by {script_basename}.py V{version} at {start_time}
+
+
+# #SBATCH -J {sub_script_base}
+# #SBATCH -o {sub_script_base}.%J.out
+# #SBATCH -e {sub_script_base}.%J.err
+
+
+# {load_singularity}
+
+
+# singularity run -B  {work_dir}:{work_dir} \\
+#     {work_dir}/bin/smcpp.sif plot \\
+#         {output_dir}/{sub_script_base}.pdf \\
+#         -g {generation_time} \\
+#         --cores {cpu} \\
+#         -c \\
+#         {s05_output_dir}/{pop2}.{pop1}.less/model.final.json
+# '''
+#         fo.write(content)
+
+
+
+# # Use medium smc files. Pop1, Pop2
+#     sub_script_base = f"{script_basename}.{pop1}.{pop2}.medium"
+#     sub_script = os.path.join(sub_script_dir,sub_script_base+".sh")
+#     with open(sub_script,"w") as fo:
+#         content = f'''#!/usr/bin/env bash
+
+# # This sub-script was generated by {script_basename}.py V{version} at {start_time}
+
+
+# #SBATCH -J {sub_script_base}
+# #SBATCH -o {sub_script_base}.%J.out
+# #SBATCH -e {sub_script_base}.%J.err
+
+
+# {load_singularity}
+
+
+# singularity run -B  {work_dir}:{work_dir} \\
+#     {work_dir}/bin/smcpp.sif plot \\
+#         {output_dir}/{sub_script_base}.pdf \\
+#         -g {generation_time} \\
+#         --cores {cpu} \\
+#         -c \\
+#         {s05_output_dir}/{pop1}.{pop2}.medium/model.final.json
+# '''
+#         fo.write(content)
+        
+# # Plot Pop2 Pop1 used medium smc files
+#     sub_script_base = f"{script_basename}.{pop2}.{pop1}.medium"
+#     sub_script = os.path.join(sub_script_dir,sub_script_base+".sh")
+#     with open(sub_script,"w") as fo:
+#         content = f'''#!/usr/bin/env bash
+
+# # This sub-script was generated by {script_basename}.py V{version} at {start_time}
+
+
+# #SBATCH -J {sub_script_base}
+# #SBATCH -o {sub_script_base}.%J.out
+# #SBATCH -e {sub_script_base}.%J.err
+
+
+# {load_singularity}
+
+
+# singularity run -B  {work_dir}:{work_dir} \\
+#     {work_dir}/bin/smcpp.sif plot \\
+#         {output_dir}/{sub_script_base}.pdf \\
+#         -g {generation_time} \\
+#         --cores {cpu} \\
+#         -c \\
+#         {s05_output_dir}/{pop2}.{pop1}.medium/model.final.json
+# '''
+#         fo.write(content)
+
+end_time = datetime.datetime.now()
+print('')
+print(' END '.center(79,'='))
+print(str(end_time-start_time).center(79))
