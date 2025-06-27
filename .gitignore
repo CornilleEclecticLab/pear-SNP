@@ -1,6 +1,9 @@
 #### gitignore is a symbolic link to .gitignore
 gitignore
 
+#### containers
+*.sif
+
 #### file name tag for any file that want to let git ignore
 *.GITIGNORE.*
 *.NOGIT.*
