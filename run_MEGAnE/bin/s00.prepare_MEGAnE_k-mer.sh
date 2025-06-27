@@ -14,11 +14,11 @@
 #Description:
     # 
 
-source s00.config.sh
-module load tmux
+source s00_config.py
+# module load tmux
 
 
 singularity exec ${sif} build_kmerset \
--fa ../input/ref_genome.fa \
--prefix reference_Pyrifolia_Cuiguan \
+-fa ../input/${ref_genome_fa} \
+-prefix $mk_file_prefix \
 -outdir ../input/megane_kmer_set
