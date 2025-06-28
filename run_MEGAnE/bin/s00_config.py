@@ -9,6 +9,6 @@ mk_file_prefix='reference_PPY'
 
 rep_library_fa="Pyrus_cat_refTE_denovoLibTEs_filtered_MCL.annotation.fa"
 
-repeatmask_out = "GWHBAOS00000000.genome.fasta.out"
+repeatmask_out="GWHBAOS00000000.genome.fasta.out"
 
 s02_output_dir="../output/s02.joint_calling"

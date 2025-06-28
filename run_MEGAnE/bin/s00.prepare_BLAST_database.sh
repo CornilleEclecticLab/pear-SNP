@@ -12,12 +12,12 @@
 #Description:
     # 
 
-source s00.config.sh
+source s00_config.py
 
 mkdir -p ../input/ref_genome_blastdb
 
 singularity exec $sif /usr/local/bin/ncbi-blast-2.12.0+/bin/makeblastdb \
--in ../input/ref_genome.fa \
--out ../input/ref_genome_blastdb/ref_genome_blastdb \
+-in ../input/${ref_genome_fa} \
+-out ../input/ref_genome_blastdb/${ref_genome_fa} \
 -dbtype nucl \
 -parse_seqids
