@@ -10,6 +10,10 @@
 # @Update:
 #   v1.0.1
 #   Change the input table format
+#   v1.1.0
+#   Using the config files
+#   v1.1.1
+#   Report all notfound cram/bam files, not raise error immediately
 
 import datetime
 import textwrap
@@ -26,7 +30,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "1.0.1"
+version = "1.1.1"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -89,7 +93,7 @@ for pop, inds in pop_dic.items():
         raise  ValueError(f'Jagged reads length in Population: {pop}')
 
 
-# Read the cram file paths and check the file existence:
+# Glob the cram file paths and check the file existence:
 cram_paths = glob.glob(cram_dir)
 file_names = []
 id_path_check_dic = {}
@@ -104,11 +108,17 @@ for path in cram_paths:
         id_path_check_dic[id] = path
 
 # Check the cram file path
+not_found_ids = []
 for id in ind_list:
     file_name_str = '\t'.join(file_names)
     if id not in file_name_str:
-        raise ValueError(f"Didn't find the cram/bam file path for this ID: {id}")
-
+        not_found_ids.append(id)
+        # raise ValueError(f"Didn't find the cram/bam file path for this ID: {id}")
+if not_found_ids:
+    print("The following IDs do not have corresponding cram/bam files in cram_files folder:")
+    for id in not_found_ids:
+        print(id)
+    raise ValueError("cram/bam files not found.")
 
 # Write the sub_script for running MEGAnE by individuals
 header = f'''#!/bin/bash
@@ -137,9 +147,9 @@ for pop, values in pop_dic.items():
 #SBATCH -o {sub_script}.%J.out
 #SBATCH -e {sub_script}.%J.err
 #SBATCH -c {cpu}      # Booked 16 from slurm and also assigned 16 to MEGAnE but used 4 cores during testing. Job ID: 38787863
-#SBATCH --mem=50G     # Booked 120G but used 39.36G during testing. Time 04:18:04
+#SBATCH --mem=36G     # Booked 120G but used 39.36G during testing. Time 04:18:04
 
-source "{bin_dir}/s00_config.sh"
+source "{bin_dir}/s00_config.py"
 
 singularity exec ${{sif}} call_genotype \\
     -i {path} \\
