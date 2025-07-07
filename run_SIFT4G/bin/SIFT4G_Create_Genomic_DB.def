@@ -3,7 +3,7 @@ From: ubuntu:latest
 
 %labels
     Author Yuqi modified from Dockerfile
-    Version v1.0
+    Version v1.1
 
 %help
     This container builds and runs the SIFT4G Create Genomic DB tool without requiring Docker or root on the host,
@@ -65,6 +65,7 @@ From: ubuntu:latest
     # Excutable
     chmod -R 755 /SIFT4G_Create_Genomic_DB/*.pl
     chmod -R 755 /SIFT4G_Create_Genomic_DB/*.py
+    chmod -R 755 /SIFT4G_Create_Genomic_DB    
 
     # Download SIFT4G_Annotator.jar
     cd /SIFT4G_Create_Genomic_DB
