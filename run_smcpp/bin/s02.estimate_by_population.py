@@ -30,6 +30,12 @@
 #     Changing the default spline type to piecewise.
 #     Adding the parameter --em-iterations 50 to the estimate command.
 
+#    version 2.2.0: 2025-07-08
+#     Change --knots
+
+#    version 2.3.0: 2025-07-09
+#     Create a folder for each scrupt, because iterate.dat temprature file is generated in the wroking directory.
+
 import datetime
 import os
 import sys
@@ -51,7 +57,7 @@ args = parser.parse_args()
 spline_type = args.spline
 print(f'The spline type is: {spline_type}')
 
-version = "2.1.1"
+version = "2.3.0"
 cpu_cores = '20'
 em_iterations = '50'
 
@@ -102,7 +108,8 @@ with open(individual_population_list,'r') as fr:
 
 for pop, inds in population_dict.items(): 
         sub_script_basename = f"estimate.{pop}"
-        sub_script = f"{sub_script_dir}/{sub_script_basename}.sh"
+        os.mkdir(f"{sub_script_dir}/{sub_script_basename}")
+        sub_script = f"{sub_script_dir}/{sub_script_basename}/{sub_script_basename}.sh"
         smc_list = ' \\\n        '.join([f"{output_s01_dir}/{pop}.{chr}.smc.gz" for chr in chr_list])
 
         with open(sub_script,"w") as fo:
@@ -119,6 +126,7 @@ for pop, inds in population_dict.items():
 
 {load_singularity}
 
+# Default --knots=8
 
 singularity run -B  {work_dir}:{work_dir} \\
     {work_dir}/bin/smcpp.sif estimate \\
@@ -126,13 +134,18 @@ singularity run -B  {work_dir}:{work_dir} \\
         --timepoints 100 1e7 \\
         --outdir {output_dir}/{pop}/ \\
         --spline {spline_type} \\
-        --em-iterations {em_iterations} \\
+        --knots 8 \\
+	--em-iterations {em_iterations} \\
         {mutation_rate} \\
         {smc_list}
 '''
             fo.write(content)
 
-
+with open(f"{sub_script_dir}/submit_slurm.bash","w") as fo:
+    fo.write(f'''#!/bin/bash
+for i in estimate.*; do cd $i && sbatch $i.sh && cd ..
+done
+''')
 
 end_time = datetime.datetime.now()
 print('')
