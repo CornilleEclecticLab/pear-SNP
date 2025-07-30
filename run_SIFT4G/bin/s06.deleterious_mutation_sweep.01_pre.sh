@@ -16,6 +16,7 @@ source activate intervaltree
 
 # Common arguments
 OUTDIR=../output/s06.dm_sweep
+mkdir -p "$OUTDIR"
 
 
 BEDS=()
@@ -41,12 +42,6 @@ case "${SLURM_ARRAY_TASK_ID}" in
   3|6|9) REGION=all_masked;;
 esac
 
-# Submit the next job to merge results
-if [[ "$SLURM_ARRAY_TASK_ID" -eq 1 ]]; then
-  sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} s06.x1.deleterious_mutation_sweep.02_merge.sh
-fi
-
-echo "[$(date)] Running ${REGION}/${DEN} on task ${SLURM_ARRAY_TASK_ID}"
 
 # Build BED_ARGS if needed
 if [[ "$REGION" == "all_masked" ]]; then
@@ -56,10 +51,18 @@ else
 fi
 
 # Run the Python script
-python3 s06.x2.dm_extract_sweep.py \
+python3 s06.x1.dm_extract_sweep.py \
     "$OUTDIR" \
     "$REGION" \
     "$DEN" \
     $BED_ARGS
 
 echo "[$(date)] Finished ${REGION}/${DEN}"
+
+
+# Submit the next job to merge results
+if [[ "$SLURM_ARRAY_TASK_ID" -eq 1 ]]; then
+  sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} s06.x2.deleterious_mutation_sweep.02_merge.sh
+fi
+
+echo "[$(date)] Running ${REGION}/${DEN} on task ${SLURM_ARRAY_TASK_ID}"
