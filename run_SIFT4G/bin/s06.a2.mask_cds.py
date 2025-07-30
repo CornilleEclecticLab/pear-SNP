@@ -6,7 +6,7 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2025/06/09 15:08:17
 # @Description:
-#    
+#    Mask specific (e.g. low-mappability) regions in CDS from GFF files using BEDTools.
 
 import datetime
 import sys

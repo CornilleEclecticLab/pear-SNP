@@ -19,7 +19,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "1.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -41,11 +41,16 @@ for bed in bed_files:
     pars = base_name.split('.')
     method = pars[0]
     pop = pars[2]
-    # Only keep files that filename starts with RAiSD or OmegaPlus
-    if method.startswith('RAiSD') or method.startswith('OmegaPlus'):
+    # Skipe the old ouput file of this scritp
+    if method.startswith('selection'):
+        continue
+    # Only keep files that filename starts with Pixy_TajimaD or OmegaPlus
+    # if method.startswith('RAiSD') 
+    if method.startswith('Pixy_TajimaD') or method.startswith('OmegaPlus'):
         bed_file_dic.setdefault(pop, []).append(bed)
 
 for pop, bed_list in bed_file_dic.items():
+    print(pop,':',bed_list)
     base_name = os.path.basename(bed_list[0])
     dir_path = os.path.dirname(bed_list[0])
     pars = base_name.split('.')
