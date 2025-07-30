@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH -J s01.build_sift4g_db_PPY.sh
-#SBATCH -o s01.build_sift4g_db_PPY.sh.%J.out
-#SBATCH -e s01.build_sift4g_db_PPY.sh.%J.err
+#SBATCH -o s01.log/s01.build_sift4g_db_PPY.sh.%J.out
+#SBATCH -e s01.log/s01.build_sift4g_db_PPY.sh.%J.err
 #SBATCH -p long # this job need more than 24 hours
 #SBATCH -c 8
 #SBATCH --mem=40G

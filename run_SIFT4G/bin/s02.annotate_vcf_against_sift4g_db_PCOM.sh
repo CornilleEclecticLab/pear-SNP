@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #SBATCH -J s02.annotate_vcf_against_sift4g_db_PCOM.sh
-#SBATCH -o s02.annotate_vcf_against_sift4g_db_PCOM.sh.%J.out
-#SBATCH -e s02.annotate_vcf_against_sift4g_db_PCOM.sh.%J.err
+#SBATCH -o s02.log/s02.annotate_vcf_against_sift4g_db_PCOM.sh.%J.out
+#SBATCH -e s02.log/s02.annotate_vcf_against_sift4g_db_PCOM.sh.%J.err
 #SBATCH -c 17
 #SBATCH --mem=16G
 
