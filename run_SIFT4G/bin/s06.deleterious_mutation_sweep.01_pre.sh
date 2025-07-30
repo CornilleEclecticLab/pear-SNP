@@ -1,9 +1,8 @@
 #!/bin/bash
 
-
 #SBATCH -J s06.deleterious_mutation_sweep.01_pre.sh
-#SBATCH -o s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.out
-#SBATCH -e s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.err
+#SBATCH -o s06.log/s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.out
+#SBATCH -e s06.log/s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.err
 #SBATCH -c 1
 #SBATCH --mem=48G
 #SBATCH --array=1-9
@@ -18,18 +17,12 @@ source activate intervaltree
 # Common arguments
 OUTDIR=../output/s06.dm_sweep
 
-BEDS=(
-  ../input/selection_bed/selection.outliers.betu.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.cauc.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.comm_Dessert.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.comm_Perry.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.pyra.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.pyri_JP.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.Sand_CN-SE.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.Sand_CN-SW.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.ussu.filtered.sorted.merged.bed
-  ../input/selection_bed/selection.outliers.White.filtered.sorted.merged.bed
-)
+
+BEDS=()
+for bed in ../input/selection_bed/selection.merge_across_methods.*.bed; do
+  BEDS+=("$bed")
+done
+
 
 # Determine REGION and DEN based on task ID
 case "${SLURM_ARRAY_TASK_ID}" in
@@ -50,7 +43,7 @@ esac
 
 # Submit the next job to merge results
 if [[ "$SLURM_ARRAY_TASK_ID" -eq 1 ]]; then
-  sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} s06.deleterious_mutation_sweep.02_merge.sh
+  sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} s06.x1.deleterious_mutation_sweep.02_merge.sh
 fi
 
 echo "[$(date)] Running ${REGION}/${DEN} on task ${SLURM_ARRAY_TASK_ID}"
@@ -63,7 +56,7 @@ else
 fi
 
 # Run the Python script
-python3 s06.x1.dm_extract_sweep.py \
+python3 s06.x2.dm_extract_sweep.py \
     "$OUTDIR" \
     "$REGION" \
     "$DEN" \

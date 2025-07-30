@@ -6,7 +6,9 @@
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2025/06/08 22:07:35
 # @Description:
-#    
+#
+# v2.0.0
+#   - Changed output filenames.
 
 import datetime
 import sys
@@ -19,7 +21,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.1.0"
+version = "2.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -54,7 +56,7 @@ for pop, bed_list in bed_file_dic.items():
     base_name = os.path.basename(bed_list[0])
     dir_path = os.path.dirname(bed_list[0])
     pars = base_name.split('.')
-    output_name = 'selection' + '.' + '.'.join(pars[1:])
+    output_name = 'selection.merge_across_methods.' + pop + '.merged.bed'
     output_bed = os.path.join(dir_path, output_name)
 
     cmd = (
