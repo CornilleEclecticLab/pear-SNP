@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-#SBATCH -o s06.deleterious_mutation_sweep.02_merge.%J.out
-#SBATCH -e s06.deleterious_mutation_sweep.02_merge.%J.err
+#SBATCH -o s06.x1.log/s06.deleterious_mutation_sweep.02_merge.%J.out
+#SBATCH -e s06.x1.log/s06.deleterious_mutation_sweep.02_merge.%J.err
 #SBATCH --mem=4G
+
+## This script would be submitted to slurm by s06.deleterious_mutation_sweep.01_pre.sh
 
 set -euo pipefail
 

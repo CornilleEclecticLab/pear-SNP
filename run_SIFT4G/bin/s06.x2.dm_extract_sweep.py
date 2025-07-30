@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-# @File     : s06.x1.dm_extract_sweep.py
+# @File     : s06.x2.dm_extract_sweep.py
 # @Author   : NIE Yuqi (based on CHEN Xilong's methodology)
 # @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2025/06/06 12:36:25
