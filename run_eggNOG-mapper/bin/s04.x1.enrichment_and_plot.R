@@ -8,11 +8,14 @@
 rm(list = ls())
 
 # Load required libraries
-library(ggplot2)
-library(stringr)
-library(enrichplot)
-library(clusterProfiler)
-library(AnnotationForge)
+suppressMessages({
+    library(ggplot2)
+    library(stringr)
+    library(enrichplot)
+    library(clusterProfiler)
+    library(AnnotationForge)
+})
+
 
 # Parse command-line arguments
 args <- commandArgs(trailingOnly = TRUE)
@@ -20,6 +23,10 @@ args <- commandArgs(trailingOnly = TRUE)
 database <- args[1]  # "comm" or "pyri"
 gene_list_f <- args[2]
 output_dir <- args[3]
+
+message("Database selected: ", database)
+message("Gene list file: ", gene_list_f)
+message("Output directory: ", output_dir)
 
 
 # Validate database selection
@@ -35,12 +42,24 @@ if (database == "comm") {
 
 # Load GO and KEGG database
 go_base_path <- file.path("../output/s03.build_GO_KEGG_database", db)
-install.packages(go_base_path, repos = NULL, type = "source")
+
+if (!requireNamespace(db, quietly = TRUE)) {
+    install.packages(go_base_path, repos = NULL, type = "source")
+}
+
 library(as.character(db), character.only = TRUE)
 
 # Read gene list
 gene_df <- read.table(gene_list_f, header = FALSE, sep = "\t", stringsAsFactors = FALSE)
 genes <- gene_df$V1
+
+# Initialize variables to avoid "object not found" errors
+GO <- NULL
+go_simplified <- NULL
+p_GO <- NULL
+p_go_sim <- NULL
+KEGG <- NULL
+p_KEGG <- NULL
 
 # GO enrichment analysis
 GO <- enrichGO(
@@ -52,12 +71,33 @@ GO <- enrichGO(
     minGSSize = 1,
     qvalueCutoff = 0.05,
     pAdjustMethod = "BH",
-    readable = FALSE
+    readable = FALSE    # If readable is set to TRUE, the input gene IDs will be converted to gene symbols.
 )
 
-# GO enrichment plot
-p_GO <- dotplot(GO, split = "ONTOLOGY") + 
+# Reduce redundancy in GO terms
+if (is.null(GO) || nrow(as.data.frame(GO)) == 0) {
+    message("No GO terms enriched.")
+} else {
+    message("GO enrichment analysis completed.")
+
+    # Check ONTOLOGY column
+    if (!"ONTOLOGY" %in% colnames(as.data.frame(GO))) {
+        GO@result$ONTOLOGY <- "Unknown"
+    }
+
+    go_simplified <- simplify(GO, cutoff = 0.7, by = "p.adjust", select_fun = min)
+    if (!"ONTOLOGY" %in% colnames(as.data.frame(go_simplified))) {
+        go_simplified@result$ONTOLOGY <- "Unknown"
+    }
+
+    # GO enrichment plots
+    p_GO <- dotplot(GO, split = "ONTOLOGY") + 
         facet_grid(ONTOLOGY ~ ., scales = "free")
+
+    p_go_sim <- dotplot(go_simplified, split = "ONTOLOGY") + 
+        facet_grid(ONTOLOGY ~ ., scales = "free")
+}
+
 
 # Read KEGG pathway mapping files
 pathway2gene <- read.table(
@@ -86,15 +126,45 @@ KEGG <- enricher(
 )
 
 # KEGG enrichment plot
-p_KEGG <- dotplot(KEGG)
+if (!is.null(KEGG) && nrow(as.data.frame(KEGG)) > 0) {
+    p_KEGG <- dotplot(KEGG)
+} else {
+    message("No KEGG terms enriched.")
+    p_KEGG <- NULL
+}
 
 # Save plots
 basename_f <- basename(gene_list_f)
-ggsave(file.path(output_dir, paste0(basename_f, ".GO_enrichment.pdf")), p_GO, width = 6, height = 10)
-ggsave(file.path(output_dir, paste0(basename_f, ".KEGG_enrichment.pdf")), p_KEGG, width = 8, height =6)
+if (!is.null(p_GO)) {
+    ggsave(file.path(output_dir, paste0(basename_f, ".GO_enrichment.pdf")), p_GO, width = 6, height = 10)
+}
+if (!is.null(p_go_sim)) {
+    ggsave(file.path(output_dir, paste0(basename_f, ".GO_simplified_enrichment.pdf")), p_go_sim, width = 6, height = 10)
+}
+if (!is.null(p_KEGG)) {
+    ggsave(file.path(output_dir, paste0(basename_f, ".KEGG_enrichment.pdf")), p_KEGG, width = 8, height = 6)
+}
 
-# Save enrichment analysis results
-write.table(as.data.frame(GO), file.path(output_dir, paste0(basename_f, ".GO_enrichment.txt")), 
-            sep = "\t", na = "nan", quote = FALSE, row.names = FALSE)
-write.table(as.data.frame(KEGG), file.path(output_dir, paste0(basename_f, ".KEGG_enrichment.txt")), 
-            sep = "\t", na = "nan", quote = FALSE, row.names = FALSE)
+
+# Get population name from gene list file
+parts <- strsplit(gene_list_f, "\\.")[[1]]
+Population <- parts[length(parts) - 1]
+
+# Add population name to results and save into tables
+if (!is.null(GO) && nrow(as.data.frame(GO)) > 0) {
+    GO_out <- cbind(Population = Population, as.data.frame(GO))
+    write.table(GO_out, file.path(output_dir, paste0(basename_f, ".GO_enrichment.txt")), 
+                sep = "\t", na = "nan", quote = FALSE, row.names = FALSE)
+}
+
+if (!is.null(go_simplified) && nrow(as.data.frame(go_simplified)) > 0) {
+    GO_simple_out <- cbind(Population = Population, as.data.frame(go_simplified))
+    write.table(GO_simple_out, file.path(output_dir, paste0(basename_f, ".GO_simplified_enrichment.txt")), 
+                sep = "\t", na = "nan", quote = FALSE, row.names = FALSE)
+}
+
+if (!is.null(KEGG) && nrow(as.data.frame(KEGG)) > 0) {
+    KEGG_out <- cbind(Population = Population, as.data.frame(KEGG))
+    write.table(KEGG_out, file.path(output_dir, paste0(basename_f, ".KEGG_enrichment.txt")), 
+                sep = "\t", na = "nan", quote = FALSE, row.names = FALSE)
+}
