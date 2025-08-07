@@ -86,12 +86,13 @@ sbatch_options = '''
 run_bcftools = '''
 source {bin_dir}/s00.load_bcftools.sh
 
+
 bcftools view \\
     {vcf} \\
     -s {chosen_samples} \\
     -r {chr_base} \\
 | bcftools filter \\
-    -e 'AC==0 || AN==AC' \\
+    -e 'AC==0 || AN==AC || F_MISSING > 0.2' \\
     -O v \\
     -o {nonadmix_vcf}
 

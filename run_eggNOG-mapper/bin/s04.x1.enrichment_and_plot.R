@@ -71,6 +71,7 @@ GO <- enrichGO(
     minGSSize = 1,
     qvalueCutoff = 0.05,
     pAdjustMethod = "BH",
+    pool = FALSE,
     readable = FALSE    # If readable is set to TRUE, the input gene IDs will be converted to gene symbols.
 )
 
