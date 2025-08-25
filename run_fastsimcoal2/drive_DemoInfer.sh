@@ -488,8 +488,32 @@ END
 }
 
 step_summary() {
-    mkdir -p ./analysis/DemoInfer/summary
-}
+    mkdir ./analysis/DemoInfer/demo_files/west_summary
+    perl ./scripts/fsc-selectbestrun.pl \
+        "./analysis/DemoInfer/demo_files/west/*/*.run*/*/*.bestlhoods" \
+        ./analysis/DemoInfer/demo_files/west_summary
+    cat ./analysis/DemoInfer/demo_files/west_summary/Best_run_for_all.summary.txt
+    # Scenario        run_nu  MaxEstLhood     AIC     deltaL  best_of_what
+    # westG6D1        run48   -1833886.714    8445380.41979247        96438.9639999999        best_of_MaxEstLhood
+    # westG6D1        run48   -1833886.714    8445380.41979247        96438.9639999999        best_of_AIC
+    mkdir ./analysis/DemoInfer/demo_files/west_Bestrun_bestlhoods_file
 
+    cp ./analysis/DemoInfer/demo_files/west/Group_G6/westG6D1.run48/westG6D1/*.bestlhoods \
+        ./analysis/DemoInfer/demo_files/west_Bestrun_bestlhoods_file/
+    cp ./analysis/DemoInfer/demo_files/west/Group_G6/westG6D1.run48/westG6D1/*.par \
+        ./analysis/DemoInfer/demo_files/west_Bestrun_bestlhoods_file/
+
+    workpath="/home/xchen/work/PearPop_Project_Yuqi"
+    cd ./analysis/DemoInfer/demo_files/west_Bestrun_bestlhoods_file/
+    Rscript $workpath/scripts/ParFileViewer.logname.r \
+        westG6D1_maxL.par \
+        cauc,comD,comP,pyra
+    cd $workpath
+
+# compare the scenarios
+    Rscript ./scripts/fsc_MaxEsthood_boxplot.R
+    # Rscript ./scripts/fsc_best_confidence_interval.R
+
+}
 
 # step_fsc_run
