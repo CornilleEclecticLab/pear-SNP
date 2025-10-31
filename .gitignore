@@ -27,10 +27,10 @@ gitignore
 *[0-9][0-9][0-9].err
 *[0-9][0-9][0-9].out
 
-#### input and output dir
+#### Ignore input, output and database directories to prevent large or transient files from bloating the repository
 input
 output
-
+database
 
 #### local dir
 output_local
