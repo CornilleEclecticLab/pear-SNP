@@ -1,0 +1,1 @@
+../../run_Population_genetic_filter/bin/s02.branch15.batch63.Asia_noAdmix_round1_4pop_for_fastsimcoal/s00.config.As.sh
