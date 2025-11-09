@@ -7,11 +7,6 @@
 
 mkdir -p ../output/
 
-# four pop name
-# betu
-# pash
-# pyri_JP
-# Sand_CN
 
 step_fsc_run() { # fastsimcoal2 simulation, run 50 times for each model 100000 simulations
     set="east"
@@ -90,34 +85,42 @@ step_summary() {
     : "${workpath:=$(pwd)}"
 
     mkdir ../output/demo_files/${set}_summary
+
+    # This perl script will extract the best likelihoods from all runs and summarize them
     perl ./scripts/fsc-selectbestrun.pl \
         "../output/demo_files/${set}/*/*.run*/*/*.bestlhoods" \
         ../output/demo_files/${set}_summary
     cat ../output/demo_files/${set}_summary/Best_run_for_all.summary.txt
 
+# It will print something like this:
 # Scenario        run_nu  MaxEstLhood     AIC     deltaL  best_of_what
 # eastS2G1        run23   -2132725.395    9821585.40395368        125007.2        best_of_MaxEstLhood
 # eastS2G1        run23   -2132725.395    9821585.40395368        125007.2        best_of_AIC
+    
+    # Capture the best scenario and best run number
+    BST_SCENARIO=$(head -n 2 ../output/demo_files/${set}_summary/Best_run_for_all.summary.txt | tail -n 1 | cut -f1)
+    echo "Best scenario is: $BEST_SCENARIO"
+    BEST_RUN_NUM=$(head -n 2 ../output/demo_files/${set}_summary/Best_run_for_all.summary.txt | tail -n 1 | cut -f2)
 
     mkdir ../output/demo_files/${set}_Bestrun_bestlhoods_file
-    cp ../output/demo_files/${set}/Group_G2/${set}S2G1.run23/${set}S2G1/*.bestlhoods \
+    cp ../output/demo_files/${set}/Group_G*/${BEST_SCENARIO}.${BEST_RUN_NUM}/${BEST_SCENARIO}/*.bestlhoods \
         ../output/demo_files/${set}_Bestrun_bestlhoods_file/
-    cp ../output/demo_files/${set}/Group_G2/${set}S2G1.run23/${set}S2G1/*.par \
+    cp ../output/demo_files/${set}/Group_G*/${BEST_SCENARIO}.${BEST_RUN_NUM}/${BEST_SCENARIO}/*.par \
         ../output/demo_files/${set}_Bestrun_bestlhoods_file/
 
     cd ../output/demo_files/${set}_Bestrun_bestlhoods_file/
 
     . s00.load_r.sh
 
-    
+    # Visualize the parameter estimates
     Rscript $workpath/scripts/ParFileViewer.logname.r \
         ${set}S2G1_maxL.par \
-        betu,pash,Sand_CN,Sand_CN-SW # cauc,comD,comP,pyra
+        betu,pash,Sand_CN,Sand_CN-SW
     cd $workpath
 
-# compare the scenarios
-    Rscript ./scripts/fsc_MaxEsthood_boxplot.R
-    # Rscript ./scripts/fsc_best_confidence_interval.R
+    # Visualize the AIC values, the plot will be saved in the folder ../output/demo_files/${set}_summary
+    Rscript ./scripts/fsc_MaxEsthood_boxplot.commbined.R
+
 
 }
 
