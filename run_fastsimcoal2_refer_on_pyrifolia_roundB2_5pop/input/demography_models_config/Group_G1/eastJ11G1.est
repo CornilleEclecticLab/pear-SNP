@@ -1,0 +1,21 @@
+// Priors and rules file
+// *********************
+
+[PARAMETERS]
+//#isInt? #name #dist.#min #max
+//all N are in number of diploid individuals
+1 Nbetu logunif 1000 500000 output bounded
+1 Npash logunif 1000 500000 output bounded
+1 Npyri_JP logunif 1000 500000 output bounded
+1 NSand_CN logunif 1000 500000 output bounded
+1 NSandCNSE logunif 1000 500000 output bounded
+
+1 T0 logunif 1001 10000 output bounded
+1 T4 logunif 50 2000 output bounded
+1 T2 logunif 50 T4 output paramInRange
+1 T3 logunif 50 T2 output paramInRange
+
+0 M02 logunif 0.0001 0.01 output
+0 M20 logunif 0.0001 0.01 output
+
+[COMPLEX PARAMETERS]
