@@ -1,0 +1,20 @@
+// Priors and rules file
+// *********************
+
+[PARAMETERS]
+//#isInt? #name #dist.#min #max
+//all N are in number of diploid individuals
+1 Ncauc logunif 1000 100000 output bounded
+1 NcomD logunif 1000 100000 output bounded
+1 NcomP logunif 1000 100000 output bounded
+1 Npyra logunif 1000 100000 output bounded
+
+1 Tpyra logunif 800 2000 output bounded
+1 TcomD logunif 200 Tpyra output paramInRange
+1 TcomP logunif 200 TcomD output paramInRange
+
+0 M03 logunif 0.0001 0.1 output
+0 M30 logunif 0.0001 0.1 output
+0 M20 logunif 0.0001 0.1 output
+
+[COMPLEX PARAMETERS]
