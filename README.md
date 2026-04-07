@@ -2,6 +2,15 @@
 [![DOI](https://img.shields.io/badge/DOI-10.1101%2F2025.11.17.687327-blue)](https://doi.org/10.1101/2025.11.17.687327)
 
 
+## Associated Publication
+
+This repository contains the full analytical pipeline and custom scripts for the following study. The manuscript is currently under peer review.
+
+> Yuqi Nie, Xilong Chen, Somia Saidi, et al. (2025). Contrasting genomic routes to domestication in Occidental and Oriental pears. bioRxiv 2025.11.17.687327; doi: https://doi.org/10.1101/2025.11.17.687327
+
+**Citation**: Please cite the bioRxiv version if you use any part of this code or the associated methodology.
+
+
 ## The workflow for bioinformatic analysis used in this study (SNPs part)
 
 Fig S1 The workflow of the study
