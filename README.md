@@ -1,3 +1,5 @@
+# Contrasting genomic routes to domestication in Occidental and Oriental pears
+[![DOI](https://img.shields.io/badge/DOI-10.1101%2F2025.11.17.687327-blue)](https://doi.org/10.1101/2025.11.17.687327)
 
 
 ## The workflow for bioinformatic analysis used in this study (SNPs part)
