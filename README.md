@@ -504,13 +504,17 @@ bash s02.annotate_vcf_against_sift4g_db_PPY.sh
 python s03.get_vcf_by_pop_from_variant.py
 cd s03.get_vcf_by_pop_from_variant
 for job in *.sh; do sbatch "$job"; done
+cd ..
 
 # 7. Analyze and plot (execute after Slurm jobs finish)
+## s04: Outputs the population baseline genetic load at the whole-genome level.
 ## Please edit s04_config.py to update your local paths and cluster environment before running.
 python s04.analysis_mutation_burden.py
 Rscript s05.plot.R
 
 # 8. Run deleterious mutation sweep analysis
+## s06: Implements a highly flexible genetic load normalization strategy. 
+## Computes relative load (de_per_denominator) normalized by effective physical length (CDS), total variant count (SNP), or neutral mutation baseline (synonymous).
 ## Please edit s06_config.py to update your local paths and cluster environment before running.
 
 ## Preparation
