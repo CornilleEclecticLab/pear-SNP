@@ -4,22 +4,18 @@
 """
 MEGAnE_AFS_byPopulation.png — 4 panels (2x2), AF on X (linear), Count on Y (linear)
 
-Chaque panneau montre le spectre de fréquence allélique pour UNE population.
-Barres côte-à-côte dans chaque bin d’AF, colorées selon 4 classes simplifiées :
+Each panel shows the allele-frequency spectrum for ONE Population.
+Bars are side-by-side within each AF bin, colored by a simplified 4-class scheme:
  - LTR
  - Class I non-LTR
  - Class II
- - Unclassified (gris)
+ - Unclassified  (rendered in grey)
 
-MEI + MEA agrégés. 40 bins AF. NaN → "NA".
-Top 4 populations par nombre d’échantillons uniques présents dans MEI/MEA (hors 'Unknown').
-
-Ajout: courbes de densité (KDE gaussien sans dépendances externes),
-superposées aux barres, avec la MÊME couleur par catégorie et
-scalées en "counts": densité * n_label * bin_width.
+MEI + MEA aggregated. 40 AF bins. NaN → "NA".
+Top 4 populations by number of unique samples actually present in MEI/MEA (excluding 'Unknown').
 """
 
-import os, gzip, warnings, math
+import os, gzip, warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -192,11 +188,12 @@ def build_labels_array(var_ids_list, class_dict, order_dict, sfamily_dict):
 def make_label_palette(labels):
     """Fixed palette for the four simplified categories; Unclassified forced to grey."""
     base_palette = {
-        "LTR": (0.20, 0.60, 0.80),             # bleu clair
+        "LTR": (0.20, 0.60, 0.80),           # light blue
         "Class I non-LTR": (0.90, 0.60, 0.00), # orange
-        "Class II": (0.30, 0.70, 0.30),        # vert
-        "Unclassified": (0.60, 0.60, 0.60),    # gris
+        "Class II": (0.30, 0.70, 0.30),      # green
+        "Unclassified": (0.60, 0.60, 0.60),  # grey
     }
+    # Keep only labels that occur; preserve canonical order
     order = ["LTR", "Class I non-LTR", "Class II", "Unclassified"]
     labels_present = [l for l in order if l in set(labels)]
     palette = {lab: base_palette[lab] for lab in labels_present}
@@ -241,60 +238,6 @@ def barplot_grouped_linear(ax, bins, counts_mat, labels, palette):
                    color=palette.get(lab, (0.7, 0.7, 0.7)),
                    edgecolor="black", linewidth=0.3, label=lab if b == 0 else None)
 
-# ------- KDE + overlay (nouveau) -------
-
-def _kde_gaussian_1d(x, grid, bw=None):
-    """KDE gaussienne 1D sur 'grid' (aire=1). Silverman par défaut."""
-    x = np.asarray(x, dtype=float)
-    x = x[np.isfinite(x)]
-    if x.size == 0:
-        return np.zeros_like(grid)
-    if bw is None:
-        if x.size > 1:
-            std = np.std(x, ddof=1)
-            iqr = np.subtract(*np.percentile(x, [75, 25]))
-            sigma = max(std, iqr / 1.349, 1e-6)
-        else:
-            sigma = 1e-6
-        bw = 1.06 * sigma * (x.size ** (-1/5))
-        bw = max(bw, 1e-3)
-    u = (grid[None, :] - x[:, None]) / bw
-    dens = np.exp(-0.5 * u**2) / (math.sqrt(2 * math.pi))
-    dens = dens.sum(axis=0) / (x.size * bw)
-    return dens
-
-def overlay_density_curves(ax, af_vals, lab_vals, label_palette, nbins, bw_factor=1.0):
-    """Trace une courbe densité par catégorie, *scalée en counts* (dens*n*bin_w)."""
-    if af_vals.size == 0 or lab_vals is None or len(lab_vals) == 0:
-        return
-    af = np.asarray(af_vals, dtype=float)
-    labs = np.asarray(lab_vals, dtype=object)
-    valid = np.isfinite(af)
-    af = np.clip(af[valid], 0.0, 1.0)
-    labs = labs[valid]
-
-    xgrid = np.linspace(0.0, 1.0, 512)
-    bin_width = 1.0 / nbins
-
-    for lab, col in label_palette.items():
-        sel = af[labs == lab]
-        if sel.size == 0:
-            continue
-        # KDE + scaling
-        dens = _kde_gaussian_1d(sel, xgrid, bw=None)
-        if bw_factor != 1.0:
-            # re-lisse en ajustant la bande passante de manière simple
-            # (équivalent à une convolution gaussienne approx)
-            # Ici on applique une petite astuce: on ré-échantillonne le grid
-            # via une interpolation après lissage supplémentaire.
-            # Pour simplicité, on applique juste une puissance pour adoucir/raidir.
-            dens = dens ** (1.0 / bw_factor)
-            dens /= np.trapz(dens, xgrid)  # renormalisation
-        y = dens * sel.size * bin_width
-        ax.plot(xgrid, y, lw=2.0, color=col, alpha=0.95, solid_capstyle="round")
-
-# ------- wrapper principal -------
-
 def grouped_afs(ax, af_vals, labels=None, label_palette=None,
                 show_xlabel=False, show_ylabel=False, title=None):
     bins = np.linspace(0.0, 1.0, NBINS + 1)
@@ -325,15 +268,12 @@ def grouped_afs(ax, af_vals, labels=None, label_palette=None,
         valid = ~np.isnan(af_np)
         af_np = np.clip(af_np[valid], 0.0, 1.0)
         lab_arr = lab_arr[valid]
-        # enforce 4-class vocab only
+        # enforce 4-class vocabulary only
         lab_arr = np.array([x if x in {"LTR","Class I non-LTR","Class II","Unclassified"} else "Unclassified"
                             for x in lab_arr], dtype=object)
         label_order = list(label_palette.keys())
         counts_mat = counts_per_bin_label(af_np, lab_arr, bins, label_order)
         barplot_grouped_linear(ax, bins, counts_mat, label_order, label_palette)
-
-        # --- Densités superposées, couleurs identiques, échelle "Count"
-        overlay_density_curves(ax, af_np, lab_arr, label_palette, NBINS)
 
     if show_xlabel:
         ax.set_xlabel("Allele frequency (TE)", fontsize=10)
