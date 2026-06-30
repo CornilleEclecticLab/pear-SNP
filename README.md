@@ -16,8 +16,9 @@ The SNP datasets generated in this study have been deposited in the Zenodo datab
 
 
 ## The workflow for bioinformatic analysis used in this study (SNPs part)
+> [!NOTE]
+> Please refresh the webpage if you see "Unable to render rich display"
 
-Fig S1 The workflow of the study
 
 ```mermaid
 %%{init: {'theme':'forest',
@@ -463,7 +464,7 @@ At minimum, most workflows require some combination of:
 - **Reference genome FASTA**. In our case, we have used two reference genomes: "*Pyrus pyrifolia* Cuiguan" (https://doi.org/10.1038/s41438-021-00632-w) and "*Pyrus communis* Bartlett" (https://doi.org/10.1093/gigascience/giz138) for Oriental and Occidental pears, respectively, to reduce reference bias in population genetic analyses.
 - **Genome annotation GFF/GTF**.
 - **Sample metadata/population assignment files**. The results should be from fastStructure, neighbor-net tree and PCA analyses, rather than the previous passport information.
-- **Optional masks/bed regions** Many modules require a `BED` mask to filter out low-mappability and centromeric regions. We provide a ready-to-use bed file for the passed` via Zenodo: file named "`GWHBAOS00000000.chr_list.fasta_centromere_range.txt.genmap_pass_subtract_centier.bed`" for *Pyrus pyrifolia* Cuiguan reference.
+- **Optional masks/bed regions** Many modules require a `BED` mask to filter out low-mappability and centromeric regions. We provide a ready-to-use bed file for the passed regions via Zenodo: file named "`GWHBAOS00000000.chr_list.fasta_centromere_range.txt.genmap_pass_subtract_centier.bed`" for *Pyrus pyrifolia* Cuiguan reference genome.
 
 Different modules are tailored to either:
 - **SNP-only analyses**, or
