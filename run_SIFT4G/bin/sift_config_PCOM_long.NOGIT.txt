@@ -1,0 +1,37 @@
+
+GENETIC_CODE_TABLE=1
+GENETIC_CODE_TABLENAME=Standard
+MITO_GENETIC_CODE_TABLE=11
+MITO_GENETIC_CODE_TABLENAME=Plant Plastid Code
+
+
+PARENT_DIR=/shared/ifbstor1/projects/pear_snp3/pear/run_SIFT4G/output/s01_database_PCOM_long
+ORG=PyrusCommunis_BartlettDH
+ORG_VERSION=Pcom_BartlettDHv20
+
+# Running SIFT4G, this path works for the Dockerfile
+SIFT4G_PATH=/sift4g/bin/sift4g
+
+#PROTEIN_DB needs to be uncompressed
+PROTEIN_DB=/shared/ifbstor1/projects/pear_snp3/pear/run_SIFT4G/database/uniref90.fasta
+
+
+# Sub-directories, don't need to change
+GENE_DOWNLOAD_DEST=gene-annotation-src
+CHR_DOWNLOAD_DEST=chr-src
+LOGFILE=Log.txt
+ZLOGFILE=Log2.txt
+FASTA_DIR=fasta
+SUBST_DIR=subst
+ALIGN_DIR=SIFT_alignments
+SIFT_SCORE_DIR=SIFT_predictions
+SINGLE_REC_BY_CHR_DIR=singleRecords
+SINGLE_REC_WITH_SIFTSCORE_DIR=singleRecords_with_scores
+DBSNP_DIR=dbSNP
+
+# Don't need to change
+FASTA_LOG=fasta.log
+INVALID_LOG=invalid.log
+PEPTIDE_LOG=peptide.log
+ENS_PATTERN=ENS
+SINGLE_RECORD_PATTERN=:change:_aa1valid_dbsnp.singleRecord
