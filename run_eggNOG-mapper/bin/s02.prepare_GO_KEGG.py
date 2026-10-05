@@ -4,7 +4,6 @@
 
 # @File     : s02.prepare_GO_KEGG.py
 # @Author   : NIE Yuqi
-# @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2025/02/11 11:44:37
 # @Description:
 #    

@@ -10,7 +10,7 @@
 # @File     :   s01.run_eggNOG.sh
 # @Version  :   1.2.0
 # @Author   :   NIE Yuqi
-# @Email    :   nieyuqi.cn@gmail.com
+
 # @Time(CET):   2024/12/05 15:50:35
 #Description:
     # 

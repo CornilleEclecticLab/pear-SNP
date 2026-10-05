@@ -42,12 +42,19 @@ if (database == "comm") {
 
 # Load GO and KEGG database
 go_base_path <- file.path("../output/s03.build_GO_KEGG_database", db)
+go_term_table_path <- file.path("../output/s02.prepare_GO_KEGG", paste0(kegg_db_prefix, ".GO_GO_term.table.txt"))
+go_term_table <-  read.table(go_term_table_path, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+ref_go_list <- unique(go_term_table$GO)
+
 
 if (!requireNamespace(db, quietly = TRUE)) {
     install.packages(go_base_path, repos = NULL, type = "source")
 }
 
-library(as.character(db), character.only = TRUE)
+suppressMessages({
+    library(db, character.only = TRUE)
+})
+
 
 # Read gene list
 gene_df <- read.table(gene_list_f, header = FALSE, sep = "\t", stringsAsFactors = FALSE)
@@ -80,6 +87,8 @@ if (is.null(GO) || nrow(as.data.frame(GO)) == 0) {
     message("No GO terms enriched.")
 } else {
     message("GO enrichment analysis completed.")
+
+    GO@result <- GO@result[GO@result$ID %in% ref_go_list, ] # Filter GO results to include only those in the reference list
 
     # Check ONTOLOGY column
     if (!"ONTOLOGY" %in% colnames(as.data.frame(GO))) {

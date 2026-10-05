@@ -29,8 +29,8 @@ species = "communisBartlettDH"  # Warning: the "_" is not allowed in the species
 
 makeOrgPackage(gene_info=gene_info,go=gene2go,
                version="0.1",
-               maintainer = 'Y.N. <nieyuqi.cn@gmail.com>',
-               author = 'Y.N. <nieyuqi.cn@gmail.com>',
+               maintainer = 'Y.N.',
+               author = 'Y.N.',
                outputDir = output_dir,
                tax_id = "23211", # https://www.ncbi.nlm.nih.gov/taxonomy
                genus = genus,
@@ -47,8 +47,8 @@ species = "pyrifoliaCuiguan"
 
 makeOrgPackage(gene_info=gene_info,go=gene2go,
                version="0.1",
-               maintainer = 'Y.N. <nieyuqi.cn@gmail.com>',
-               author = 'Y.N. <nieyuqi.cn@gmail.com>',
+               maintainer = 'Y.N.',
+               author = 'Y.N.',
                outputDir = output_dir,
                tax_id = "3767", # https://www.ncbi.nlm.nih.gov/taxonomy
                genus = genus,
