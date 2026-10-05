@@ -159,6 +159,8 @@ if (!is.null(p_KEGG)) {
 # Get population name from gene list file
 parts <- strsplit(gene_list_f, "\\.")[[1]]
 Population <- parts[length(parts) - 1]
+list_type <- strsplit(basename_f, "\\.")[[1]][1]   # e.g. specific / shared_per_wild_cultivar
+Population <- paste0(Population, " (", list_type, ")")
 
 # Add population name to results and save into tables
 if (!is.null(GO) && nrow(as.data.frame(GO)) > 0) {
