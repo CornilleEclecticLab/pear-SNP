@@ -1,0 +1,1 @@
+../../run_Dsuite_genome/bin/s00.load_ruby.sh

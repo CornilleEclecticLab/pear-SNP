@@ -21,7 +21,7 @@ source $BIN/s00.load_environment.sh
 
 RUNNAME="root_P.cauc_Eastern_tree_Eastern_list.geno20"
 OUTPUT2="$WORK/output/$RUNNAME"
-OUTPUT5="$WORK/output/s05.fbranch/$RUNNAME"
+OUTPUT5="$WORK/output/fbranch/$RUNNAME"
 mkdir -p $OUTPUT5
 
 Dsuite Fbranch \
@@ -29,30 +29,15 @@ Dsuite Fbranch \
     $OUTPUT2/DTparallel_s02.id_species.Eastern.outgroup_cauc_root_P.cauc_Eastern_tree_Eastern_list.geno20_combined_tree.txt \
     > "${OUTPUT5}/${RUNNAME}_Fbranch.txt"
 
-dtools.py \
-    --tree-label-size 10 \
-    -n ${OUTPUT5}/${RUNNAME} \
+# dtools.py \
+#     --tree-label-size 10 \
+#     -n ${OUTPUT5}/${RUNNAME} \
+#     "${OUTPUT5}/${RUNNAME}_Fbranch.txt" \
+#     $OUTPUT2/root_cauc_Eastern_tree.nwk
+
+
+# Non-overapled plot based on dtools.py
+python3 s02.b2.plot_fbranch.py \
     "${OUTPUT5}/${RUNNAME}_Fbranch.txt" \
-    $OUTPUT2/root_cauc_Eastern_tree.nwk
-
-
-####
-
-
-RUNNAME="root_P.ussu_Western_tree_Western_list.geno20"
-OUTPUT2="$WORK/output/$RUNNAME"
-OUTPUT5="$WORK/output/s05.fbranch/$RUNNAME"
-mkdir -p $OUTPUT5
-
-TREE=$OUTPUT2/root_ussu_Western.nwk
-
-Dsuite Fbranch \
-    $TREE \
-    $OUTPUT2/DTparallel_s02.id_species.Western.outgroup_cauc_root_P.ussu_Western_tree_Western_list.geno20_combined_tree.txt \
-    > "${OUTPUT5}/${RUNNAME}_Fbranch.txt"
-
-dtools.py \
-    --tree-label-size 5 \
-    -n ${OUTPUT5}/${RUNNAME} \
-    "${OUTPUT5}/${RUNNAME}_Fbranch.txt" \
-    $TREE
+    $OUTPUT2/root_cauc_Eastern_tree.nwk \
+    -n ${OUTPUT5}/${RUNNAME}.clean \

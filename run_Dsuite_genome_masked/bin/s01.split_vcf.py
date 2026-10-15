@@ -4,10 +4,11 @@
 # @File     : s01.split_vcf.py
 # @Version  : 1.0.0
 # @Author   : NIE Yuqi
-# @Email    : nieyuqi.cn@gmail.com
 # @Time(CET): 2024-08-08 15:38:22
 # @Description:
-#     
+#    
+# Update 2.1.0 2025-08-20
+# No intermediate file
 
 import datetime
 import sys
@@ -17,7 +18,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.0.0"
+version = "2.1.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -51,6 +52,7 @@ for chr in chromosomes:
     choosing_list = os.path.join(input_dir, f's01.choosing_list.txt')
     rename_list = os.path.join(input_dir, f's01.rename_list.txt')
     vcf_choosing = os.path.join(output_dir, f'{chr}.choosing.vcf.gz')
+    vcf_masked = os.path.join(output_dir, f'{chr}.choosing.masked.vcf.gz')
     with open(os.path.join(sub_script_dir, f'{script_basename}.{chr}.sh'), 'w') as fh:
         fh.write(f'''\
 #!/bin/bash
@@ -58,7 +60,7 @@ for chr in chromosomes:
 #SBATCH -J {script_basename}.{chr}
 #SBATCH -o {script_basename}.{chr}.%J.out
 #SBATCH -e {script_basename}.{chr}.%J.err
-#SBATCH -c 4
+#SBATCH -c 8
 
 module load bcftools/1.14
 
@@ -66,13 +68,28 @@ bcftools view \\
     -S {choosing_list} \\
     {vcf} \\
     -r {chr} \\
+    --threads 8 \\
 | bcftools reheader \\
     -s {rename_list} \\
+    --threads 8 \\
 | bcftools view \\
     -O z4 \\
     -o {vcf_choosing}
 
-tabix -p vcf {vcf_choosing}
+tabix -f -p vcf {vcf_choosing}
+
+bcftools view \\
+    {vcf_choosing} \\
+    -R {input_dir}/{chr}.pass.bed \\
+    -O z4 \\
+    --threads 8 \\
+    -o {vcf_masked}
+
+tabix -f -p vcf {vcf_masked}
+
+# rm {vcf_choosing}
+# rm {vcf_choosing}.tbi
+
 ''')
 
 
