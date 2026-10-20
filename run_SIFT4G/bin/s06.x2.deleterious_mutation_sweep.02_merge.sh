@@ -27,8 +27,31 @@ merge_burden() {
   done
 }
 
+merge_summary() {
+  local suffix=$1   # e.g. "CDS" or "synonymous" or "SNP"
+  local prefix=$2   # e.g. "region.${suffix}.pop_mutation_burden.summary.Rdata.txt"
+
+  echo "Merging results for ${suffix}..."
+
+  local combined="${OUTDIR}/${prefix}"
+  # take header from any control file
+  head -n1 "${OUTDIR}/control.${suffix}.pop_mutation_burden.summary.txt" > "$combined"
+
+  for f in "${OUTDIR}"/*.${suffix}.pop_mutation_burden.summary.txt; do
+    if [[ "$f" != "$combined" ]]; then
+      tail -n +2 "$f" >> "$combined"
+    fi
+  done
+}
+
 merge_burden CDS         region.CDS.pop_mutation_burden.Rdata.txt
 merge_burden synonymous  region.synonymous.pop_mutation_burden.Rdata.txt
+merge_burden synonymous_allele  region.synonymous_allele.pop_mutation_burden.Rdata.txt
 merge_burden SNP         region.SNP.pop_mutation_burden.Rdata.txt
+merge_burden tolerated_allele   region.tolerated_allele.pop_mutation_burden.Rdata.txt
+
+merge_summary CDS         region.CDS.pop_mutation_burden.summary.Rdata.txt
+merge_summary SNP         region.SNP.pop_mutation_burden.summary.Rdata.txt
+merge_summary synonymous  region.synonymous.pop_mutation_burden.summary.Rdata.txt
 
 echo "All merges done at $(date)"

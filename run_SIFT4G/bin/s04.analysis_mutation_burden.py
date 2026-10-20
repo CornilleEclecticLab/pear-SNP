@@ -9,6 +9,9 @@
 # Update: v1.1.0 
 #   Read vcf.gz files.
 
+# Update: v1.2.0
+#   Output counts for synonymous sites. Also updated header on output table for easier reading.
+
 from s04_config import *
 import datetime
 import sys
@@ -22,7 +25,7 @@ print(f'{" Start ":=^79}')
 
 
 
-version = "1.1.0"
+version = "1.2.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -64,8 +67,13 @@ def read_sift4g_annotation(file_path):
             sift_score = parts[12]
             prediction = parts[16]
             
-            if variant_type != 'NONSYNONYMOUS' or sift_score == 'NA':
+            if variant_type not in ['NONSYNONYMOUS', 'SYNONYMOUS']:
                 continue
+            if variant_type == 'NONSYNONYMOUS' and sift_score == 'NA':
+                continue
+            if variant_type == 'SYNONYMOUS':
+                prediction = 'SYNONYMOUS'
+                sift_score = 0.0
 
             annotations.setdefault(chr, {})
             annotations[chr][pos] = {
@@ -146,9 +154,9 @@ def parse_vcf(file_path, sift_annotations):
             genotype = genotypes[i]
             gt = parse_vcf_genotype(gt_index, genotype)
 
-            variants.setdefault(sample_id, {'Allele': {'DELETERIOUS': 0, 'TOLERATED': 0},
-                                            'Homozygous': {'DELETERIOUS': 0, 'TOLERATED': 0}, 
-                                            'Heterozygous': {'DELETERIOUS': 0, 'TOLERATED': 0}})
+            variants.setdefault(sample_id, {'Allele': {'DELETERIOUS': 0, 'TOLERATED': 0, 'SYNONYMOUS': 0},
+                                            'Homozygous': {'DELETERIOUS': 0, 'TOLERATED': 0, 'SYNONYMOUS': 0}, 
+                                            'Heterozygous': {'DELETERIOUS': 0, 'TOLERATED': 0, 'SYNONYMOUS': 0}})
 
             if gt == 'Homozygous':
                 variants[sample_id]['Allele'][prediction] += 2     # Alt allele counts as 2
@@ -230,6 +238,9 @@ def process_vcf_files(ref_genome, sift_annotations):
             sample_variants[sample_id]['Allele']['TOLERATED'] += variants['Allele']['TOLERATED']
             sample_variants[sample_id]['Homozygous']['TOLERATED'] += variants['Homozygous']['TOLERATED']
             sample_variants[sample_id]['Heterozygous']['TOLERATED'] += variants['Heterozygous']['TOLERATED']
+            sample_variants[sample_id]['Allele']['SYNONYMOUS'] += variants['Allele']['SYNONYMOUS']
+            sample_variants[sample_id]['Homozygous']['SYNONYMOUS'] += variants['Homozygous']['SYNONYMOUS']
+            sample_variants[sample_id]['Heterozygous']['SYNONYMOUS'] += variants['Heterozygous']['SYNONYMOUS']
 
         processed_vcf_dic[chr_vcf][pop_vcf] = True
 
@@ -241,15 +252,15 @@ def process_vcf_files(ref_genome, sift_annotations):
     print(len(sample_variants), 'samples found in all VCF files for all populations and chromosomes.\n')
     for sample_id, variants in sample_variants.items():
         pop = ind_pop_dic[sample_id]
-        for var_type, vt in (['Allele','All'],  ['Homozygous', 'Ho'], ['Heterozygous','He']):
+        for var_type in ['Allele','Homozygous', 'Heterozygous']:
            write_lines.append(
-               f"{sample_id}\t{pop}\t{vt}\t{variants[var_type]['DELETERIOUS']}\t{variants[var_type]['TOLERATED']}\n")
+               f"{sample_id}\t{pop}\t{var_type}\t{variants[var_type]['DELETERIOUS']}\t{variants[var_type]['TOLERATED']}\t{variants[var_type]['SYNONYMOUS']}\n")
 
     return write_lines
 
 def main():
-    # header = f'Sample_ID\tPopulation\tAllele_Count\tHomozygous_Count\tHeterozygous_Count\n'
-    header  = f'ind\tpop\ttype\tde_nu\ttol_nu\n'
+    header = f'Individual\tPopulation\tType\tDeleterious_allele_count\tTolerated_allele_count\tSynonymous_allele_count\n'
+    # header  = f'ind\tpop\ttype\tde_nu\ttol_nu\tsyn_nu\n'
     with open(os.path.join(sub_output_dir, 'pop_mutation_burden.txt'), 'w') as concat_file:
         concat_file.write(header)
         for ref_genome in ref_genomes:

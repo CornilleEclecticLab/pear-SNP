@@ -11,6 +11,8 @@
 #    Read vcf.gz files.
 # @Update: v2.0.0
 #    Support SNP and synonymous variants counting.
+# @Update: v3.0.0
+#    Support tolerated variants counting, updated the output files header.
 
 from s04_config import *
 from s06_config import *
@@ -34,7 +36,7 @@ start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.0.0"
+version = "3.0.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -61,7 +63,9 @@ def parse_args():
     parser.add_argument(
         "region_type", help="Region type (e.g. selection, control, all_masked)")
     parser.add_argument(
-        "denominator",  help="Denominator for calculating mutation burden (e.g. CDS, SNP, synonymous)")
+        "denominator",  help="Denominator for calculating mutation burden (e.g. CDS, SNP, synonymous_allele, synonymous_SNP(synonymous), tolerated)")
+    parser.add_argument(
+        "summary", help="Generate a summary table (string True/False)")
     parser.add_argument("bed_files", nargs="*",
                         help="One or more BED files named by *.*.pop.*.bed")
     return parser.parse_args()
@@ -251,21 +255,27 @@ class VCFParser:
             # Read SIFT4G annotation for this variant
             ann = self.read_sift4g_annotation(chrom, pos, ref, alt)
             if ann is None:
-                    if args.denominator in ['CDS', 'SNP']:
-                        prediction = 'SNP'  # other SNP except nonsynonymous
-                    elif args.denominator == 'synonymous':
-                        continue  # For synonymous denominator, SNP is only synonymous variants 
+                if args.denominator in ['CDS', 'SNP']:
+                    prediction = 'background_SNP'  # other SNP except nonsynonymous
+                # elif args.denominator in ['synonymous_allele', 'synonymous_SNP', 'synonymous', 'tolerated_SNP', 'tolerated_snp', 'tolerated_allele']:
+                #     continue  # For synonymous denominator, SNP is only synonymous variants 
+                else:
+                    continue  # For other denominators, we need the annotation to clasify the variant (synonymous/tolerated etc.)
             elif ann is not None:
                 if args.denominator in ['CDS', 'SNP']:
                     if ann['variant_type'] != 'NONSYNONYMOUS':
-                        prediction = 'SNP'
-                elif args.denominator == 'synonymous':
+                        prediction = 'background_SNP'
+                elif args.denominator in ['synonymous_allele', 'synonymous_SNP', 'synonymous']:
                     if ann['variant_type'] == 'SYNONYMOUS':
-                        prediction = 'SNP'
+                        prediction = 'background_SNP'
                     elif ann['variant_type'] != 'NONSYNONYMOUS':
                         continue
+                # elif args.denominator in ['tolerated_SNP', 'tolerated_snp', 'tolerated_allele']:
+                #     if ann['variant_type'] != 'NONSYNONYMOUS':
+                #         continue
+            
             if prediction is None:
-                prediction = ann['prediction'] # 'DELETERIOUS' or 'TOLERATED'
+                prediction = ann['prediction']  # 'DELETERIOUS' or 'TOLERATED'
 
             # Locate which column GT is in the FORMAT field
             fmt_cols = format_field.split(':')
@@ -280,23 +290,17 @@ class VCFParser:
 
                 # Initialize sample statistics structure
                 variants.setdefault(sample_id, {
-                    'Total_SNP':{'DELETERIOUS': 0, 'TOLERATED': 0, 'SNP': 0},
-                    'Allele': {'DELETERIOUS': 0, 'TOLERATED': 0, 'SNP': 0},
-                    'Homozygous': {'DELETERIOUS': 0, 'TOLERATED': 0, 'SNP': 0},
-                    'Heterozygous': {'DELETERIOUS': 0, 'TOLERATED': 0, 'SNP': 0}
+                    'Total_site':{'DELETERIOUS': 0, 'TOLERATED': 0, 'background_SNP': 0},
+                    'Allele': {'DELETERIOUS': 0, 'TOLERATED': 0, 'background_SNP': 0},
+                    'Homozygous': {'DELETERIOUS': 0, 'TOLERATED': 0, 'background_SNP': 0},
+                    'Heterozygous': {'DELETERIOUS': 0, 'TOLERATED': 0, 'background_SNP': 0}
                 })
 
                 if gt == 'Homozygous' or gt == 'Heterozygous':
-                    variants[sample_id]['Total_SNP'][prediction] += 1
+                    variants[sample_id]['Total_site'][prediction] += 1
                 if gt == 'Homozygous':
-                    if prediction != 'SNP':
-                        # Homozygous alt -> Alt allele counts as 2
-                        variants[sample_id]['Allele'][prediction] += 2
-                        variants[sample_id]['Homozygous'][prediction] += 2
-                    else:
-                        # Homozygous SNP -> Alt allele counts as 1
-                        variants[sample_id]['Allele'][prediction] += 1
-                        variants[sample_id]['Homozygous'][prediction] += 1
+                    variants[sample_id]['Allele'][prediction] += 2
+                    variants[sample_id]['Homozygous'][prediction] += 2
                 elif gt == 'Heterozygous':
                     variants[sample_id]['Allele'][prediction] += 1
                     variants[sample_id]['Heterozygous'][prediction] += 1
@@ -328,8 +332,15 @@ def load_sift4g_annotation(file_path):
             sift_score = parts[12]
             prediction = parts[16]
 
+
             if sift_score == 'NA':
                 continue
+
+            if "Low confidence" in prediction or 'WARNING' in  prediction:
+                raise ValueError(
+                    f"Low confidence SIFT prediction at {chrom}:{pos}:{ref}>{alt} SIFT Score:{sift_score}."
+                    " should have been filtered in a previous step.")
+
             if variant_type not in ['SYNONYMOUS', 'NONSYNONYMOUS']:
                 continue
 
@@ -364,6 +375,7 @@ def process_vcf_files(ref_genome, sift_annotations, cds_length_dic, bed_region_p
     # Return str lines to be written to output file
     write_lines = []
     sample_stats = {}
+    write_lines_summary = []
 
     ind_pop_dic, pop_ind_dic = read_individual_pop_map(
         individuals_map_file_dic[ref_genome])
@@ -418,8 +430,8 @@ def process_vcf_files(ref_genome, sift_annotations, cds_length_dic, bed_region_p
             if sample_id not in sample_stats:
                 sample_stats[sample_id] = variants  # Warning: Cannot change the "variants" hereafter.
                 continue
-            for var_type in ['Allele', 'Homozygous', 'Heterozygous', 'Total_SNP']:
-                for prediction in ['DELETERIOUS', 'TOLERATED', 'SNP']:
+            for var_type in ['Allele', 'Homozygous', 'Heterozygous', 'Total_site']:
+                for prediction in ['DELETERIOUS', 'TOLERATED', 'background_SNP']:
                     sample_stats[sample_id][var_type][prediction] += variants[var_type][prediction]
 
         processed_vcf_dic[chr_vcf][pop_vcf] = True
@@ -443,29 +455,86 @@ def process_vcf_files(ref_genome, sift_annotations, cds_length_dic, bed_region_p
             if args.denominator == 'CDS':
                 denominator = cds_len
             elif args.denominator == 'SNP':
-                denominator = (variants['Total_SNP']['SNP'] +variants['Total_SNP']["DELETERIOUS"] + variants['Total_SNP']["TOLERATED"]) 
-            elif args.denominator == 'synonymous':
-                denominator = variants['Total_SNP']['SNP']
+                denominator = (variants['Total_site']['background_SNP'] +variants['Total_site']["DELETERIOUS"] + variants['Total_site']["TOLERATED"]) 
+            elif args.denominator in ['synonymous', 'synonymous_SNP']:
+                denominator = variants['Total_site']['background_SNP']
+            elif args.denominator in ['synonymous_allele']:
+                denominator = variants['Allele']['background_SNP']
+            elif args.denominator in ['tolerated_snp', 'tolerated_SNP']:
+                denominator = variants['Total_site']['TOLERATED']
+            elif args.denominator == 'tolerated_allele':
+                denominator = variants['Allele']['TOLERATED']
             # tol_nu = variants[var_type]['TOLERATED']
             # tol_per_cds = tol_nu / cds_len if tol_nu else 0.0
             de_per_denominator = de_nu / denominator if de_nu and denominator else 0.0
             write_lines.append(
                 f"{sample_id}\t{pop}\t{vt}\t{de_nu}\t{de_per_denominator}\t{args.region_type}\t{denominator}\n")
+    
 
-    return write_lines
+        de_all = variants['Allele']['DELETERIOUS']
+        de_ho  = variants['Homozygous']['DELETERIOUS']
+        de_he  = variants['Heterozygous']['DELETERIOUS']
+        de_site = variants['Total_site']['DELETERIOUS']
+        
+        if de_site != int(de_ho//2 + de_he):
+            raise ValueError(f"DEVELOPMENTAL BUG: Sample {sample_id} {pop} Allele Deleterious count mismatch {de_site} {de_ho//2 + de_he}")
+
+        syn_all = variants['Allele']['background_SNP']
+        syn_site = variants['Total_site']['background_SNP']
+        tol_all = variants['Allele']['TOLERATED']
+        tol_site = variants['Total_site']['TOLERATED']
+        total_snp_all = variants['Allele']['background_SNP'] + variants['Allele']['DELETERIOUS'] + variants['Allele']['TOLERATED']
+        total_snp_site = variants['Total_site']['background_SNP'] + variants['Total_site']['DELETERIOUS'] + variants['Total_site']['TOLERATED']
+
+        write_lines_summary.append(
+            f"{sample_id}\t{pop}\t{args.region_type}\t{cds_len}\t"
+            f"{de_all}\t{de_ho}\t{de_he}\t{de_site}\t"
+            f"{syn_all}\t{syn_site}\t"
+            f"{tol_all}\t{tol_site}\t"
+            f"{total_snp_all}\t{total_snp_site}\n"
+        )
+        
+
+    return write_lines, write_lines_summary
 
 
 def main():
 
     # header = f'Sample_ID\tPopulation\tAllele_Count\tHomozygous_Count\tHeterozygous_Count\n'
     if args.denominator == 'CDS':
-        header = f'ind\tpop\ttype\tde_nu\tde_per_cds\tregion_type\tcds_length\n'
+        # header = f'ind\tpop\ttype\tde_nu\tde_per_cds\tregion_type\tcds_length\n'
+        header = f'Sample_ID\tPopulation\tAllelic_state\tDeleterious_allele_count\tDeleterious_per_CDS_length\tRegion_type\tCDS_length\n'
     elif args.denominator == 'SNP':
-        header = f'ind\tpop\ttype\tde_nu\tde_per_snp\tregion_type\tsnp_nu\n'
-    elif args.denominator == 'synonymous':
-        header = f'ind\tpop\ttype\tde_nu\tde_per_syno\tregion_type\tsynonymous_snp_nu\n'
-    with open(os.path.join(args.output_dir, f'{args.region_type}.{args.denominator}.pop_mutation_burden.txt'), 'w') as concat_file:
+        # header = f'ind\tpop\ttype\tde_nu\tde_per_snp\tregion_type\tsnp_nu\n'
+        header = f'Sample_ID\tPopulation\tAllelic_state\tDeleterious_allele_count\tDeleterious_per_SNP_count\tRegion_type\tSNP_count\n'
+    elif args.denominator in ['synonymous', 'synonymous_SNP']:
+        # header = f'ind\tpop\ttype\tde_nu\tde_per_syno\tregion_type\tsynonymous_snp_nu\n'
+        header = f'Sample_ID\tPopulation\tAllelic_state\tDeleterious_allele_count\tDeleterious_per_synonymous_SNP\tRegion_type\tSynonymous_SNP_count\n'
+    elif args.denominator in ['synonymous_allele']:
+        header = f'Sample_ID\tPopulation\tAllelic_state\tDeleterious_allele_count\tDeleterious_per_synonymous_allele\tRegion_type\tSynonymous_allele_count\n'
+    elif args.denominator == 'tolerated_allele':
+        header = f'Sample_ID\tPopulation\tAllelic_state\tDeleterious_allele_count\tDeleterious_per_tolerated_allele\tRegion_type\tTolerated_allele_count\n'
+    elif args.denominator in ['tolerated_SNP', 'tolerated_snp']:
+        header = f'Sample_ID\tPopulation\tAllelic_state\tDeleterious_allele_count\tDeleterious_per_tolerated_SNP\tRegion_type\tTolerated_SNP_count\n'
+    else:
+        raise ValueError(f'Invalid denominator: {args.denominator}.')
+
+    if args.summary == 'True':
+        header_summary = f'Sample_ID\tPopulation\tRegion_type\tCDS_length\tDeleterious_allele_count\tDeleterious_homozygous_count\tDeleterious_heter_count\tDeleterious_site_count\tSynonymous_allele_count\tSynonymous_site_count\tTolerated_allele_count\tTolerated_site_count\tTotal_snp_allele_count\tTotal_snp_site_count\n'
+        file_summary = os.path.join(args.output_dir, f'{args.region_type}.{args.denominator}.pop_mutation_burden.summary.txt')
+    elif args.summary == 'False':
+        header_summary = ''
+        file_summary = os.devnull
+    else:
+        raise ValueError(f'Invalid summary value: {args.summary}. Must be "True" or "False".')
+
+
+    with open(os.path.join(args.output_dir, f'{args.region_type}.{args.denominator}.pop_mutation_burden.txt'), 'w') as concat_file, \
+        open(file_summary, 'w') as concat_file_summary:
         concat_file.write(header)
+        concat_file_summary.write(header_summary)
+
+
         for ref_genome in ref_genomes:
             cds_length_dic = {}
             # {pop: {chrom: [(start1, end1), (start2, end2), ...]}
@@ -509,10 +578,12 @@ def main():
                 raise ValueError(
                     f'Invalid region type: {args.region_type}. Must be one of "selection", "control", or "all_masked".')
 
-            with open(os.path.join(
-                args.output_dir, 
-                args.region_type+'.'+args.denominator+'.'+ref_genome+'_mutation_burden.txt'), 'w') as out_file:
-                out_file.write(header)
+            
+            # with open(os.path.join(
+                # args.output_dir, 
+                # args.region_type+'.'+args.denominator+'.'+ref_genome+'_mutation_burden.txt'), 'w') as out_file:
+            with open(os.devnull, 'w') as out_file:
+                # out_file.write(header)
 
                 print(f'Processing {ref_genome}...\n')
                 sift_annotations = load_sift4g_annotation(
@@ -524,10 +595,11 @@ def main():
                 print(
                     f'Read {sift4g_annotation_num} SIFT4G annotations for {ref_genome} completed.\n')
 
-                write_lines = process_vcf_files(
+                write_lines, write_lines_summary = process_vcf_files(
                     ref_genome, sift_annotations, cds_length_dic, bed_region_per_pop)
-                out_file.writelines(write_lines)
+                # out_file.writelines(write_lines)
                 concat_file.writelines(write_lines)
+                concat_file_summary.writelines(write_lines_summary)
 
 
 if __name__ == "__main__":

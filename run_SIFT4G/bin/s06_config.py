@@ -21,7 +21,7 @@ gff_file_dic = {
 
 mask_pass_bed_dic ={
     'PPY': os.path.join(input_dir, 'GWHBAOS00000000.chr_list.fasta_centromere_range.txt.genmap_pass_subtract_centier.bed'),
-    'PCOM': os.path.join(input_dir, '../input/PyrusCommunis_BartlettDHv2.0.chr_list.fasta_centromere_range.txt.genmap_pass_subtract_centier.bed')
+    'PCOM': os.path.join(input_dir, 'PyrusCommunis_BartlettDHv2.0.chr_list.fasta_centromere_range.txt.genmap_pass_subtract_centier.bed')
 }
 
 cds_masked_bed_dic = {

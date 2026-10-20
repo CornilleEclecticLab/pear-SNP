@@ -5,7 +5,7 @@
 #SBATCH -e s06.log/s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.err
 #SBATCH -c 1
 #SBATCH --mem=48G
-#SBATCH --array=1-9
+#SBATCH --array=1-18
 
 
 set -euo pipefail
@@ -29,7 +29,10 @@ done
 case "${SLURM_ARRAY_TASK_ID}" in
   1|2|3) DEN=CDS ;;
   4|5|6) DEN=SNP ;;
-  7|8|9) DEN=synonymous ;;
+  7|8|9) DEN=synonymous;;
+  10|11|12) DEN=tolerated_SNP;;
+  13|14|15) DEN=synonymous_allele;;
+  16|17|18) DEN=tolerated_allele;;
   *)
     echo "Invalid task ID" >&2
     exit 1
@@ -37,11 +40,15 @@ case "${SLURM_ARRAY_TASK_ID}" in
 esac
 
 case "${SLURM_ARRAY_TASK_ID}" in
-  1|4|7) REGION=selection ;;
-  2|5|8) REGION=control   ;;
-  3|6|9) REGION=all_masked;;
+  1|4|7|10|13|16) REGION=selection ;;
+  2|5|8|11|14|17) REGION=control   ;;
+  3|6|9|12|15|18) REGION=all_masked;;
 esac
 
+case "${SLURM_ARRAY_TASK_ID}" in
+  1|2|3|4|5|6|7|8|9) SUMMARY="True";;
+  *) SUMMARY="False";;
+esac
 
 # Build BED_ARGS if needed
 if [[ "$REGION" == "all_masked" ]]; then
@@ -55,6 +62,7 @@ python3 s06.x1.dm_extract_sweep.py \
     "$OUTDIR" \
     "$REGION" \
     "$DEN" \
+    $SUMMARY \
     $BED_ARGS
 
 echo "[$(date)] Finished ${REGION}/${DEN}"
