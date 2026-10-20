@@ -5,12 +5,13 @@
 #SBATCH -e s03.run_bedtools_subtract.sh.%J.err
 
 # @File     :   s03.run_bedtools_subtract.sh
-# @Version  :   1.0.0
+# @Version  :   1.1.0
 # @Author   :   NIE Yuqi
-# @Email    :   nieyuqi.cn@gmail.com
 # @Time(CET):   2025/01/29 13:59:18
 #Description:
     # 
+
+set -euo pipefail
 
 source s00.load_bedtools.sh
 
@@ -22,8 +23,8 @@ for bed in $(ls ../output/s02.generate_run_CentIER/*/*${suffix}); do
     prefix=$(echo $base | sed "s/$suffix//")
 
     awk '{print $1"\t"$2-1"\t"$3}' ${bed} \
-    | awk -v OFS='\t'  'NR==FNR {map[$2] = $1; next} $1 in map { $1 = map[$1];print } 1' ../input/${prefix}.chrID_map.txt ${bed}.bed - \
-    | bedootls sort \
+    | awk -v OFS='\t'  'NR==FNR {map[$2] = $1; next} $1 in map { $1 = map[$1] } 1' ../input/${prefix}.chrID_map.txt - \
+    | bedtools sort \
     > ${bed}.sorted.bed
 
     bedtools subtract \

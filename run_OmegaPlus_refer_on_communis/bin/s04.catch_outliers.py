@@ -28,17 +28,23 @@
 
 # Update: v3.1.0 2025-02-04
 #    1. Remove duplicate genes in the output
+# Update: v3.2.0 2025-07-22
+#    1. Add more cutoffs for outliers.
+#    2. Output the cutoff values.
+
+
 import datetime
 import sys
 import textwrap
 import os
+import numpy as np
 from s00_config import *
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
 
-version = "3.1.0"
+version = "3.2.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -75,17 +81,17 @@ with open(os.path.join(input_dir,chromosomes_list_filename)) as f:
 
 
 # Load cutoffs
-cutoff_pop = {}
-for pop in populations:
-    cutoff_file = os.path.join(input_dir,cutoff_files_dir,f'{pop}.{cutoff_files_suffix}')
-    with open(cutoff_file) as f:
-        lines = f.readlines()
-        header = lines[0].strip()
-        cutoff = lines[-1].strip()
-        if header.startswith('omegas') or header.startswith('#') or header.startswith(pop):
-            cutoff_pop[pop] = float(cutoff)
-        else:
-            raise ValueError(f'Unexpected format in {cutoff_file}')
+# cutoff_pop = {}
+# for pop in populations:
+#     cutoff_file = os.path.join(input_dir,cutoff_files_dir,f'{pop}.{cutoff_files_suffix}')
+#     with open(cutoff_file) as f:
+#         lines = f.readlines()
+#         header = lines[0].strip()
+#         cutoff = lines[-1].strip()
+#         if header.startswith('omegas') or header.startswith('#') or header.startswith(pop):
+#             cutoff_pop[pop] = float(cutoff)
+#         else:
+#             raise ValueError(f'Unexpected format in {cutoff_file}')
 
 
 # Read outputs from OmegaPlus, and catch the outliers based on neutral envlope
@@ -120,13 +126,13 @@ for pop in populations:
                         # if (chr, start, end, omega) not in results:
                             # results.append((chr, start, end, omega))
                         results_pop.append((chr, start, end, omega, position)) # Collect all valid results
-                        if omega >= cutoff_pop[pop]:  # Check against the cutoff
-                            outliers.append((chr, start, end))
-                    else:
-                        if omega >= cutoff_pop[pop]:
-                            print(f'Warning: invalid outlier at {chr}:{position}\t{start}-{end}')
+                    #     if omega >= cutoff_pop[pop]:  # Check against the cutoff
+                    #         outliers.append((chr, start, end))
+                    # else:
+                    #     if omega >= cutoff_pop[pop]:
+                    #         print(f'Warning: invalid outlier at {chr}:{position}\t{start}-{end}')
         # Remove duplicates
-        outliers = list(set(outliers))   # remove duplicates
+        # outliers = list(set(outliers))   # remove duplicates
         
         # Sort the outliers by start position within this chromosome
         outliers.sort(key=lambda x: x[1])    # Note: should sort chromosome first, sort -k1,1 -k2,2n
@@ -146,13 +152,6 @@ for pop in populations:
     # Sort the results by statistic
     results_pop.sort(key=lambda x: x[3], reverse=True)
     
-    # Write the top 30% results
-    top_30_results = results_pop[:int(0.3 * len(results_pop))]
-    with open(os.path.join(sub_output_dir, f'OmegaPlus.top30per.{pop}.txt'), 'w') as f:
-        # Sort by chromosome and position
-        top_30_results.sort(key=lambda x: (x[0], x[1]))
-        f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_30_results]))
-    
     # Write the top 20% results
     top_20_results = results_pop[:int(0.2 * len(results_pop))]
     with open(os.path.join(sub_output_dir, f'OmegaPlus.top20per.{pop}.txt'), 'w') as f:
@@ -161,15 +160,24 @@ for pop in populations:
         f.write('\n'.join([f'{chr}\t{position}\t{omega}' for (chr, start, end, omega, position) in top_20_results]))
 
 
-    top_cut_off = [0.02, 0.001, 0.005, 0.01, 200, 500]
+    # top_cut_off = [0.01, 0.005, 0.001, 0.0001, 200, 500]
+    top_cut_off = [f"{i:.4f}" for i in np.arange(0.05, 0.0009, -0.0005)]
     for top in top_cut_off:
-        if top < 1:
-            tops = max(1,int(float(top * len(results_pop))))
+        if float(top) < 1:
+            tops = max(1,int(float(float(top) * len(results_pop))))
         else:
             tops = int(top)
 
+        # Write the cutoff value
+        cutoff_stat_value = results_pop[tops-1][3]
+
+        with open(os.path.join(sub_output_dir, f'{pop}.OmegaPlus.{str(top).replace(".","_")}.cutoff.txt'), 'w') as f_cutoff:
+            f_cutoff.write(f'{pop} Omega cutoff\n')
+            f_cutoff.write(f'{cutoff_stat_value}\n')
+
         # Write the top outliers
         tops_outliers = results_pop[:tops]
+
         # Sort the outliers by chromosome and by start position
         tops_outliers.sort(key=lambda x: (x[0], x[1]))
         with open(os.path.join(sub_output_dir, f'OmegaPlus.{str(top).replace(".","_")}outliers.{pop}.bed'), 'w') as f:
@@ -188,7 +196,8 @@ def merge_outliers(method, cutoff):
         f.write(f"#SBATCH -o {os.path.basename(merge_script)}.%J.out\n")
         f.write(f"{load_bedtools}\n\n\n")
         for pop in populations:
-            input_file = os.path.join(sub_output_dir, f'{method}.{str(cutoff).replace(".","_")}outliers.{pop}.bed')
+            input_file = os.path.join(
+                sub_output_dir, f'{method}.{str(cutoff).replace(".","_")}outliers.{pop}.bed')
             output_file = os.path.join(
                 sub_output_dir, f'{method}.{str(cutoff).replace(".","_")}outliers.{pop}.merged.bed')
             gff_file = os.path.join(input_dir, gff_filename)

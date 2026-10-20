@@ -16,19 +16,19 @@ if (interactive()) {
 }
 
 # Set parameters ----------------------------------------------------------
-raisd_dir <- "../RAiSD_link.NOGIT./s06.mask_results"
+tajimad_dir <- "../Tajima_D_link.NOGIT./s02.split_pixy_by_pop"
 omega_dir <- "../output/s06.mask_results"
 
-raisd_cutoff_dir <- "../../run_MS_simulate/output/s03.find_FPR_cutoff_RAiSD/"
-omegaplus_cutoff_dir <- "../../run_MS_simulate/output/s03.find_FPR_cutoff_OmegaPlus/"
+tajimad_cutoff_dir   <- "../../run_pixy_TajimaD/output/s04.catch_outliers/"
+omegaplus_cutoff_dir <- "../../run_OmegaPlus/output/s04.catch_outliers/"
 
-raisd_cutoff_dir2 <- "../../run_MS_simulate_refer_on_communis/output/s03.find_FPR_cutoff_RAiSD/"
-omegaplus_cutoff_dir2 <- "../../run_MS_simulate_refer_on_communis/output/s03.find_FPR_cutoff_OmegaPlus/"
+tajimad_cutoff_dir2   <- "../../run_pixy_TajimaD_refer_on_communis/output/s04.catch_outliers/"
+omegaplus_cutoff_dir2 <- "../../run_OmegaPlus_refer_on_communis/output/s04.catch_outliers/"
 
 
 # Check if the data directory exists
-if (!dir.exists(raisd_dir)) {
-  stop(paste("RAiSD data directory", raisd_dir, "not found."))
+if (!dir.exists(tajimad_dir)) {
+  stop(paste("Tajima_D data directory", tajimad_dir, "not found."))
 }
 if (!dir.exists(omega_dir)) {
   stop(paste("OmegaPlus data directory", omega_dir, "not found."))
@@ -62,29 +62,32 @@ convert_chr_to_id <- function(data, chr_map) {
 
 
 # Load data ---------------------------------------------------------------
-#### Load RAiSD data ####
-raisd_file_list <- list.files(path = raisd_dir, pattern = "^RAiSD_Report\\..*by_win.*", full.names = TRUE)
+#### Load Tajima_D data ####
+tajimad_file_list <- list.files(path = tajimad_dir, pattern = "^Pixy\\..*\\.1k_tajima_d\\.txt", full.names = TRUE)
 
-raisd_data <- raisd_file_list %>%
+tajimad_data <- tajimad_file_list %>%
   lapply(function(file_path) {
-    
     # Read the data
     print(paste0("Reading file: ", file_path))
-    data <- fread(file_path, header = FALSE, sep = "\t", fill = TRUE)
-    
+    data <- fread(file_path, header = TRUE, sep = "\t", fill = TRUE)
+    # Header:
+      # pop     chromosome      window_pos_1    window_pos_2    tajima_d 
+      # no_sites        raw_pi  raw_watterson_theta     tajima_d_stdev
+
     # Check the number of columns and set column names accordingly
-    if (ncol(data) == 7) {
-      colnames(data) <- c("Pos", "Start", "End", "VAR", "SFS", "LD", "Score" )
-    } else {
+    if (ncol(data) == 9) {
+      colnames(data) <- c("Population", "Chr", "Start", "End", "Score", "no_sites", "raw_pi", "raw_watterson_theta", "tajima_d_stdev")
+      } else {
       stop(paste("Unexpected number of columns in file:", file_path))
     }
-    
-    # Filter out lines that are empty or start with "//"
-    data <- data[!(data$Pos == "" | grepl("^//", data$Pos)), ]
+    data$Pos <- as.integer(0.5 * (data$Start + data$End))  # Calculate the midpoint of the window
     data$Pos <- as.integer(data$Pos)
     
-    data$Population <- strsplit(basename(file_path), "\\.")[[1]][2]
-    data$Chr <- strsplit(basename(file_path), "\\.")[[1]][3]
+    # Filter out lines that are empty or start with "//"
+    data <- data[!is.na(data$Score), ]  # Remove rows with NA in tajima_d
+
+    # data$Population <- strsplit(basename(file_path), "\\.")[[1]][2]
+    # data$Chr <- strsplit(basename(file_path), "\\.")[[1]][3]
     
     data <- convert_chr_to_id(data, chr_map)
 
@@ -92,13 +95,13 @@ raisd_data <- raisd_file_list %>%
     data$Chr <- factor(data$Chr, levels = paste0("Chr", 1:17))
     
     # Set Method
-    data$Method <- "RAiSD"
+    data$Method <- "Pixy_TajimaD"
     
     return(data)
   }) %>%
   bind_rows()
 
-raisd_data <- raisd_data %>%
+tajimad_data <- tajimad_data %>%
   drop_na(Score) %>%
   select(Chr, Start, End, Pos, Method, Population, Score)
 
@@ -157,7 +160,7 @@ omega_data <- omega_data %>%
   drop_na(Score) %>%
   select(Chr, Start, End, Pos, Method, Population, Score)
 
-combined_data <-bind_rows(raisd_data, omega_data)
+combined_data <-bind_rows(tajimad_data, omega_data)
 
 head(combined_data)
 dim(combined_data)
@@ -169,7 +172,7 @@ dim(combined_data)
 # omega_data_sample <- omega_data %>%
 #   sample_n(5000)
 
-# raisd_data_sample <- raisd_data %>%
+# tajimad_data_sample <- tajimad_data %>%
 #   sample_n(5000)
 ###########################################################################
 
@@ -205,7 +208,7 @@ chr_label <- combined_data %>%
 
 
 #### Prune data ####
-prune_data <- function(df, method="RAiSD", window_size=10) { # Keep one mark for every window_size (3) marks
+prune_data <- function(df, method="Pixy_TajimaD", window_size=10) { # Keep one mark for every window_size (3) marks
   df <- as.data.table(df)
   df_method<- df[df$Method == method, ]
   df_other <- df[df$Method != method, ]
@@ -223,60 +226,33 @@ prune_data <- function(df, method="RAiSD", window_size=10) { # Keep one mark for
 
 ## Pruning
 print(paste0("Pruning data from  ", nrow(combined_data), "..."))
-combined_data <- prune_data(combined_data, "RAiSD", 20)
+# combined_data <- prune_data(combined_data, "Pixy_TajimaD", 20)
 print(paste0("Done, purning data, left ", nrow(combined_data), "..." ))
 
 
-# #### Load cutoff ####
-# populations <- na.omit(unique(combined_data$Population))
-
-# # Initialize
-# cutoff_df <- data.frame(Population = character(),  raisd = numeric(),  omegaplus = numeric(),  stringsAsFactors = FALSE)
-
-# # Loop through populations and read cutoff values
-# for (pop in populations) {
-#   # Generate file paths for each method
-#   raisd_file <- paste0(raisd_cutoff_dir, pop, ".RAiSD.FPR0005.cutoff.txt")
-#   omegaplus_file <- paste0(omegaplus_cutoff_dir,pop, ".OmegaPlus.FPR0005.cutoff.txt")
-
-#   # Read cutoff values from each file (taking only the first value)
-#   raisd_cutoff <- read.table(raisd_file, header = FALSE, skip = 1)[1, 1]
-#   omegaplus_cutoff <- read.table(omegaplus_file, header = FALSE, skip = 1)[1, 1]
-
-#   # Add to the dataframe
-#   cutoff_df <- rbind(
-#     cutoff_df,
-#     data.frame(
-#       Population = pop,
-#       raisd = raisd_cutoff,
-#       omegaplus = omegaplus_cutoff
-#     )
-#   )
-# }
-#### Load cutoff ####
 populations <- na.omit(unique(combined_data$Population))
 
 # Initialize
-cutoff_df <- data.frame(Population = character(),  raisd = numeric(),  omegaplus = numeric(),  stringsAsFactors = FALSE)
+cutoff_df <- data.frame(Population = character(),  tajimad = numeric(),  omegaplus = numeric(),  stringsAsFactors = FALSE)
 
 # Loop through populations and read cutoff values
 for (pop in populations) {
   print(paste0("Reading cutoff for ", pop))
   # Generate file paths for each method
-  raisd_file <- paste0(raisd_cutoff_dir, pop, ".RAiSD.FPR005.cutoff.txt")
-  omegaplus_file <- paste0(omegaplus_cutoff_dir, pop, ".OmegaPlus.FPR0005.cutoff.txt")
-  raisd_file2 <- paste0(raisd_cutoff_dir2, pop, ".RAiSD.FPR005.cutoff.txt")
-  omegaplus_file2 <- paste0(omegaplus_cutoff_dir2, pop, ".OmegaPlus.FPR0005.cutoff.txt")
+  tajimad_file <- file.path(tajimad_cutoff_dir, paste0(pop, ".Pixy_TajimaD.0_0040.cutoff.txt"))
+  omegaplus_file <- paste0(omegaplus_cutoff_dir, pop, ".OmegaPlus.0_0055.cutoff.txt")
+  tajimad_file2 <- paste0(tajimad_cutoff_dir2, pop, ".Pixy_TajimaD.0_0040.cutoff.txt")
+  omegaplus_file2 <- paste0(omegaplus_cutoff_dir2, pop, ".OmegaPlus.0_0055.cutoff.txt")
   
   # Initialize cutoff values to NA
-  raisd_cutoff <- NA
+  tajimad_cutoff <- NA
   omegaplus_cutoff <- NA
   
-  # Try to read RAiSD cutoff value
-  if (file.exists(raisd_file)) {
-    raisd_cutoff <- read.table(raisd_file, header = FALSE, skip = 1)[1, 1]
-  } else if (file.exists(raisd_file2)) {
-    raisd_cutoff <- read.table(raisd_file2, header = FALSE, skip = 1)[1, 1]
+  # Try to read Tajima_D cutoff value
+  if (file.exists(tajimad_file)) {
+    tajimad_cutoff <- read.table(tajimad_file, header = FALSE, skip = 1)[1, 1]
+  } else if (file.exists(tajimad_file2)) {
+    tajimad_cutoff <- read.table(tajimad_file2, header = FALSE, skip = 1)[1, 1]
   }
   
   # Try to read OmegaPlus cutoff value
@@ -291,7 +267,7 @@ for (pop in populations) {
     cutoff_df,
     data.frame(
       Population = pop,
-      raisd = raisd_cutoff,
+      tajimad = tajimad_cutoff,
       omegaplus = omegaplus_cutoff
     )
   )
@@ -303,17 +279,21 @@ combined_data <- combined_data %>%
   left_join(cutoff_df, by = "Population") %>%
   mutate(
     Cutoff = case_when(
-      Method == "RAiSD" ~ raisd,
+      Method == "Pixy_TajimaD" ~ tajimad,
       Method == "OmegaPlus" ~ omegaplus
     ),
-    Color_group = ifelse(Score > Cutoff, Population, "Below_Cutoff"),
+    Color_group = case_when(
+      Method == "Pixy_TajimaD"  & Score < Cutoff ~ Population,
+      Method == "OmegaPlus" & Score > Cutoff ~ Population,
+      TRUE ~ "Below_Cutoff"
+    ),
     Color_group = factor(Color_group, levels = c(unique(Population), "Below_Cutoff"))
   )
 
 
 
 # Save data ---------------------------------------------------------------
-binary_cache_file <- "combined_data_binary.rds"
+binary_cache_file <- "combined_data_Omega_TajimaD_binary.rds"
 
 save(combined_data, cutoff_df, file = binary_cache_file)
 

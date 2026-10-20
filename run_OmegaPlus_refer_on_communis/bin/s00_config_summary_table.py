@@ -16,6 +16,9 @@ blast_annotation = '../../run_blast/output/s04.annotate_blast_result/PyrusCommun
 
 interest_common_populations_combines = [['comm_Dessert', 'comm_Perry']]
 
+interest_wild_crop_populations_combines = [['cauc', 'pyra'],['comm_Dessert', 'comm_Perry']]
+interest_among_crop_populations = ['comm_Dessert', 'comm_Perry']
+
 go_terms_list = '../../run_eggNOG-mapper/output/s02.prepare_GO_KEGG/PyrusCommunis_BartlettDHv2.0.GO_GO_term.table.txt'
 kegg_terms_list = '../../run_eggNOG-mapper/output/s02.prepare_GO_KEGG/PyrusCommunis_BartlettDHv2.0.KEGG_TERM2GENE.table.txt'
 nl_genome_sweeper_annotation = '../../run_NLGenomeSweeper/output/PyrusCommunis_BartlettDHv2.0/NLGenomeSweeper/Final_candidates.bed.NLs.genes.txt'

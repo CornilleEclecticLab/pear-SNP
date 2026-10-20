@@ -27,13 +27,19 @@
 
 # v2.5.0 2025-04-28 10:54:36
 # - Add strand information from gff in the summary table.
-# - Include the upstream 2Kb region in the summary table, and remove 2Kb/10Kb up-down stream. 
+# - Include the upstream 2kb region in the summary table, and remove 2kb/10kb up-down stream. 
 
 # v2.6.0 2025-04-29 
 # - Add PlantTFDB annotation to the summary table.
 # - Add flowering annotation (from blast result) to the summary table.
 # - Use symbol instead of gene name.
 # - Add interprete GO terms using goatools.
+
+# v2.7.0 2025-05-12
+# - Shorten the NBS-LRR gene name in the summary table.
+
+# v2.8.0 2026-07-22 
+# - Update the header.
 
 import datetime
 import sys
@@ -50,14 +56,14 @@ try:
 except ImportError as e:
     print(f"Error: {e}")
     print("Not found the required packages: goatools, pandas")
-    print('"source s00.load_goatools.sh"' )
+    print('May load by "source s00.load_goatools.sh"' )
     sys.exit(1)
 
 start_time = datetime.datetime.now()
 print(f'{" Start ":=^79}')
 
 
-version = "2.6.0"
+version = "2.8.0"
 script_basename = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 bin_dir = script_path
@@ -334,7 +340,7 @@ def get_leveln_terms(go_list_str, go_dag, nLevel):
 # Write summary table
 ## Expected columns: Gene_ID, Chr, Start, End, Detected_methods, common_vs_specific, Detedted_populations, Gene_name Gene_description
 with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w') as f:
-    header = '\t'.join(['Gene_ID','Chr_accession', 'Chr_ID', 'Start', 'End','Strand', 'Start_upstream2Kb', 'End_upstream2Kb', 'Detected_methods', 'Common_vs_specific_in_population',
+    header = '\t'.join(['Gene_ID','Chr_accession', 'Chr_ID', 'Start_upstream1kb', 'End_updstream1kb','Strand', 'Start_upstream2kb', 'End_upstream2kb', 'Detected_methods', 'Common_vs_specific_in_population',
                         'Detected_populations', 'Symbol', 'PFAM', 'Gene_description', blast_header, 'NBS-LRR_gene', 'Transcription_factor', 'GO_ID', 'GO_terms_level1','KEGG_ID'])+'\n'
 
     f.write(header)
@@ -428,7 +434,7 @@ with open(os.path.join(sub_output_dir,'positive_selection_summary_table.tsv'),'w
         if symbol == 'NA' or symbol == '-':
             symbol = '-'
             if gene in nl_genome_sweeper_dic:
-                symbol = nl_genome_sweeper
+                symbol = nl_genome_sweeper.split('(')[0]
         
         # Discard symbol if gene without pfam domain
         if pfam == 'NA' or pfam == '-':

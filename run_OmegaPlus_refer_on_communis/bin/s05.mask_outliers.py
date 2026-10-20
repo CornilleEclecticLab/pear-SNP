@@ -104,6 +104,8 @@ for file in outliers_files:
 #SBATCH -o {sub_prefix}.%j.out
 #SBATCH -e {sub_prefix}.%j.err
 
+set -euo pipefail
+
 {load_bedtools}
 percent_cutoff={percent_cutoff}
 
