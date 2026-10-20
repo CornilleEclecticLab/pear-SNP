@@ -14,9 +14,13 @@
 # BASE_PREFIX="pear_Dec2023.noClone.Combine_chr.geno20_maf005.anno.syno.thin8k"
 
 # s01 has been run
-# s02 has been run 
+# s02 has been run
 # BATCH="branch15.batch42.full"
 # BASE_PREFIX="pear_Dec2023.full.Combine_chr.geno20_maf005.anno.syno.thin8k"
+
+
+BATCH="branch17.batch56.full_396.individuals"
+BASE_PREFIX="pear_Jul2024_ref_comm.full.Combine_chr.geno20_maf005.anno.syno.thin8k"
 
 ##### Estern samples
 # s01 run
@@ -43,8 +47,8 @@
 ##### Western samples
 # s01 has been run
 # s02 has been run
-BATCH="branch17.batch45.Europe"
-BASE_PREFIX="pear_Jul2024_ref_comm.Europe.Combine_chr.geno20_maf005.anno.syno.thin8k"
+# BATCH="branch17.batch45.Europe"
+# BASE_PREFIX="pear_Jul2024_ref_comm.Europe.Combine_chr.geno20_maf005.anno.syno.thin8k"
 
 
 # s01 has been run
