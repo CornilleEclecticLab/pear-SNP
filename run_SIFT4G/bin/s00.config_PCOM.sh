@@ -16,7 +16,8 @@ GFF_FILE="${INPUT_DIR}/PyrusCommunis_BartlettDHv2.0.gff"             # expected 
 CHR_LIST="${INPUT_DIR}/PyrusCommunis_BartlettDHv2.0.chr_list.txt"    # One chromosome per line, no header, no blank lines
 
 ORG="PyrusCommunis_BartlettDH"
-ORG_VERSION="PCOM"       # Output dir = $OUTPUT_DIR/$ORG_VERSION
+ORG_VERSION="PCOM"
+SIFT_DB_VERSION="Pcom_BartlettDHv20" # SIFT4G database dir = $OUTPUT_DIR/$SIFT_DB_VERSION
 
 # Set path, adjust as needed
 OUTPUT_DIR="${PROJECT_ROOT}/output/s01_database_PCOM_long"          # Adjust as needed
@@ -31,6 +32,7 @@ CONFIG_FILE="${SCRIPT_DIR}/sift_config_PCOM_long.NOGIT.txt"         # Adjust as 
 
 # ORG="Pyrus_pyrifolia_Cuiguan"
 # ORG_VERSION="PPY"
+# SIFT_DB_VERSION="Ppy_Cuiguan"      # SIFT4G database dir = $OUTPUT_DIR/$SIFT_DB_VERSION
 
 # # Set path, adjust as needed
 # OUTPUT_DIR="${PROJECT_ROOT}/output/s01_database_PPY_long"       # Adjust as needed

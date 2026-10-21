@@ -44,14 +44,14 @@ merge_summary() {
   done
 }
 
-merge_burden CDS         region.CDS.pop_mutation_burden.Rdata.txt
+# merge_burden CDS         region.CDS.pop_mutation_burden.Rdata.txt
 merge_burden synonymous  region.synonymous.pop_mutation_burden.Rdata.txt
-merge_burden synonymous_allele  region.synonymous_allele.pop_mutation_burden.Rdata.txt
-merge_burden SNP         region.SNP.pop_mutation_burden.Rdata.txt
-merge_burden tolerated_allele   region.tolerated_allele.pop_mutation_burden.Rdata.txt
+# merge_burden synonymous_allele  region.synonymous_allele.pop_mutation_burden.Rdata.txt
+# merge_burden SNP         region.SNP.pop_mutation_burden.Rdata.txt
+# merge_burden tolerated_allele   region.tolerated_allele.pop_mutation_burden.Rdata.txt
 
-merge_summary CDS         region.CDS.pop_mutation_burden.summary.Rdata.txt
-merge_summary SNP         region.SNP.pop_mutation_burden.summary.Rdata.txt
-merge_summary synonymous  region.synonymous.pop_mutation_burden.summary.Rdata.txt
+# merge_summary CDS         region.CDS.pop_mutation_burden.summary.Rdata.txt
+# merge_summary SNP         region.SNP.pop_mutation_burden.summary.Rdata.txt
+# merge_summary synonymous  region.synonymous.pop_mutation_burden.summary.Rdata.txt
 
 echo "All merges done at $(date)"

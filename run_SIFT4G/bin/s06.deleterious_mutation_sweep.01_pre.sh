@@ -5,7 +5,8 @@
 #SBATCH -e s06.log/s06.deleterious_mutation_sweep.01_pre.sh.%A_%a.%J.err
 #SBATCH -c 1
 #SBATCH --mem=48G
-#SBATCH --array=1-18
+##SBATCH --array=1-18
+#SBATCH --array=7-9
 
 
 set -euo pipefail
@@ -69,7 +70,7 @@ echo "[$(date)] Finished ${REGION}/${DEN}"
 
 
 # Submit the next job to merge results
-if [[ "$SLURM_ARRAY_TASK_ID" -eq 1 ]]; then
+if [[ "$SLURM_ARRAY_TASK_ID" -eq 7 ]]; then
   sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} s06.x2.deleterious_mutation_sweep.02_merge.sh
 fi
 

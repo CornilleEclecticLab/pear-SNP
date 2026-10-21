@@ -15,7 +15,8 @@ if (interactive()) {
 # Load data
 de_pop <- read.table(
     "../output/s04.analysis_mutation_burden/pop_mutation_burden.txt",
-    header = TRUE
+    header = TRUE,
+    col.names = c("ind", "pop", "type", "de_nu", "tol_nu", "syn_nu")
 )
 
 # Define population order for Occidental/Eastern
@@ -37,14 +38,15 @@ de_pop <- de_pop %>%
     mutate(del_tol = de_nu / tol_nu) 
 
 de_pop <- de_pop %>% 
-    rename(
+    mutate(
         Type = type)
 
 
 
 
 # Plot Allele ------------------------------------------------------------
-de_all <- de_pop[de_pop$type == "All", ]
+dir.create("../plot", showWarnings = FALSE)
+de_all <- de_pop[de_pop$type == "Allele", ]
 
 p <- ggplot() +
     geom_jitter(
@@ -73,6 +75,26 @@ p <- ggplot() +
 p
 
 # Perform pairwise Wilcoxon test
+tri.to.squ<-function(x)
+{
+  rn<-row.names(x)
+  cn<-colnames(x)
+  an<-unique(c(cn,rn))
+  myval<-x[!is.na(x)]
+  mymat<-matrix(1,nrow=length(an),ncol=length(an),dimnames=list(an,an))
+  for(ext in 1:length(cn))
+  {
+    for(int in 1:length(rn))
+    {
+      if(is.na(x[row.names(x)==rn[int],colnames(x)==cn[ext]])) next
+      mymat[row.names(mymat)==rn[int],colnames(mymat)==cn[ext]]<-x[row.names(x)==rn[int],colnames(x)==cn[ext]]
+      mymat[row.names(mymat)==cn[ext],colnames(mymat)==rn[int]]<-x[row.names(x)==rn[int],colnames(x)==cn[ext]]
+    }
+    
+  }
+  return(mymat)
+}
+
 pp <- pairwise.wilcox.test(de_all$de_nu, de_all$pop, p.adjust.method = "holm")
 mymat <- tri.to.squ(pp$p.value)
 myletters <- multcompLetters(mymat, compare = "<=", threshold = 0.01, Letters = letters)
@@ -98,7 +120,7 @@ ggsave2(
 
 
 # Homo Hete ---------------------------------------------------------------
-de_hohe <- de_pop[de_pop$Type != "All", ]
+de_hohe <- de_pop[de_pop$Type != "Allele", ]
 
 p_w <- ggboxplot(
   data = de_hohe %>% filter(pop %in% west_pops),
@@ -152,7 +174,7 @@ pdfname <- "../plot/pop_HevsHo_deleterious_mutation_box_plot.pdf"
 ggsave2(pdfname, device = "pdf", width = 5.5, height = 4)
 
 # He ----------------------------------------------------------------------
-de_he <- de_pop[de_pop$type == "He", ]
+de_he <- de_pop[de_pop$type == "Heterozygous", ]
 
 p <- ggplot(de_he, aes(x = pop, y = de_nu, fill = pop)) +
     geom_boxplot() +
@@ -179,7 +201,7 @@ p + geom_text(
 ggsave2("../plot/pop_He_deleterious_mutation_box_plot.pdf", width = 4, height = 3)
 
 # Ho ----------------------------------------------------------------------
-de_ho <- de_pop[de_pop$type == "Ho", ]
+de_ho <- de_pop[de_pop$type == "Homozygous", ]
 
 p <- ggplot(de_ho, aes(x = pop, y = de_nu, fill = pop)) +
     geom_boxplot() +

@@ -43,7 +43,7 @@ while read -r CHR; do
     java -jar ./SIFT4G_Annotator.jar \
     -c \
     -i "$TEMP_VCF" \
-    -d  "$OUTPUT_DIR/$ORG_VERSION" \
+    -d  "$OUTPUT_DIR/$SIFT_DB_VERSION" \
     -r "$SIFT_DIR"
 
   # SIFT4g Option	Description
@@ -68,14 +68,14 @@ while read -r CHR; do
   awk '$9=="NONSYNONYMOUS"' $SIFT_XLS | awk '$17=="DELETERIOUS"' > $SIFT_DIR/$ORG_VERSION.$CHR.deleterious.tsv
   awk '$9=="NONSYNONYMOUS"' $SIFT_XLS | awk '$17=="TOLERATED"'    > $SIFT_DIR/$ORG_VERSION.$CHR.tolerated.tsv
   awk '$9=="SYNONYMOUS"' $SIFT_XLS | grep -v "DELETERIOUS" | awk '$13!="NA"' > $SIFT_DIR/$ORG_VERSION.$CHR.synonymous.tsv
-  awk '$8=="CDS"' $SIFT_XLS | awk '$13!="NA"' >$SIFT_DIR/$ORG_VERSION.$CHR.cds.tsv
+  awk '$8=="CDS"' $SIFT_XLS | awk '$13!="NA"' >$SIFT_DIR/$ORG_VERSION.$CHR.all.cds.tsv
   
   # Extract SNP positions
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.loss_of_funtion.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.loss_of_funtion.pos.txt
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.deleterious.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.deleterious.pos.txt
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.tolerated.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.tolerated.pos.txt
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.synonymous.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.synonymous.pos.txt
-  cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.cds.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.cds.pos.txt
+  cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.all.cds.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.all.cds.pos.txt
   ) &
 done < "$CHR_LIST"
 

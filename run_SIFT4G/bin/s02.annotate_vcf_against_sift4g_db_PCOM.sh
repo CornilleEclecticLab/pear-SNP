@@ -43,7 +43,7 @@ while read -r CHR; do
     java -jar ./SIFT4G_Annotator.jar \
     -c \
     -i "$TEMP_VCF" \
-    -d  "$OUTPUT_DIR/$ORG_VERSION" \
+    -d  "$OUTPUT_DIR/$SIFT_DB_VERSION" \
     -r "$SIFT_DIR"
 
   # SIFT4g Option	Description
@@ -75,7 +75,7 @@ while read -r CHR; do
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.deleterious.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.deleterious.pos.txt
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.tolerated.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.tolerated.pos.txt
   cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.synonymous.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.synonymous.pos.txt
-  cut -f 1,2 $SIFT_DIR/all.cds.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.all.cds.pos.txt
+  cut -f 1,2 $SIFT_DIR/$ORG_VERSION.$CHR.all.cds.tsv > $SIFT_DIR/$ORG_VERSION.$CHR.all.cds.pos.txt
   ) &
 done < "$CHR_LIST"
 

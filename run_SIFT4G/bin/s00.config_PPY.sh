@@ -16,7 +16,8 @@ PROTEIN_DB="${PROJECT_ROOT}/database/uniref90.fasta"        # Its output is bett
 # CHR_LIST="${INPUT_DIR}/PyrusCommunis_BartlettDHv2.0.chr_list.txt"    # One chromosome per line, no header, no blank lines
 
 # ORG="PyrusCommunis_BartlettDH"
-# ORG_VERSION="PCOM"       # Output dir
+# ORG_VERSION="PCOM"
+# SIFT_DB_VERSION="Pcom_BartlettDHv20" # SIFT4G database dir = $OUTPUT_DIR/$SIFT_DB_VERSION
 
 # # Set path, adjust as needed
 # OUTPUT_DIR="${PROJECT_ROOT}/output/s01_database_PCOM_long_sprot"       # Adjust as needed
@@ -31,6 +32,7 @@ CHR_LIST="${INPUT_DIR}/GWHBAOS00000000.chr_list.txt"
 
 ORG="Pyrus_pyrifolia_Cuiguan"
 ORG_VERSION="PPY"
+SIFT_DB_VERSION="Ppy_Cuiguan"      # SIFT4G database dir = $OUTPUT_DIR/$SIFT_DB_VERSION
 
 # Set path, adjust as needed
 OUTPUT_DIR="${PROJECT_ROOT}/output/s01_database_PPY_long"       # Adjust as needed

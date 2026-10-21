@@ -54,7 +54,7 @@ MITO_GENETIC_CODE_TABLENAME=Plant Plastid Code
 
 PARENT_DIR=${OUTPUT_DIR}
 ORG=${ORG}
-ORG_VERSION=${ORG_VERSION}
+ORG_VERSION=${SIFT_DB_VERSION}
 
 # Running SIFT4G, this path works for the Dockerfile
 SIFT4G_PATH=/sift4g/bin/sift4g
@@ -95,4 +95,4 @@ apptainer run \
     make-SIFT-db-all.pl \
       -config "$CONFIG_FILE"
 
-echo "==> Completed! Database directory: $OUTPUT_DIR/${ORG_VERSION}"
+echo "==> Completed! Database directory: $OUTPUT_DIR/${SIFT_DB_VERSION}"
