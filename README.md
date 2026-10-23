@@ -12,7 +12,7 @@ This repository contains the full analytical pipeline and custom scripts for the
 **Correspondence**: Dr. Xilong Chen, Prof. Karine Alix, Prof. Yuanwen Teng, and Dr. Amandine Cornille.
 
 **Data availability**:
-The SNP datasets generated in this study have been deposited in the Zenodo database under accession code zenodo.17673915. And raw sequencing data have been deposited in the European Nucleotide Archive (ENA) under accession code PRJEB104237, which are available but currently restricted and will be released upon publication. TE consensus sequences are available in the RepetDB database (https://urgi.versailles.inrae.fr/repetdb)."
+The SNP datasets generated in this study have been deposited in the Zenodo database under accession code zenodo.17673915. And raw sequencing data have been deposited in the European Nucleotide Archive (ENA) under accession code PRJEB104237, which are available but currently restricted and will be released upon publication. TE consensus sequences are available in the RepetDB database (https://urgi.versailles.inrae.fr/repetdb).
 
 
 ## The workflow for bioinformatic analysis used in this study (SNPs part)
