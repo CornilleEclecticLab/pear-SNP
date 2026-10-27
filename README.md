@@ -12,7 +12,7 @@ This repository contains the full analytical pipeline and custom scripts for the
 **Correspondence**: Dr. Xilong Chen, Prof. Karine Alix, Prof. Yuanwen Teng, and Dr. Amandine Cornille.
 
 **Data availability**:
-The SNP datasets generated in this study have been deposited in the Zenodo database under accession code zenodo.17673915. And raw sequencing data have been deposited in the European Nucleotide Archive (ENA) under accession code PRJEB104237, which are available but currently restricted and will be released upon publication. TE consensus sequences are available in the RepetDB database (https://urgi.versailles.inrae.fr/repetdb).
+The SNP datasets generated in this study have been deposited in the Zenodo database under accession code zenodo.17673914. And raw sequencing data have been deposited in the European Nucleotide Archive (ENA) under accession code PRJEB104237, which are available but currently restricted and will be released upon publication. TE consensus sequences are available in the RepetDB database (https://urgi.versailles.inrae.fr/repetdb).
 
 
 ## The workflow for bioinformatic analysis used in this study (SNPs part)
@@ -548,7 +548,7 @@ Rscript s07.dm_sweep.03_plot.R
 ```
 
 ## Test dataset and performance evaluation status
-To keep the Git repository size manageable, this repository does not include the full public test dataset. Instead, we provide the SNP datasets and a sample subset for testing on Zenodo (https://doi.org/10.5281/zenodo.17673915). Additionally, the TE consensus sequences are available via RepetDB (https://urgi.versailles.inrae.fr/repetdb).
+To keep the Git repository size manageable, this repository does not include the full public test dataset. Instead, we provide the SNP datasets and a sample subset for testing on Zenodo (https://doi.org/10.5281/zenodo.17673914). Additionally, the TE consensus sequences are available via RepetDB (https://urgi.versailles.inrae.fr/repetdb).
 
 ### Current limitation
 We cannot provide standardized performance metrics (runtime/memory/accuracy) across all workflows for other public dataset. And it is difficult to provide a single test dataset that can be used for all modules, given the diversity of analyses.
