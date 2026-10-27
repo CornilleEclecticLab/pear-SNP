@@ -19,7 +19,6 @@ The SNP datasets generated in this study have been deposited in the Zenodo datab
 > [!NOTE]
 > Please refresh the webpage if you see "Unable to render rich display"
 
-
 ```mermaid
 %%{init: {'theme':'forest',
   "themeVariables": {
@@ -44,12 +43,15 @@ ROW_DATA[["`**Raw Reads Data**
             *N* = 674`"]]
     QUALITY_CONTROL
       ~~~
+    bwa
+      ~~~
     gatk
 
     CLEAN_DATA
-    --> gatk{{BWA2, Picard, GATK4, bcftools, Plink2 kinship}}
+    --> bwa{{BWA-MEM2, Picard}}
+    --> gatk{{GATK4, bcftools, Plink2 kinship}}
 
-    --- L1[\Level 1 and 2 Filters/]
+    --- L1[\"`Level 1 (Horizontal SNP filtering) and Level 2 (Vertical SNP filtering) Filters`"/]
 
     --  Remove low quality sites
         Remove&nbsp;high&nbsp;SNP&nbsp;missing&nbsp;rate&nbsp;(>40%)&nbsp;samples
@@ -65,16 +67,25 @@ ROW_DATA[["`**Raw Reads Data**
     -- -Only Invariant sites
     --> FILTERED_INVARIANT[["`**Filtered Invariants**
             *N* = 229`"]]
+    
+bwa
+    --> MAPPED_reads[["`**Mapped Reads Data**
+    (bam)`"]]
+    --> rohan{{ROHan}}
+    --> roh(["Runs of Homozygosity (ROH)"])
+
+
+
 
 REF_GENOME_W[["`**Reference Occidental Pear Genome**
             (fasta)
             *Pyrus communis*`"]]
-    --> gatk
+    --> bwa
 
 REF_GENOME_E[["`**Reference Oriental Pear Genome**
             (fasta)
             *Pyrus pyrifolia*`"]]
-    --> gatk
+    --> bwa
 
     
 FILTERED_GENOTYPE
@@ -94,7 +105,7 @@ FILTERED_GENOTYPE
 
 
 UNLINKED_VARIANT
-    --> splittree{{Splitstree}}
+    --> splittree{{SplitsTree}}
     --> tree([Neighbor-net tree])
 
 
@@ -112,7 +123,7 @@ REF_GENOME_BOTH[["`**Both Reference Genomes**
             (fasta)
             *Pyrus pyrifolia*
             and *Pyrus communis*`"]]
-    --> genemap{{genemap, CentIER}}
+    --> genemap{{GeneMap, CentIER}}
     -.  Mask low mappability and centromeric regions
     .-> FINAL_VARIANT
 
@@ -140,7 +151,7 @@ structure
 
 
 REF_GENOME_BOTH
-    --> eggNOG{{eggNOG-mapper, PlantTFDB, NLGenomeSweeper, TAIR, UniPort, FLOR-ID, GO, KEGG}}
+    --> eggNOG{{eggNOG-mapper, PlantTFDB, NLGenomeSweeper, TAIR, UniProt, FLOR-ID, GO, KEGG}}
     --> anno(["`**Genes Functional Annotation**`"])
 
 
@@ -148,6 +159,10 @@ FINAL_VARIANT
     -- Wild and cultivated populations
     --> sift4g{{SIFT4G}}
     --> sift(["`**Deleterious Variants Prediction**`"])
+
+FINAL_VARIANT
+    --> snpeff{{SnpEff, VEP}}
+    --> lof(["`**Loss-of-Function Variants Annotation**`"])
 
 
 FINAL_VARIANT
@@ -161,12 +176,12 @@ FINAL_VARIANT
     --> omegaplus{{OmegaPlus}}
     --> omega(["`**_ω_**`"])
 
-regionR{{regionR}}
+regioneR{{regioneR}}
     -. Permutation Test for Selection Regions
     .-> omega
 
 
-regionR
+regioneR
     -. Permutation Test for Selection Regions
     .-> tajima
 
@@ -174,7 +189,7 @@ pixy2{{Pixy}}
     -->tajima(["`**Tajima's *D***`"])
 
 FINAL_VARIANT
-    --> Dsutie{{Dsuite}}
+    --> Dsuite{{Dsuite}}
     --> abba_baba(["`**D and f4-ratio statistic**`"])
 
 FINAL_VARIANT
@@ -196,7 +211,7 @@ UNLINKED_VARIANT
     --> FINAL_UNLINKED_VARIANT
 
 FINAL_UNLINKED_VARIANT
-    --> stacks{{Stacks Population}}
+    --> stacks{{Stacks Populations}}
     --> statistics(["`**Population Genetics Statistics**`"])
 
 
@@ -243,6 +258,7 @@ end
 
 subgraph Fig.4 Genetic Burden
     sift
+    lof
 end
 
 
