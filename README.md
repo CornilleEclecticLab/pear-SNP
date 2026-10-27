@@ -1,5 +1,5 @@
 # Contrasting genomic routes to domestication in Occidental and Oriental pears
-[![Manuscript DOI](https://img.shields.io/badge/Manuscript_DOI-10.1101%2F2025.11.17.687327-E65127)](https://doi.org/10.1101/2025.11.17.687327)    [![SNP data DOI](https://img.shields.io/badge/Data_DOI-10.5281%2Fzenodo.17673915-blue?logo=zenodo&logoColor=white)](https://doi.org/10.5281/zenodo.17673915)    [![ENA Project](https://img.shields.io/badge/ENA_Accession-PRJEB104237-007C82)](https://www.ebi.ac.uk/ena/browser/view/PRJEB104237)    [![TE Consensus](https://img.shields.io/badge/TE_Consensus_RepetDB-https://urgi.versailles.inrae.fr/repetdb-00a389)](https://urgi.versailles.inrae.fr/repetdb)
+[![Manuscript DOI](https://img.shields.io/badge/Manuscript_DOI-10.1101%2F2025.11.17.687327-E65127)](https://doi.org/10.1101/2025.11.17.687327)    [![SNP data DOI](https://img.shields.io/badge/Data_DOI-10.5281%2Fzenodo.17673914-blue?logo=zenodo&logoColor=white)](https://doi.org/10.5281/zenodo.17673914)    [![ENA Project](https://img.shields.io/badge/ENA_Accession-PRJEB104237-007C82)](https://www.ebi.ac.uk/ena/browser/view/PRJEB104237)    [![TE Consensus](https://img.shields.io/badge/TE_Consensus_RepetDB-https://urgi.versailles.inrae.fr/repetdb-00a389)](https://urgi.versailles.inrae.fr/repetdb)
 
 ## Associated Publication
 
